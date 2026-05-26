@@ -53,6 +53,10 @@ public class Student {
         this.acad_info = acad_info;
     }
 
+    public void addAcad_info(AcademicInfo academicInfo) {
+        this.acad_info.add(academicInfo);
+    }
+
     public String getYear_admitted() {
         return year_admitted;
     }

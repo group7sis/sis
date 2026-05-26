@@ -16,17 +16,18 @@ public class ScheduledCourse {
     private String academic_year;
     private List<Day> days;
     private Faculty assigned_faculty;
-    //private int year_level; // this is already in section so i could remove this
+    private int year_level; // this is already in section so i could remove this
     private String notes;
     private status status;
     
-    public ScheduledCourse(Program program, Course course, Section section, String academic_year, List<Day> days, Faculty assigned_faculty, String notes, status status) {
+    public ScheduledCourse(Program program, Course course, Section section, String academic_year, List<Day> days, Faculty assigned_faculty, int year_level, String notes, status status) {
         this.program = program;
         this.course = course;
         this.section = section;
         this.academic_year = academic_year;
         this.days = days;
         this.assigned_faculty = assigned_faculty;
+        this.year_level = year_level;
         this.notes = notes;
         this.status = status;
     }
@@ -69,6 +70,14 @@ public class ScheduledCourse {
 
     public void setAssigned_faculty(Faculty assigned_faculty) {
         this.assigned_faculty = assigned_faculty;
+    }
+
+    public int getYear_level() {
+        return year_level;
+    }
+
+    public void setYear_level(int year_level) {
+        this.year_level = year_level;
     }
 
     public String getNotes() {
