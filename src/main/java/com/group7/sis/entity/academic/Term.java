@@ -11,4 +11,22 @@ public class Term {
         this.acadamic_year = academic_year;
         this.semester = semester;
     }
+
+    public String getAcadamic_year() {
+        return acadamic_year;
+    }
+
+    public void setAcadamic_year(String acadamic_year) {
+        this.acadamic_year = acadamic_year;
+    }
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public void setSemester(int semester) {
+        this.semester = semester;
+    }
+
+    
 }
