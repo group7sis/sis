@@ -3,11 +3,11 @@ package com.group7.sis.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.group7.sis.dto.CreateAdmin;
 import com.group7.sis.entity.*;
 import com.group7.sis.entity.users.*;
 import com.group7.sis.entity.academic.*;
 import com.group7.sis.debug.*;
+import com.group7.sis.dto.*;
 
 import java.util.List;
 
@@ -49,16 +49,15 @@ public class AdminController {
 
     //-----------------------------COURSES-----------------------------------
     @GetMapping("/courses")
-    public List<Course> getAllCourses() {
+    public List<CourseInfo> getAllCourses() {
         //add logic
         return ListService.getCourses();
     }
 
     @PostMapping("/courses/add")
-    public Course createCourse(@RequestBody Course newCourse) {
-        //add checks here
-        ListService.addCourse(newCourse);
-        return newCourse;
+    public String addCourse(@RequestBody CourseInfo addCourse) {
+        ListService.addCourse(addCourse);
+        return ListService.addCourseToProgram(addCourse.getProgram(), addCourse.getCurriculum_code(), addCourse.getYear_level(), addCourse.getSemester(), addCourse.getCourse());
     }
     
     //-----------------------------------STUDENTS-----------------------------------

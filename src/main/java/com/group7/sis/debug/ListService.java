@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.entity.academic.*;
 import com.group7.sis.entity.users.*;
 import com.group7.sis.entity.users.student.*;
+import com.group7.sis.dto.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,23 +28,44 @@ public class ListService {
     public static void addProgram(Program program) {
         programs.add(program);
     }
+
+    public static String addCourseToProgram(String program, String curriculum_code, int year_level, int semester, Course course) {
+        for (Program p : programs) {
+            if (p.getTitle().equals(program)) {
+                for (Curriculum c : p.getCurriculum()) {
+                    if (c.getCode().equals(curriculum_code)) {
+                        for (Year y : c.getYears()) {
+                            if (y.getLevel() == year_level) {
+                                if (semester > y.sems_n_course.size()) {
+                                    break;
+                                }
+                                y.sems_n_course.get(semester).add(course);
+                                return "Course added successfully";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return "Failed to add course";
+    }
     
     public static List<Program> getPrograms() {
         return programs;
     }
 
     //COURSES
-    private static List<Course> courses = new ArrayList<>();
+    private static List<CourseInfo> courses = new ArrayList<>();
 
-    public static void addCourse(Course course) {
-        courses.add(course);
+    public static void addCourse(CourseInfo courseInfo) {
+        courses.add(courseInfo);
     }
 
-    public static List<Course> getCourses() {
+    public static List<CourseInfo> getCourses() {
         return courses;
     }
 
-
+    
     //FACULTY
     private static List<Faculty> faculty = new ArrayList<>();
 

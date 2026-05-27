@@ -7,7 +7,7 @@ import java.util.Map;
 @Entity
 public class Year {
     private int level;
-    private Map<Integer, List<Course>> sems_n_course;
+    public Map<Integer, List<Course>> sems_n_course;
 
     public Year(int level, Map<Integer, List<Course>> sems_n_course) {
         this.level = level;
