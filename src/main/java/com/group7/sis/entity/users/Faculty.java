@@ -9,11 +9,11 @@ import java.util.List;
 @Entity
 public class Faculty {
 
-    private enum status {
+    public enum status {
         ACTIVE,
         INACTIVE
     }
-
+    private String faculty_number;
     private Account account;
     private Profile profile;
     private String department;
@@ -23,7 +23,8 @@ public class Faculty {
     private List<Course> qualified_courses;
     private status status;
 
-    public Faculty(Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<Course> qualified_courses, status status) {
+    public Faculty(String faculty_number, Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<Course> qualified_courses, status status) {
+        this.faculty_number = faculty_number;
         this.account = account;
         this.profile = profile;
         this.department = department;
@@ -34,6 +35,14 @@ public class Faculty {
         this.status = status;
     }
 
+    public String getFaculty_number() {
+        return faculty_number;
+    }
+
+    public void setFaculty_number(String faculty_number) {
+        this.faculty_number = faculty_number;
+    }
+    
     public Account getAccount() {
         return account;
     }

@@ -5,10 +5,10 @@ import jakarta.persistence.Entity;
 @Entity
 public class Account {
 
-    private enum Role {
+    public enum Role {
         STUDENT, FACULTY
     }
-    private enum Status {
+    public enum Status {
         ACTIVE, INACTIVE
     }
 

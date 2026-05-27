@@ -6,7 +6,7 @@ import java.util.List;
 @Entity
 public class Course {
 
-    private enum status {
+    public enum status {
         ACTIVE, INACTIVE
     }
 

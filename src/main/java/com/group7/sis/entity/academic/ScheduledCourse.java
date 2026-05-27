@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class ScheduledCourse {
-    private enum status {
+    public enum status {
         ACTIVE, INACTIVE
     }
 

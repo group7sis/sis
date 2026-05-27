@@ -48,7 +48,6 @@ public class Student {
         return acad_info;
     }
 
-    //not sure about this. maybe have a method that adds an academic info to the list instead of setting the whole list
     public void setAcad_info(List<AcademicInfo> acad_info) {
         this.acad_info = acad_info;
     }

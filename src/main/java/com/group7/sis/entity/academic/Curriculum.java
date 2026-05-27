@@ -5,14 +5,21 @@ import java.util.List;
 
 @Entity
 public class Curriculum {
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+
     private String code;
     private String effective_year;
     private List<Year> years;
+    private Status status;
 
-    public Curriculum(String code, String effective_year, List<Year> years) {
+    public Curriculum(String code, String effective_year, List<Year> years, Status status) {
         this.code = code;
         this.effective_year = effective_year;
         this.years = years;
+        this.status = status;
     }
 
     public String getCode() {
@@ -35,10 +42,16 @@ public class Curriculum {
         return years;
     }
 
-    //another list setter that can be addYears instead
     public void setYears(List<Year> years) {
         this.years = years;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
     
 }

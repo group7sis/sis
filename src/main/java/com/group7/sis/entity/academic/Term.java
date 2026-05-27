@@ -4,12 +4,20 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Term {
+    public enum Status {
+        ENROLLMENT,
+        ONGOING,
+        CLOSED
+    }
+
     private String acadamic_year;
     private int semester;
+    private Status status;
 
-    public Term(String academic_year, int semester){
+    public Term(String academic_year, int semester, Status status) {
         this.acadamic_year = academic_year;
         this.semester = semester;
+        this.status = status;
     }
 
     public String getAcadamic_year() {
@@ -28,5 +36,11 @@ public class Term {
         this.semester = semester;
     }
 
-    
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

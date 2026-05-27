@@ -5,12 +5,19 @@ import java.util.List;
 
 @Entity
 public class Program {
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+
     private String title;
     private List<Curriculum> curriculum;
+    private Status status;
 
-    public Program(String title, List<Curriculum> curriculum) {
+    public Program(String title, List<Curriculum> curriculum, Status status) {
         this.title = title;
         this.curriculum = curriculum;
+        this.status = status;
     }
 
     public String getTitle() {
@@ -25,10 +32,15 @@ public class Program {
         return curriculum;
     }
 
-    // again, this could be addCurriculum instead of setCurriculum since a program can have multiple curriculum but for now i will just do setCurriculum
     public void setCurriculum(List<Curriculum> curriculum) {
         this.curriculum = curriculum;
     }
 
-    
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
