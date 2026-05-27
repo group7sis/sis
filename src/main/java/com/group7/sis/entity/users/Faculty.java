@@ -21,7 +21,6 @@ public class Faculty {
     private String position;
     private LocalDate date_hired;
     private List<Course> qualified_courses;
-    // private String notes; // nakalimutan ko kung may notes ba to o wala check nalang maya
     private status status;
 
     public Faculty(Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<Course> qualified_courses, status status) {

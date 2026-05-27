@@ -12,7 +12,6 @@ public class Account {
         ACTIVE, INACTIVE
     }
 
-
     private String username;
     private String email;
     private String password;
