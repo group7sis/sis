@@ -45,6 +45,7 @@ public class AdminController {
         return student;
     }
 
+    //small issue where u can't edit the student number, but idk might be fine for now since the student number is unique and should not be changed
     @PostMapping("/students/{studentnum}/edit")
     public Student EditStudent(@PathVariable String studentnum, @RequestBody Student editedStudent) {
         //temporary iteration, will be changed once the database is implemented
