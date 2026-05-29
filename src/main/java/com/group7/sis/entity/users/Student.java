@@ -4,7 +4,7 @@ import com.group7.sis.entity.users.student.AcademicInfo;
 import jakarta.persistence.Entity;
 import java.util.List;
 
-@Entity
+
 public class Student {
     private String student_number;
     private Account account;

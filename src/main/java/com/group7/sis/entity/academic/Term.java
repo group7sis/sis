@@ -2,7 +2,6 @@ package com.group7.sis.entity.academic;
 
 import jakarta.persistence.Entity;
 
-@Entity
 public class Term {
     public enum Status {
         ENROLLMENT,

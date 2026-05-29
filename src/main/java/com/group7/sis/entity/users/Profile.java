@@ -2,7 +2,7 @@ package com.group7.sis.entity.users;
 
 import jakarta.persistence.Entity;
 
-@Entity
+
 public class Profile {
     private String first_name;
     private String middle_name;

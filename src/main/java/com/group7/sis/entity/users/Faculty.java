@@ -1,12 +1,11 @@
 package com.group7.sis.entity.users;
-import com.group7.sis.entity.academic.Course;
+import com.group7.sis.entity.academic.CourseEntity;
 
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import java.util.List;
 
-@Entity
 public class Faculty {
 
     public enum status {
@@ -20,10 +19,10 @@ public class Faculty {
     private String employment_type;
     private String position;
     private LocalDate date_hired;
-    private List<Course> qualified_courses;
+    private List<CourseEntity> qualified_courses;
     private status status;
 
-    public Faculty(String faculty_number, Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<Course> qualified_courses, status status) {
+    public Faculty(String faculty_number, Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<CourseEntity> qualified_courses, status status) {
         this.faculty_number = faculty_number;
         this.account = account;
         this.profile = profile;
@@ -91,11 +90,11 @@ public class Faculty {
         this.date_hired = date_hired;
     }
 
-    public List<Course> getQualified_courses() {
+    public List<CourseEntity> getQualified_courses() {
         return qualified_courses;
     }
 
-    public void setQualified_courses(List<Course> qualified_courses) {
+    public void setQualified_courses(List<CourseEntity> qualified_courses) {
         this.qualified_courses = qualified_courses;
     }
 

@@ -2,7 +2,6 @@ package com.group7.sis.entity.academic;
 
 import jakarta.persistence.Entity;
 
-@Entity
 public class Day {
     private String name;
     private String start_time;

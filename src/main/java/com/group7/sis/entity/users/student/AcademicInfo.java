@@ -1,12 +1,11 @@
 package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.Section;
-import com.group7.sis.entity.academic.Program;
+import com.group7.sis.entity.academic.ProgramEntity;
 import jakarta.persistence.Entity;
 import java.util.List;
 import java.time.LocalDate;
 
-@Entity
 public class AcademicInfo {
     public enum ScholasticStatus {
         REGULAR,
@@ -17,7 +16,7 @@ public class AcademicInfo {
         INACTIVE
     }
     
-    private Program enrolled_program;
+    private ProgramEntity enrolled_program;
     private List<EnrolledCourse> enrolled_courses;
     private int year_level; // this is already in section so i could remove this
     private LocalDate enrollment_date;
@@ -25,7 +24,7 @@ public class AcademicInfo {
     private ScholasticStatus scholastic_status;
     private StudentStatus student_status;
 
-    public AcademicInfo(Program enrolled_program, List<EnrolledCourse> enrolled_courses, int year_level, LocalDate enrollment_date, Section section, ScholasticStatus scholastic_status, StudentStatus student_status) {
+    public AcademicInfo(ProgramEntity enrolled_program, List<EnrolledCourse> enrolled_courses, int year_level, LocalDate enrollment_date, Section section, ScholasticStatus scholastic_status, StudentStatus student_status) {
         this.enrolled_program = enrolled_program;
         this.enrolled_courses = enrolled_courses;
         this.year_level = year_level;
@@ -35,11 +34,11 @@ public class AcademicInfo {
         this.student_status = student_status;
     }
 
-    public Program getEnrolled_program() {
+    public ProgramEntity getEnrolled_program() {
         return enrolled_program;
     }
 
-    public void setEnrolled_program(Program enrolled_program) {
+    public void setEnrolled_program(ProgramEntity enrolled_program) {
         this.enrolled_program = enrolled_program;
     }
 

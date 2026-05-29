@@ -3,7 +3,6 @@ package com.group7.sis.entity.users.student;
 import com.group7.sis.entity.academic.ScheduledCourse;
 import jakarta.persistence.Entity;
 
-@Entity
 public class EnrolledCourse {
     public enum Status {
         PASSED, FAILED, DROPPED

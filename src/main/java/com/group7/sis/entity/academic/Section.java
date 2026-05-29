@@ -4,7 +4,6 @@ import com.group7.sis.entity.users.Student;
 import jakarta.persistence.Entity;                    
 import java.util.List;                                
 
-@Entity
 public class Section {
     public enum status {
         OPEN, CLOSED, WAITLIST
@@ -12,7 +11,7 @@ public class Section {
 
     private String code;
     private String name;
-    private Program program;
+    private ProgramEntity program;
     private int year_level;
     private String academic_year;
     private int semester;
@@ -22,7 +21,7 @@ public class Section {
     private List<Student> students;
     private List<ScheduledCourse> sched_courses;
 
-    public Section(String code, String name, Program program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<Student> students, List<ScheduledCourse> sched_courses) {
+    public Section(String code, String name, ProgramEntity program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<Student> students, List<ScheduledCourse> sched_courses) {
         this.code = code;
         this.name = name;
         this.program = program;
@@ -52,11 +51,11 @@ public class Section {
         this.name = name;
     }
 
-    public Program getProgram() {
+    public ProgramEntity getProgram() {
         return program;
     }
 
-    public void setProgram(Program program) {
+    public void setProgram(ProgramEntity program) {
         this.program = program;
     }
 

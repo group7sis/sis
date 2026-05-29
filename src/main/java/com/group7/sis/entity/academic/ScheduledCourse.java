@@ -4,14 +4,13 @@ import com.group7.sis.entity.users.Faculty;
 import java.util.List;
 import jakarta.persistence.Entity;
 
-@Entity
 public class ScheduledCourse {
     public enum status {
         ACTIVE, INACTIVE
     }
 
-    private Program program;
-    private Course course;
+    private ProgramEntity program;
+    private CourseEntity course;
     private Section section; // Or String section idk yet
     private String academic_year;
     private List<Day> days;
@@ -20,7 +19,7 @@ public class ScheduledCourse {
     private String notes;
     private status status;
     
-    public ScheduledCourse(Program program, Course course, Section section, String academic_year, List<Day> days, Faculty assigned_faculty, int year_level, String notes, status status) {
+    public ScheduledCourse(ProgramEntity program, CourseEntity course, Section section, String academic_year, List<Day> days, Faculty assigned_faculty, int year_level, String notes, status status) {
         this.program = program;
         this.course = course;
         this.section = section;
@@ -32,19 +31,19 @@ public class ScheduledCourse {
         this.status = status;
     }
 
-    public Program getProgram() {
+    public ProgramEntity getProgram() {
         return program;
     }
 
-    public void setProgram(Program program) {
+    public void setProgram(ProgramEntity program) {
         this.program = program;
     }
 
-    public Course getCourse() {
+    public CourseEntity getCourse() {
         return course;
     }
 
-    public void setCourse(Course course) {
+    public void setCourse(CourseEntity course) {
         this.course = course;
     }
 
