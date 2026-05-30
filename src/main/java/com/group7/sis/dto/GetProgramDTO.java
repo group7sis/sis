@@ -23,6 +23,7 @@ public class GetProgramDTO {
         private long programId;
         private String code;
         private String effectiveYear;
+        private String durationYear;
         private CurriculumStatus status;
 
         private List<YearDTO> years;

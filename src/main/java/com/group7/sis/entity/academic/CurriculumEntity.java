@@ -24,7 +24,7 @@ public class CurriculumEntity {
     @JoinColumn(name = "program_id")
     private ProgramEntity program;
 
-    @Column(unique = true)
+    @Column
     private String code;
 
     @Column

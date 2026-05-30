@@ -48,7 +48,7 @@ public class AdminController {
     }
 
     @GetMapping("/programs/{id}")
-    public GetProgramDTO getProgram(@PathVariable Long id) {
+    public ProgramDTO getProgram(@PathVariable Long id) {
         return programService.getProgram(id);
     }
 
@@ -70,14 +70,14 @@ public class AdminController {
         return courseService.getAllCourses();
     }
 
-    @GetMapping("/courses/{code}")
-    public CourseEntity getCourseByCode(@PathVariable String code) {
-        return courseService.getCourseByCode(code);
+    @GetMapping("/courses/{id}")
+    public CourseDTO getCourseByCode(@PathVariable Long id) {
+        return courseService.getCourse(id);
     }
 
-    @PutMapping("/courses/{code}")
-    public CourseEntity modifyCourseByCode(@PathVariable String code, @RequestBody CourseDTO modifyCourse) {
-        return courseService.updateCourseByCode(code, modifyCourse);
+    @PutMapping("/courses/{id}")
+    public CourseDTO modifyCourseByCode(@PathVariable Long id, @RequestBody CourseDTO modifyCourse) {
+        return courseService.updateCourse(id, modifyCourse);
     }
 
     @PostMapping("/courses/add")

@@ -15,6 +15,13 @@ public abstract class CourseMapper{
     @Mapping(target = "prerequisites", source = "prerequisiteIds")
     public abstract CourseEntity toEntity(CourseDTO courseDTO);
 
+    @Mapping(target="prerequisiteIds", source="prerequisites")
+    public abstract CourseDTO toDto(CourseEntity courseEntity);
+
+    protected Long map(CourseEntity courseEntity){
+        return courseEntity.getId();
+    }
+
     protected CourseEntity map(Long id){
         return courseRepository.findById(id).orElseThrow();
     }
