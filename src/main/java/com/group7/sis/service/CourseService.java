@@ -24,19 +24,16 @@ public class CourseService {
     }
 
     public CourseEntity updateCourseByCode(String code, CourseDTO courseToModify){
-        if (!courseRepository.existsByCode(code)) {
-            throw new RuntimeException("Course not found.");
-            //havent tested this yet after adding the else block
-        }
-        else{
-            CourseEntity course = courseRepository.findByCode(code);
-            courseMapper.updateEntityFromDTO(courseToModify, course);
-            return courseRepository.save(course);
-        }
+        CourseEntity course = courseRepository.findByCode(code)
+        .orElseThrow(() -> new RuntimeException("Course does not exist."));
+
+        courseMapper.updateEntityFromDTO(courseToModify, course);
+        return courseRepository.save(course);
     }
 
-    public CourseEntity getCourseByCode(String code) {
-        return courseRepository.findByCode(code);
+    public CourseEntity getCourseByCode(String code) { 
+        return courseRepository.findByCode(code)
+        .orElseThrow(() -> new RuntimeException("Course does not exist."));
     }
 
     public List<CourseEntity> getAllCourses() {

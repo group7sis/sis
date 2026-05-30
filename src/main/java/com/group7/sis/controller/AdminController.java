@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -40,13 +42,21 @@ public class AdminController {
     // //-----------------------------PROGRAMS-----------------------------------
     private final ProgramService programService;
 
-    //not being stored properly. returns no curriculums. could be due to the problem below
     @GetMapping("/programs")
     public List<GetProgramDTO> getAllPrograms() {
         return programService.getAllPrograms();
     }
 
-    //not saving properly: program id and curriciulum id not being saved
+    @GetMapping("/programs/{id}")
+    public ProgramDTO getProgram(@PathVariable Long id) {
+        return programService.getProgram(id);
+    }
+
+    @PutMapping("/programs/{id}")
+    public GetProgramDTO updateProgram(@PathVariable Long id, @RequestBody ProgramDTO programDTO) {
+        return programService.updateProgram(id, programDTO);
+    }
+
     @PostMapping("/programs/add")
     public ProgramEntity createProgram(@RequestBody ProgramDTO addProgram) {
         return programService.addProgram(addProgram);

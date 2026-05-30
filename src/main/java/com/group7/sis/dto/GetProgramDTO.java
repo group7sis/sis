@@ -11,6 +11,7 @@ import lombok.Setter;
 public class GetProgramDTO {
     private long id;
     private String title;
+    private String code;
     private ProgramStatus status;
 
     List<CurriculumDTO> curriculums;
