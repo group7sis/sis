@@ -48,12 +48,12 @@ public class AdminController {
     }
 
     @GetMapping("/programs/{id}")
-    public ProgramDTO getProgram(@PathVariable Long id) {
+    public GetProgramDTO getProgram(@PathVariable Long id) {
         return programService.getProgram(id);
     }
 
     @PutMapping("/programs/{id}")
-    public GetProgramDTO updateProgram(@PathVariable Long id, @RequestBody ProgramDTO programDTO) {
+    public ProgramDTO updateProgram(@PathVariable Long id, @RequestBody ProgramDTO programDTO) {
         return programService.updateProgram(id, programDTO);
     }
 
