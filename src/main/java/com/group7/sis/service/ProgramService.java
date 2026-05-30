@@ -12,6 +12,8 @@ import com.group7.sis.mapper.ProgramMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,30 +37,26 @@ public class ProgramService {
     }
 
     //ANGSEINGAWNGINAWIGNAWIdanf IAWINf iawF IWABFK A
-    public GetProgramDTO updateProgram(Long id, ProgramDTO programToModify){
+    public ProgramDTO updateProgram(Long id, ProgramDTO programToModify){
         ProgramEntity program = programRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Program not found."));
 
         programMapper.updateEntityFromDto(programToModify, program);
 
-        List<CurriculumEntity> curriculumContainer = new ArrayList<>();
+        Map<Long, CurriculumEntity> oldCurriculums = new HashMap<>();
 
-        //program.setCurriculums(programMapper.toCurriculumEntity(programToModify.getCurriculums()));
+        for (CurriculumEntity curriculum : program.getCurriculums()){
+            oldCurriculums.put(curriculum.getId(), curriculum);
+        }
 
+        List<CurriculumEntity> newCurriculums = new ArrayList<>();
+        for (ProgramDTO.CurriculumDTO cDto: programToModify.getCurriculums()){
+            CurriculumEntity curriculumEntity = (cDto.getId() !=null && oldCurriculums.containsKey(cDto.getId())) ? oldCurriculums.get(cDto.getId()) : new CurriculumEntity ();
+        }
         
-        // List <CurriculumEntity> curriculums = program.getCurriculums();
-
-        // for (ProgramDTO.CurriculumDTO cDto : programToModify.getCurriculums()){
-
-        // }
-        //ye this is confusing god help me
-
-            // for (YearEntity year : curriculum.getYears()){
-            //     year.setCurriculum(curriculum);
-            // }
-        
-        return programMapper.toGetDto(programRepository.save(program));
+        return null;
     }
+
     
     public List<GetProgramDTO> getAllPrograms(){
         return programMapper.toGetDtoList(programRepository.findAll());
@@ -68,5 +66,4 @@ public class ProgramService {
         return programMapper.toDto(programRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Program not found.")));
     }
-
 }

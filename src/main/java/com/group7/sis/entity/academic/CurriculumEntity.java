@@ -3,7 +3,7 @@ package com.group7.sis.entity.academic;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,5 +39,5 @@ public class CurriculumEntity {
     private CurriculumStatus status;
 
     @OneToMany(mappedBy = "curriculum", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<YearEntity> years;
+    private List<YearEntity> years = new ArrayList<>();
 }

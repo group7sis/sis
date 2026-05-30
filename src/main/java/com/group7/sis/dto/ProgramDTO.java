@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ProgramDTO {
+    private long id;
     private String title;
     private String code;
     private ProgramStatus status;
@@ -18,6 +19,7 @@ public class ProgramDTO {
     @Getter
     @Setter
     public static class CurriculumDTO{
+        private long id;
         private String code;
         private String effectiveYear;
         private String durationYear;
@@ -29,6 +31,7 @@ public class ProgramDTO {
     @Getter
     @Setter
     public static class YearDTO {
+        private long id;
         private int level;
         private int totalSemester;
     }

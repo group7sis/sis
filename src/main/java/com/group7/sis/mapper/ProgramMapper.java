@@ -20,14 +20,12 @@ public abstract class ProgramMapper {
     
     public abstract List<YearEntity> toYearEntity(List<ProgramDTO.YearDTO> yearEntity);
 
-    @Mapping(target = "id", ignore = true)
+    
     public abstract ProgramEntity toEntity(ProgramDTO programDTO);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "program", ignore = true)
     protected abstract CurriculumEntity toEntity(ProgramDTO.CurriculumDTO curriculumDTO);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "curriculum", ignore = true)
     protected abstract YearEntity toEntity(ProgramDTO.YearDTO yearDTO);
 

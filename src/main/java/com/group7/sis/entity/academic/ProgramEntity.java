@@ -12,7 +12,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,5 +39,5 @@ public class ProgramEntity {
     private ProgramStatus status;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CurriculumEntity> curriculums;
+    private List<CurriculumEntity> curriculums = new ArrayList <>();
 }
