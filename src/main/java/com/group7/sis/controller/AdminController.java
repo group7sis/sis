@@ -99,7 +99,7 @@ public class AdminController {
         return studentService.getStudent(id);
     }
 
-    @PutMapping("students/{id}")
+    @PutMapping("/students/{id}")
     public StudentDTO updateStudent(@PathVariable Long id, @RequestBody StudentDTO studentDTO) {
         return studentService.updateStudent(id, studentDTO);
     }
