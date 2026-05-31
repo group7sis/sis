@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -39,7 +38,7 @@ public class AdminController {
     //     return "Admin logged in successfully";
     // }
 
-    // //-----------------------------PROGRAMS-----------------------------------
+    //-----------------------------PROGRAMS-----------------------------------
     private final ProgramService programService;
 
     @GetMapping("/programs")
@@ -88,36 +87,29 @@ public class AdminController {
     //TODO: Delete (tho kahit ihuli na. not really prioritized atm)
     
     //-----------------------------------STUDENTS-----------------------------------
-    // @GetMapping("/students")
-    // public List<Student> getAllStudents() {
-    //     //add logic of what to show here in the list, for now it just shows all students
-    //     return ListService.getStudents();
-    // }
+    private final StudentService studentService;
 
-    // @PostMapping("/students/add")
-    // public Student createStudent(@RequestBody Student newStudent) {
-    //     //add checks here for the student number, account, etc. before adding to the list
-    //     //academicinfo.enrollment_date should be automatically generated, but for now it is being passed in the request body
-    //     ListService.addStudent(newStudent);
-    //     return newStudent;
-    // }
+    @GetMapping("/students")
+    public List<StudentEntity> getAllStudents() {
+        return studentService.getAllStudents();
+    }
 
-    // @PostMapping("/students/{studentnum}/edit")
-    // public Student EditStudent(@PathVariable String studentnum, @RequestBody Student editedStudent) {
-    //     //temporary iteration, will be changed once the database is implemented
-    //     //add checks here too before editing the student information
-    //     for (Student student : ListService.getStudents()) {
-    //         if (student.getStudent_number().equals(studentnum)) {
-    //             student.setAccount(editedStudent.getAccount());
-    //             student.setProfile(editedStudent.getProfile());
-    //             student.setAcad_info(editedStudent.getAcad_info());
-    //             student.setYear_admitted(editedStudent.getYear_admitted());
-    //             break;
-    //         }
-    //     }
-    //     return editedStudent;
-    // }
+    @GetMapping("/students/{id}")
+    public StudentDTO getStudent(@PathVariable Long id) {
+        return studentService.getStudent(id);
+    }
 
+    @PutMapping("students/{id}")
+    public StudentDTO updateStudent(@PathVariable Long id, @RequestBody StudentDTO studentDTO) {
+        return studentService.updateStudent(id, studentDTO);
+    }
+
+    @PostMapping("/students/add")
+    public StudentEntity createStudent(@RequestBody StudentDTO studentDTO) {
+        return studentService.addStudent(studentDTO);
+    }
+    
+    
     //-----------------------------------FACULTY-----------------------------------
     // @GetMapping("/faculty")
     // public List<Faculty> getAllFaculty() {

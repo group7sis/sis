@@ -1,32 +1,20 @@
 package com.group7.sis.mapper;
 
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.entity.academic.CourseEntity;
-import com.group7.sis.repository.CourseRepository;
 
 @Mapper(componentModel = "spring")
-public abstract class CourseMapper{
-    @Autowired
-    protected CourseRepository courseRepository;
+public interface CourseMapper{
 
     @Mapping(target ="id", ignore = true)
-    @Mapping(target = "prerequisites", source = "prerequisiteIds")
-    public abstract CourseEntity toEntity(CourseDTO courseDTO);
+    @Mapping(target = "prerequisites", ignore = true)
+    CourseEntity toEntity(CourseDTO courseDTO);
 
-    @Mapping(target="prerequisiteIds", source="prerequisites")
-    public abstract CourseDTO toDto(CourseEntity courseEntity);
-
-    protected Long map(CourseEntity courseEntity){
-        return courseEntity.getId();
-    }
-
-    protected CourseEntity map(Long id){
-        return courseRepository.findById(id).orElseThrow();
-    }
+    @Mapping(target="prerequisiteIds", ignore = true)
+    CourseDTO toDto(CourseEntity courseEntity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "prerequisites", source = "prerequisiteIds")
-    public abstract void updateEntityFromDTO(CourseDTO dto, @MappingTarget CourseEntity entity);
+    @Mapping(target = "prerequisites", ignore = true)
+    void updateEntityFromDTO(CourseDTO dto, @MappingTarget CourseEntity entity);
 }

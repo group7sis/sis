@@ -1,6 +1,6 @@
 package com.group7.sis.entity.academic;
 
-import com.group7.sis.entity.users.Student;
+import com.group7.sis.entity.users.StudentEntity;
 import jakarta.persistence.Entity;                    
 import java.util.List;                                
 
@@ -18,10 +18,10 @@ public class Section {
     private int max_capacity;
     private String notes;
     private status status;
-    private List<Student> students;
+    private List<StudentEntity> students;
     private List<ScheduledCourse> sched_courses;
 
-    public Section(String code, String name, ProgramEntity program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<Student> students, List<ScheduledCourse> sched_courses) {
+    public Section(String code, String name, ProgramEntity program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<StudentEntity> students, List<ScheduledCourse> sched_courses) {
         this.code = code;
         this.name = name;
         this.program = program;
@@ -107,11 +107,11 @@ public class Section {
         this.status = status;
     }
 
-    public List<Student> getStudents() {
+    public List<StudentEntity> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(List<StudentEntity> students) {
         this.students = students;
     }
 

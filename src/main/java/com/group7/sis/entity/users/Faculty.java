@@ -13,8 +13,8 @@ public class Faculty {
         INACTIVE
     }
     private String faculty_number;
-    private Account account;
-    private Profile profile;
+    private AccountEntity account;
+    private ProfileEntity profile;
     private String department;
     private String employment_type;
     private String position;
@@ -22,7 +22,7 @@ public class Faculty {
     private List<CourseEntity> qualified_courses;
     private status status;
 
-    public Faculty(String faculty_number, Account account, Profile profile, String department, String employment_type, String position, LocalDate date_hired, List<CourseEntity> qualified_courses, status status) {
+    public Faculty(String faculty_number, AccountEntity account, ProfileEntity profile, String department, String employment_type, String position, LocalDate date_hired, List<CourseEntity> qualified_courses, status status) {
         this.faculty_number = faculty_number;
         this.account = account;
         this.profile = profile;
@@ -42,19 +42,19 @@ public class Faculty {
         this.faculty_number = faculty_number;
     }
     
-    public Account getAccount() {
+    public AccountEntity getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(AccountEntity account) {
         this.account = account;
     }
 
-    public Profile getProfile() {
+    public ProfileEntity getProfile() {
         return profile;
     }
 
-    public void setProfile(Profile profile) {
+    public void setProfile(ProfileEntity profile) {
         this.profile = profile;
     }
 

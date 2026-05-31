@@ -9,7 +9,6 @@ import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
 import com.group7.sis.mapper.ProgramMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class ProgramService {
             oldCurriculums.put(curriculum.getCode(), curriculum);
         }
 
-        List<CurriculumEntity> updatedCurriculums = new ArrayList<>();
+        program.getCurriculums().clear();
         if (programDTO.getCurriculums() != null) {
             for (ProgramDTO.CurriculumDTO cDto : programDTO.getCurriculums()){
                 CurriculumEntity curriculumEntity = oldCurriculums.remove(cDto.getCode());
@@ -77,13 +76,10 @@ public class ProgramService {
                     }
                 }
 
-                updatedCurriculums.add(curriculumEntity);
+                program.getCurriculums().add(curriculumEntity);
             }
         }
-
-        program.getCurriculums().clear();
-        program.getCurriculums().addAll(updatedCurriculums);
-
+        
         return programMapper.toDto(programRepository.save(program));
     }
 

@@ -7,6 +7,7 @@ import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,23 +18,53 @@ public class CourseService {
     private final CourseMapper courseMapper;
 
     public CourseEntity addCourse(CourseDTO request) {
-        if (courseRepository.existsByCode(request.getCode())){
-            throw new RuntimeException("Course with code '" +request.getCode()+"' already exists");
+        List <CourseEntity> prereqs = new ArrayList<>();
+
+        if (request.getPrerequisiteIds() != null){
+            for (Long id : request.getPrerequisiteIds()){
+                prereqs.add(courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Could not create Course. Prerequisite with Course id ("+ id + ") does not exist")));
+            }
         }
-        return courseRepository.save(courseMapper.toEntity(request));
+        
+        CourseEntity course = courseMapper.toEntity(request);
+        course.setPrerequisites(prereqs);
+        return courseRepository.save(course);
     }
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
         CourseEntity course = courseRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Course does not exist."));
 
+        if (courseToModify.getPrerequisiteIds() != null){
+            List <CourseEntity> prereqs = new ArrayList<>();
+            for (Long prereqId : courseToModify.getPrerequisiteIds()){
+                prereqs.add(courseRepository.findById(prereqId)
+                .orElseThrow(() -> new RuntimeException("Could not update Course. Prerequisite with Course id ("+ prereqId + ") does not exist")));
+            }
+            course.getPrerequisites().clear();
+            course.setPrerequisites(prereqs);
+        }
+
         courseMapper.updateEntityFromDTO(courseToModify, course);
-        return courseMapper.toDto(courseRepository.save(course));
+        courseRepository.save(course);
+        return getCourse(id);
     }
 
-    public CourseDTO getCourse(Long id) { 
-        return courseMapper.toDto(courseRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Course does not exist.")));
+    public CourseDTO getCourse(Long id){
+        CourseEntity course = courseRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Course not found."));
+
+        List <Long> prereqIds = new ArrayList<>();
+        if (course.getPrerequisites() != null){
+            for (CourseEntity prereq : course.getPrerequisites()){
+                prereqIds.add(prereq.getId());
+            }
+        }
+
+        CourseDTO courseDto = courseMapper.toDto(course);
+        courseDto.setPrerequisiteIds(prereqIds);
+        return courseDto;
     }
 
     public List<CourseEntity> getAllCourses() {

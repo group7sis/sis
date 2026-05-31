@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-//import com.group7.sis.entity.academic.Program;
 
 @Getter
 @Setter
@@ -20,7 +19,7 @@ public class CourseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(unique = true)
     private String code;
