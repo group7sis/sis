@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
 @RestController
 @RequiredArgsConstructor
 
@@ -111,19 +109,32 @@ public class AdminController {
     
     
     //-----------------------------------FACULTY-----------------------------------
-    // @GetMapping("/faculty")
-    // public List<Faculty> getAllFaculty() {
-    //     //add logic of what to show here in the list, for now it just shows all faculty
-    //     return ListService.getFaculty();
-    // }
+    private final FacultyService facultyService;
+    
+    @GetMapping("/facultydebug")
+    public List<FacultyEntity> getAllFacultyEntity() {
+        return facultyService.getAllFacultyEntity();
+    }
 
-    // @PostMapping("/faculty/add")
-    // public Faculty createFaculty(@RequestBody Faculty newFaculty) {
-    //     //add checks here before adding to the list
-    //     //date_hired should be automatically generated, but for now it is being passed in the request body 
-    //     ListService.addFaculty(newFaculty);
-    //     return newFaculty;
-    // }
+    @GetMapping("/faculty")
+    public List<GetFacultyDTO> getAllFaculty() {
+        return facultyService.getAllFaculty();
+    }
+
+    @GetMapping("/faculty/{id}")
+    public GetFacultyDTO getFaculty(@PathVariable Long id) {
+        return facultyService.getFaculty(id);
+    }
+
+    @PutMapping("/faculty/{id}")
+    public GetFacultyDTO updateFaculty(@PathVariable Long id, @RequestBody FacultyDTO facultyDTO) {
+        return facultyService.updateFaculty(id, facultyDTO);
+    }
+    
+    @PostMapping("/faculty/add")
+    public GetFacultyDTO createFaculty(@RequestBody FacultyDTO facultyDTO) {
+        return facultyService.addFaculty(facultyDTO);
+    }
 
     // @PostMapping("/faculty/edit")
     // public Faculty editFaculty(@RequestBody Faculty editedFaculty) {

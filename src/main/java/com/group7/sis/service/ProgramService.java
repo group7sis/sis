@@ -41,13 +41,14 @@ public class ProgramService {
 
         programMapper.updateEntityFromDto(programDTO, program);
 
-        Map<String, CurriculumEntity> oldCurriculums = new HashMap<>();
-        for (CurriculumEntity curriculum : program.getCurriculums()){
-            oldCurriculums.put(curriculum.getCode(), curriculum);
-        }
-
-        program.getCurriculums().clear();
         if (programDTO.getCurriculums() != null) {
+
+            Map<String, CurriculumEntity> oldCurriculums = new HashMap<>();
+            for (CurriculumEntity curriculum : program.getCurriculums()){
+                oldCurriculums.put(curriculum.getCode(), curriculum);
+            }
+            program.getCurriculums().clear();
+
             for (ProgramDTO.CurriculumDTO cDto : programDTO.getCurriculums()){
                 CurriculumEntity curriculumEntity = oldCurriculums.remove(cDto.getCode());
                 if (curriculumEntity == null) {
@@ -57,16 +58,17 @@ public class ProgramService {
                 programMapper.updateEntityFromDto(cDto, curriculumEntity);
                 curriculumEntity.setProgram(program);
 
-                Map<Integer, YearEntity> oldYears = new HashMap<>();
-                for (YearEntity year : curriculumEntity.getYears()){
-                    oldYears.put(year.getLevel(), year);
-                }
-
-                curriculumEntity.getYears().clear();
                 if (cDto.getYears() != null) {
+
+                    Map<Integer, YearEntity> oldYears = new HashMap<>();
+                    for (YearEntity year : curriculumEntity.getYears()){
+                        oldYears.put(year.getLevel(), year);
+                    }
+                    curriculumEntity.getYears().clear();
+
                     for (ProgramDTO.YearDTO yDto : cDto.getYears()){
-                        YearEntity yearEntity = oldYears.remove(yDto.getLevel());
-                        if (yearEntity == null) {
+                    YearEntity yearEntity = oldYears.remove(yDto.getLevel());
+                    if (yearEntity == null) {
                             yearEntity = new YearEntity();
                         }
 

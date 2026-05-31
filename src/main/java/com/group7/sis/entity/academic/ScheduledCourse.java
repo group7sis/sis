@@ -1,6 +1,6 @@
 package com.group7.sis.entity.academic;
 
-import com.group7.sis.entity.users.Faculty;
+import com.group7.sis.entity.users.FacultyEntity;
 import java.util.List;
 import jakarta.persistence.Entity;
 
@@ -14,12 +14,12 @@ public class ScheduledCourse {
     private Section section; // Or String section idk yet
     private String academic_year;
     private List<Day> days;
-    private Faculty assigned_faculty;
+    private FacultyEntity assigned_faculty;
     private int year_level; // this is already in section so i could remove this
     private String notes;
     private status status;
     
-    public ScheduledCourse(ProgramEntity program, CourseEntity course, Section section, String academic_year, List<Day> days, Faculty assigned_faculty, int year_level, String notes, status status) {
+    public ScheduledCourse(ProgramEntity program, CourseEntity course, Section section, String academic_year, List<Day> days, FacultyEntity assigned_faculty, int year_level, String notes, status status) {
         this.program = program;
         this.course = course;
         this.section = section;
@@ -63,11 +63,11 @@ public class ScheduledCourse {
         this.days = days;
     }
 
-    public Faculty getAssigned_faculty() {
+    public FacultyEntity getAssigned_faculty() {
         return assigned_faculty;
     }
 
-    public void setAssigned_faculty(Faculty assigned_faculty) {
+    public void setAssigned_faculty(FacultyEntity assigned_faculty) {
         this.assigned_faculty = assigned_faculty;
     }
 

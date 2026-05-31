@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import com.group7.sis.entity.academic.ProgramEntity.ProgramStatus;
 import com.group7.sis.entity.academic.CurriculumEntity.CurriculumStatus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,7 +15,7 @@ public class ProgramDTO {
     private String code;
     private ProgramStatus status;
 
-    private List<CurriculumDTO> curriculums;
+    private List<CurriculumDTO> curriculums = new ArrayList<>();
 
     @Getter
     @Setter
@@ -23,7 +25,7 @@ public class ProgramDTO {
         private String durationYear;
         //private long facultyHeadId;
         private CurriculumStatus status;
-        private List<YearDTO> years;
+        private List<YearDTO> years = new ArrayList<>();
     }
 
     @Getter
