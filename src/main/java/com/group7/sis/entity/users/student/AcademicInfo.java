@@ -40,6 +40,5 @@ public class AcademicInfo {
     @Enumerated(EnumType.STRING)
     private ScholasticStatus scholastic_status;
     
-
     private List<EnrolledCourse> enrolled_courses;
 }

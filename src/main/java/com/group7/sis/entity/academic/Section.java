@@ -19,9 +19,9 @@ public class Section {
     private String notes;
     private status status;
     private List<StudentEntity> students;
-    private List<ScheduledCourse> sched_courses;
+    private List<ScheduledCourseEntity> sched_courses;
 
-    public Section(String code, String name, ProgramEntity program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<StudentEntity> students, List<ScheduledCourse> sched_courses) {
+    public Section(String code, String name, ProgramEntity program, int year_level, String academic_year, int semester, int max_capacity, String notes, status status, List<StudentEntity> students, List<ScheduledCourseEntity> sched_courses) {
         this.code = code;
         this.name = name;
         this.program = program;
@@ -115,11 +115,11 @@ public class Section {
         this.students = students;
     }
 
-    public List<ScheduledCourse> getSched_courses() {
+    public List<ScheduledCourseEntity> getSched_courses() {
         return sched_courses;
     }
 
-    public void setSched_courses(List<ScheduledCourse> sched_courses) {
+    public void setSched_courses(List<ScheduledCourseEntity> sched_courses) {
         this.sched_courses = sched_courses;
     }
 }

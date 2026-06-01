@@ -9,7 +9,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.group7.sis.entity.users.faculty.QualifiedCourseEntity;
+import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.ScheduledCourseEntity;
 
 @Getter
 @Entity
@@ -54,8 +55,20 @@ public class FacultyEntity {
     @Column
     private LocalDate dateHired;
 
-    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QualifiedCourseEntity> qualifiedCourses = new ArrayList<>();
+    //YOU DONT NEED EMBEDDABLE
+    // @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<QualifiedCourseEntity> qualifiedCourses = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "qualified_course",
+        joinColumns = @JoinColumn(name ="faculty_id"),
+        inverseJoinColumns = @JoinColumn(name="course_id")
+    )
+    private List<CourseEntity> qualifiedCourses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "assignedFaculty")
+    private List<ScheduledCourseEntity> scheduledCourses = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Status status;

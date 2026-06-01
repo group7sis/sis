@@ -28,5 +28,6 @@ public class FacultyDTO {
     private String position;
     private LocalDate dateHired;
     private List<Long> qualifiedCoursesIds = new ArrayList<>();
+    private List<Long> scheduledCoursesIds = new ArrayList<>();
     private Status status;
 }

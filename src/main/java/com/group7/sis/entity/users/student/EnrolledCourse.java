@@ -1,6 +1,6 @@
 package com.group7.sis.entity.users.student;
 
-import com.group7.sis.entity.academic.ScheduledCourse;
+import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import jakarta.persistence.Entity;
 
 public class EnrolledCourse {
@@ -8,21 +8,22 @@ public class EnrolledCourse {
         PASSED, FAILED, DROPPED
     }
 
-    private ScheduledCourse sched_course;
+    private ScheduledCourseEntity sched_course;
     private double grade;
     private Status status;
 
-    public EnrolledCourse(ScheduledCourse sched_course, double grade, Status status) {
+    public EnrolledCourse(ScheduledCourseEntity sched_course, double grade, Status status) {
         this.sched_course = sched_course;
         this.grade = grade;
         this.status = status;
     }
 
-    public ScheduledCourse getSched_course() {
+    public ScheduledCourseEntity getSched_course() {
         return sched_course;
     }
 
-    public void setSched_course(ScheduledCourse sched_course) {
+    //must have dis
+    public void setSched_course(ScheduledCourseEntity sched_course) {
         this.sched_course = sched_course;
     }
 

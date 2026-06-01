@@ -7,7 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -37,6 +39,10 @@ public class ProgramEntity {
 
     @Enumerated(EnumType.STRING)
     private ProgramStatus status;
+
+    @OneToOne
+    @JoinColumn(name = "active_curriculum_id")
+    private CurriculumEntity activeCurriculum;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CurriculumEntity> curriculums = new ArrayList <>();

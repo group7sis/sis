@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+
 @RestController
 @RequiredArgsConstructor
 
@@ -111,47 +112,51 @@ public class AdminController {
     //-----------------------------------FACULTY-----------------------------------
     private final FacultyService facultyService;
     
-    @GetMapping("/facultydebug")
-    public List<FacultyEntity> getAllFacultyEntity() {
-        return facultyService.getAllFacultyEntity();
+    @GetMapping("/facultydto")
+    public List<FacultyDTO> getAllFacultyByDTO() {
+        return facultyService.getAllFacultyDTO();
     }
 
     @GetMapping("/faculty")
-    public List<GetFacultyDTO> getAllFaculty() {
+    public List<FacultyEntity> getAllFaculty() {
         return facultyService.getAllFaculty();
     }
 
     @GetMapping("/faculty/{id}")
-    public GetFacultyDTO getFaculty(@PathVariable Long id) {
+    public FacultyDTO getFaculty(@PathVariable Long id) {
         return facultyService.getFaculty(id);
     }
 
     @PutMapping("/faculty/{id}")
-    public GetFacultyDTO updateFaculty(@PathVariable Long id, @RequestBody FacultyDTO facultyDTO) {
+    public FacultyDTO updateFaculty(@PathVariable Long id, @RequestBody FacultyDTO facultyDTO) {
         return facultyService.updateFaculty(id, facultyDTO);
     }
     
     @PostMapping("/faculty/add")
-    public GetFacultyDTO createFaculty(@RequestBody FacultyDTO facultyDTO) {
+    public FacultyEntity createFaculty(@RequestBody FacultyDTO facultyDTO) {
         return facultyService.addFaculty(facultyDTO);
     }
 
-    // @PostMapping("/faculty/edit")
-    // public Faculty editFaculty(@RequestBody Faculty editedFaculty) {
-    //     //add checks here before editing the faculty information
-    //     for (Faculty faculty : ListService.getFaculty()) {
-    //         if (faculty.getFaculty_number().equals(editedFaculty.getFaculty_number())) {
-    //             faculty.setAccount(editedFaculty.getAccount());
-    //             faculty.setProfile(editedFaculty.getProfile());
-    //             faculty.setDepartment(editedFaculty.getDepartment());
-    //             faculty.setEmployment_type(editedFaculty.getEmployment_type());
-    //             faculty.setPosition(editedFaculty.getPosition());
-    //             faculty.setQualified_courses(editedFaculty.getQualified_courses());
-    //             faculty.setStatus(editedFaculty.getStatus());
-    //             break;
-    //         }
-    //     }
-    //     return editedFaculty;
-    // }
-    
+
+    //-----------------------------------SCHEDULE-----------------------------------
+    private final ScheduleService scheduleService;
+
+    @GetMapping("/schedules")
+    public List<ScheduledCourseEntity> getAllSchedules() {
+        return scheduleService.getAllSchedule();
+    }
+
+    @GetMapping("/schedules/{id}")
+    public ScheduledCourseDTO getSchedule(@PathVariable Long id) {
+        return scheduleService.getSchedule(id);
+    }
+
+    @PutMapping("/schedules/{id}")
+    public ScheduledCourseDTO updateSchedule(@PathVariable Long id, @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
+        return scheduleService.updateSchedule(id, scheduledCourseDTO);
+    }
+    @PostMapping("/schedules/add")
+    public ScheduledCourseEntity createSchedule(@RequestBody ScheduledCourseDTO scheduledCourseDTO) {
+        return scheduleService.addSchedule(scheduledCourseDTO);
+    }
 }

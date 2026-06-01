@@ -7,10 +7,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.group7.sis.dto.GetFacultyDTO;
 import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.users.FacultyEntity;
-import com.group7.sis.entity.users.faculty.QualifiedCourseEntity;
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
@@ -24,71 +23,66 @@ public class FacultyService {
     private final FacultyRepository facultyRepository;
     private final FacultyMapper facultyMapper;
 
-    public GetFacultyDTO addFaculty(FacultyDTO facultyDTO){
+    public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         
         if (facultyDTO.getQualifiedCoursesIds() != null && !facultyDTO.getQualifiedCoursesIds().isEmpty()){
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
-                QualifiedCourseEntity qualifiedCourseEntity = new QualifiedCourseEntity();
-                qualifiedCourseEntity.setCourse(courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Qualified courses could not be added due to a Course not being found")));
-                qualifiedCourseEntity.setFaculty(faculty);
-
-                faculty.getQualifiedCourses().add(qualifiedCourseEntity);
+                CourseEntity course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty could not be created due to a Course not being found"));
+                faculty.getQualifiedCourses().add(course);
             }
         }
         facultyRepository.save(faculty);
-        return getFaculty(faculty.getId());
+        return faculty;
     }
 
-    public GetFacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){
+    public FacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){
         FacultyEntity facultyEntity = facultyRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty not found"));
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
-
+        
         if (facultyDTO.getQualifiedCoursesIds() != null){
             facultyEntity.getQualifiedCourses().clear();
 
-            for (Long qcId : facultyDTO.getQualifiedCoursesIds()){
-                CourseEntity course = courseRepository.findById(qcId).orElseThrow(() -> new RuntimeException("Faculty could not be modified due to a Course not being found"));
-                QualifiedCourseEntity qualifiedCourseEntity = new QualifiedCourseEntity();
-
-                qualifiedCourseEntity.setFaculty(facultyEntity);
-                qualifiedCourseEntity.setCourse(course);
-
-                facultyEntity.getQualifiedCourses().add(qualifiedCourseEntity);
+            for (Long courseId : facultyDTO.getQualifiedCoursesIds()){
+                CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Faculty could not be modified due to a Course not being found"));
+                facultyEntity.getQualifiedCourses().add(course);
             }
         }
         facultyRepository.save(facultyEntity);
         return getFaculty(facultyEntity.getId());
     }
 
-    public GetFacultyDTO getFaculty(Long id){
+    public FacultyDTO getFaculty(Long id){
         FacultyEntity facultyEntity = facultyRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty not found"));
 
-        GetFacultyDTO faculty = facultyMapper.toDto(facultyEntity);
+        FacultyDTO faculty = facultyMapper.toDto(facultyEntity);
 
         if (facultyEntity.getQualifiedCourses() != null && !facultyEntity.getQualifiedCourses().isEmpty()){
-            for (QualifiedCourseEntity qualifiedCourseEntity : facultyEntity.getQualifiedCourses()){
-                CourseEntity course = qualifiedCourseEntity.getCourse();
+            for (CourseEntity courseEntity : facultyEntity.getQualifiedCourses()){
+                faculty.getQualifiedCoursesIds().add(courseEntity.getId());
+            }
+        }
 
-                faculty.getQualifiedCourses().add(course);
+        if (facultyEntity.getScheduledCourses() != null && !facultyEntity.getScheduledCourses().isEmpty()){
+            for (ScheduledCourseEntity schedule : facultyEntity.getScheduledCourses()){
+                faculty.getScheduledCoursesIds().add(schedule.getId());
             }
         }
         return faculty;
     }
 
-    public List<GetFacultyDTO> getAllFaculty(){
-        List<GetFacultyDTO> faculties = new ArrayList<>();
+    public List<FacultyDTO> getAllFacultyDTO(){
+        List<FacultyDTO> faculties = new ArrayList<>();
 
         for (FacultyEntity facultyEntity : facultyRepository.findAll()){
             faculties.add(getFaculty(facultyEntity.getId()));
         }
-
         return faculties;
     }
 
     //for debugging
-    public List<FacultyEntity> getAllFacultyEntity(){
+    public List<FacultyEntity> getAllFaculty(){
         return facultyRepository.findAll();
     }
 
-}
+}//ALL THESE IGNORE SCHEDULEDCOURSES
