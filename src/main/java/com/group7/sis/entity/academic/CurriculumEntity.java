@@ -33,8 +33,6 @@ public class CurriculumEntity {
     @Column
     private String durationYear;
 
-    //add faculty head later
-
     @Enumerated(EnumType.STRING)
     private CurriculumStatus status;
 

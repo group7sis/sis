@@ -10,6 +10,8 @@ import com.group7.sis.entity.academic.YearEntity;
 
 @Mapper(componentModel = "spring")
 public interface ProgramMapper {
+
+    //gotta refactor some of these
     
     //MainDTO
     List<CurriculumEntity> toCurriculumEntity(List<ProgramDTO.CurriculumDTO> curriculumDTO);
@@ -17,6 +19,7 @@ public interface ProgramMapper {
     List<YearEntity> toYearEntity(List<ProgramDTO.YearDTO> yearEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "activeCurriculum", ignore = true)
     ProgramEntity toEntity(ProgramDTO programDTO);
 
     @Mapping(target = "id", ignore = true)
@@ -29,6 +32,7 @@ public interface ProgramMapper {
 
 
     //ProgramDTO
+    @Mapping(target = "activeCurriculumId", source = "activeCurriculum.id")
     ProgramDTO toDto(ProgramEntity programEntity);
 
 

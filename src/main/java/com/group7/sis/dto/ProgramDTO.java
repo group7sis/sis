@@ -14,7 +14,7 @@ public class ProgramDTO {
     private String title;
     private String code;
     private ProgramStatus status;
-
+    private String activeCurriculumId;
     private List<CurriculumDTO> curriculums = new ArrayList<>();
 
     @Getter
@@ -23,7 +23,7 @@ public class ProgramDTO {
         private String code;
         private String effectiveYear;
         private String durationYear;
-        //private long facultyHeadId;
+        // private Long facultyHeadId;
         private CurriculumStatus status;
         private List<YearDTO> years = new ArrayList<>();
     }

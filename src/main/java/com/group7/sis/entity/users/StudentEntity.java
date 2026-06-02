@@ -6,7 +6,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-//import java.util.List;
+import com.group7.sis.entity.users.student.AcademicInfoEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,6 +45,7 @@ public class StudentEntity {
     @Column
     private String yearAdmitted; 
 
-    //@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private List<AcademicInfo> academicInfo;   
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "student_id")
+    private List<AcademicInfoEntity> academicInfo = new ArrayList<>(); //enrollment history, current enrollment, etc.   
 }

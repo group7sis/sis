@@ -9,18 +9,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetProgramDTO {
-    private long id;
+    private Long id;
     private String title;
     private String code;
     private ProgramStatus status;
-
+    private String activeCurriculumId;
     List<CurriculumDTO> curriculums;
 
     @Getter
     @Setter
     public static class CurriculumDTO {
-        private long id;
-        private long programId;
+        private Long id;
+        private Long programId;
         private String code;
         private String effectiveYear;
         private String durationYear;
@@ -32,8 +32,8 @@ public class GetProgramDTO {
     @Getter
     @Setter
     public static class YearDTO {
-        private long id;
-        private long curriculumId;
+        private Long id;
+        private Long curriculumId;
         private int level;
         private int totalSemester;
     }
