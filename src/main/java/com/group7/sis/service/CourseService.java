@@ -5,6 +5,7 @@ import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
+import com.group7.sis.service.queryservices.CourseQueryService;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CourseService {
+    private final CourseQueryService courseQueryService;
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
@@ -22,7 +24,7 @@ public class CourseService {
 
         if (request.getPrerequisiteIds() != null){
             for (Long id : request.getPrerequisiteIds()){
-                prereqs.add(getCourseEntity(id));
+                prereqs.add(courseQueryService.getCourseEntity(id));
             }
         }
         
@@ -32,12 +34,12 @@ public class CourseService {
     }
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
-        CourseEntity course = getCourseEntity(id);
+        CourseEntity course = courseQueryService.getCourseEntity(id);
 
         if (courseToModify.getPrerequisiteIds() != null){
             List <CourseEntity> prereqs = new ArrayList<>();
             for (Long prereqId : courseToModify.getPrerequisiteIds()){
-                prereqs.add(getCourseEntity(prereqId));
+                prereqs.add(courseQueryService.getCourseEntity(prereqId));
             }
             course.getPrerequisites().clear();
             course.setPrerequisites(prereqs);
@@ -49,7 +51,7 @@ public class CourseService {
     }
 
     public CourseDTO getCourse(Long id){
-        CourseEntity course = getCourseEntity(id);
+        CourseEntity course = courseQueryService.getCourseEntity(id);
 
         List <Long> prereqIds = new ArrayList<>();
         if (course.getPrerequisites() != null){
@@ -65,12 +67,5 @@ public class CourseService {
 
     public List<CourseEntity> getAllCourses() {
         return courseRepository.findAll();
-    }
-
-
-    //Helpers
-    public CourseEntity getCourseEntity(Long id){
-        return courseRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Course does not exist."));
     }
 }

@@ -11,23 +11,26 @@ import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
+import com.group7.sis.service.queryservices.CourseQueryService;
+import com.group7.sis.service.queryservices.FacultyQueryService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class FacultyService {
+    private final FacultyQueryService facultyQueryService;
     private final FacultyRepository facultyRepository;
     private final FacultyMapper facultyMapper;
 
-    private final CourseService courseService;
+    private final CourseQueryService courseQueryService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         
         if (facultyDTO.getQualifiedCoursesIds() != null && !facultyDTO.getQualifiedCoursesIds().isEmpty()){
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
-                CourseEntity course = courseService.getCourseEntity(id);
+                CourseEntity course = courseQueryService.getCourseEntity(id);
                 faculty.getQualifiedCourses().add(course);
             }
         }
@@ -36,14 +39,14 @@ public class FacultyService {
     }
 
     public FacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){
-        FacultyEntity facultyEntity = getFacultyEntity(id);
+        FacultyEntity facultyEntity = facultyQueryService.getFacultyEntity(id);
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
         
         if (facultyDTO.getQualifiedCoursesIds() != null){
             facultyEntity.getQualifiedCourses().clear();
 
             for (Long courseId : facultyDTO.getQualifiedCoursesIds()){
-                CourseEntity course = courseService.getCourseEntity(courseId);
+                CourseEntity course = courseQueryService.getCourseEntity(courseId);
                 facultyEntity.getQualifiedCourses().add(course);
             }
         }
@@ -52,7 +55,7 @@ public class FacultyService {
     }
 
     public FacultyDTO getFaculty(Long id){
-        FacultyEntity facultyEntity = getFacultyEntity(id);
+        FacultyEntity facultyEntity = facultyQueryService.getFacultyEntity(id);
 
         FacultyDTO faculty = facultyMapper.toDto(facultyEntity);
 
@@ -82,12 +85,5 @@ public class FacultyService {
     //for debugging
     public List<FacultyEntity> getAllFaculty(){
         return facultyRepository.findAll();
-    }
-
-
-    //Helpers
-    public FacultyEntity getFacultyEntity(Long id){
-        return facultyRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Faculty not found"));
     }
 }//ALL THESE IGNORE SCHEDULEDCOURSES

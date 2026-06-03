@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.ProgramDTO;
 import com.group7.sis.dto.GetProgramDTO;
 import com.group7.sis.repository.ProgramRepository;
+import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class ProgramService {
+    private final ProgramQueryService programQueryService;
     private final ProgramRepository programRepository;
     private final ProgramMapper programMapper;
 
@@ -36,7 +38,7 @@ public class ProgramService {
 
     //ANGSEINGAWNGINAWIGNAWIdanf IAWINf iawF IWABFK A
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
-        ProgramEntity program = getProgramEntity(id);
+        ProgramEntity program = programQueryService.getProgramEntity(id);
 
         programMapper.updateEntityFromDto(programDTO, program);
 
@@ -90,14 +92,6 @@ public class ProgramService {
     }
 
     public ProgramDTO getProgram(Long id){
-        return programMapper.toDto(programRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Program not found.")));
-    }
-
-
-    //Helpers
-    public ProgramEntity getProgramEntity(Long id){
-        return programRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Program not found"));
+        return programMapper.toDto(programQueryService.getProgramEntity(id));
     }
 }

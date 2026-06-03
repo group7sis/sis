@@ -10,6 +10,10 @@ import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
+import com.group7.sis.service.queryservices.ProgramQueryService;
+import com.group7.sis.service.queryservices.ScheduleQueryService;
+import com.group7.sis.service.queryservices.SectionQueryService;
+import com.group7.sis.service.queryservices.StudentQueryService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,12 +25,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class StudentService {
+    private final StudentQueryService studentQueryService;
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
-    private final ProgramService programService;
-    private final SectionService sectionService;
-    private final ScheduleService scheduleService;
+    private final ProgramQueryService programQueryService;
+    private final SectionQueryService sectionQueryService;
+    private final ScheduleQueryService scheduleQueryService;
 
     public StudentEntity addStudent(StudentDTO studentDTO){
         StudentEntity student = studentMapper.toEntity(studentDTO);
@@ -35,13 +40,13 @@ public class StudentService {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
 
-                academicInfoEntity.setEnrolledProgram(programService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
-                academicInfoEntity.setSection(sectionService.getSectionEntity(academicInfoDTO.getSectionId()));
+                academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
-                        enrolledCourseEntity.setSchedule(scheduleService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
                     }
                 }
@@ -52,12 +57,12 @@ public class StudentService {
     }
 
     public StudentDTO getStudent(Long id){
-        return studentMapper.toDto(getStudentEntity(id));
+        return studentMapper.toDto(studentQueryService.getStudentEntity(id));
     }
 
     //god damn
     public StudentDTO updateStudent(Long id, StudentDTO studentDTO){
-        StudentEntity student = getStudentEntity(id);
+        StudentEntity student = studentQueryService.getStudentEntity(id);
         studentMapper.updateEntityFromDTO(studentDTO, student);
 
         if (studentDTO.getAcademicInfo() != null){
@@ -77,8 +82,8 @@ public class StudentService {
                 }
 
                 studentMapper.updateAcademicInfoEntityFromDTO(academicInfoDTO, academicInfoEntity);
-                academicInfoEntity.setEnrolledProgram(programService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
-                academicInfoEntity.setSection(sectionService.getSectionEntity(academicInfoDTO.getSectionId()));
+                academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
 
                 if (academicInfoDTO.getEnrolledCourses() != null) {
                     Map<Long, EnrolledCourseEntity> oldEnrolledCourseMap = new HashMap<>();
@@ -95,7 +100,7 @@ public class StudentService {
                         }
 
                         studentMapper.updateEnrolledCourseEntityFromDTO(enrolledCourseDTO, enrolledCourseEntity);
-                        enrolledCourseEntity.setSchedule(scheduleService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         updatedEnrolledCourseEntities.add(enrolledCourseEntity);
                     }
                     academicInfoEntity.getEnrolledCourses().clear();
@@ -111,17 +116,5 @@ public class StudentService {
 
     public List<StudentEntity> getAllStudents(){
         return studentRepository.findAll();
-    }
-
-
-    //Helpers
-    public StudentEntity getStudentEntity(Long id){
-        return studentRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Student not found."));
-    }
-    
-    public StudentDTO getStudentByAcademicInfoId(Long academicInfoId){
-        return studentMapper.toDto(studentRepository.findByAcademicInfoId(academicInfoId)
-        .orElseThrow(() -> new RuntimeException("Student not found.")));
     }
 }

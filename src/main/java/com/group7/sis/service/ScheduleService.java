@@ -12,25 +12,30 @@ import com.group7.sis.entity.academic.DayEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.mapper.ScheduledCourseMapper;
 import com.group7.sis.repository.ScheduledCourseRepository;
+import com.group7.sis.service.queryservices.CourseQueryService;
+import com.group7.sis.service.queryservices.ProgramQueryService;
+import com.group7.sis.service.queryservices.ScheduleQueryService;
+import com.group7.sis.service.queryservices.FacultyQueryService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class ScheduleService {
+    private final ScheduleQueryService scheduleQueryService;
     private final ScheduledCourseRepository scheduledCourseRepository;
     private final ScheduledCourseMapper scheduledCourseMapper;
 
-    private final ProgramService programService;
-    private final CourseService courseService;
-    private final FacultyService facultyService;
+    private final ProgramQueryService programQueryService;
+    private final CourseQueryService courseQueryService;
+    private final FacultyQueryService facultyQueryService;
 
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
-        schedule.setProgram(programService.getProgramEntity(scheduledCourseDTO.getProgramId()));
-        schedule.setCourse(courseService.getCourseEntity(scheduledCourseDTO.getCourseId()));
-        schedule.setAssignedFaculty(facultyService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
+        schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
             for (DayDTO dayDTO : scheduledCourseDTO.getDays()){
@@ -45,11 +50,11 @@ public class ScheduleService {
 
     //im tired boss
     public ScheduledCourseDTO updateSchedule(Long id, ScheduledCourseDTO scheduledCourseDTO){
-        ScheduledCourseEntity schedule = getScheduledCourseEntity(id);
+        ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
 
-        schedule.setProgram(programService.getProgramEntity(scheduledCourseDTO.getProgramId()));
-        schedule.setCourse(courseService.getCourseEntity(scheduledCourseDTO.getCourseId()));
-        schedule.setAssignedFaculty(facultyService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
+        schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if (scheduledCourseDTO.getDays() != null){
             Map<Long, DayEntity> oldDays = new HashMap<>();
@@ -71,7 +76,7 @@ public class ScheduleService {
     }
 
     public ScheduledCourseDTO getSchedule(Long id){
-        ScheduledCourseEntity scheduleEntity = getScheduledCourseEntity(id);
+        ScheduledCourseEntity scheduleEntity = scheduleQueryService.getScheduledCourseEntity(id);
         ScheduledCourseDTO schedule = scheduledCourseMapper.toDto(scheduleEntity);
 
         schedule.setProgramId(scheduleEntity.getProgram().getId());
@@ -83,12 +88,5 @@ public class ScheduleService {
 
     public List<ScheduledCourseEntity> getAllSchedule(){
         return scheduledCourseRepository.findAll();
-    }
-
-
-    //Helper
-    public ScheduledCourseEntity getScheduledCourseEntity(Long id){
-        return scheduledCourseRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
 }
