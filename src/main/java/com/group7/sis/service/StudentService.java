@@ -28,10 +28,8 @@ public class StudentService {
     private final SectionService sectionService;
     private final ScheduleService scheduleService;
 
-    //cant add scheduleId to enrolledCourse: "Detached entity passed to persist: com.group7.sis.entity.users.student.AcademicInfoEntity"
     public StudentEntity addStudent(StudentDTO studentDTO){
         StudentEntity student = studentMapper.toEntity(studentDTO);
-
 
         if (studentDTO.getAcademicInfo() != null && !studentDTO.getAcademicInfo().isEmpty()) {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
@@ -58,8 +56,6 @@ public class StudentService {
     }
 
     //god damn
-    //cant add academicinfo, enrolledcourse: The given id must not be null
-    //when emptying a list: A collection with orphan deletion was no longer referenced by the owning entity
     public StudentDTO updateStudent(Long id, StudentDTO studentDTO){
         StudentEntity student = getStudentEntity(id);
         studentMapper.updateEntityFromDTO(studentDTO, student);

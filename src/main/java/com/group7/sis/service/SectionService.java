@@ -57,8 +57,7 @@ public class SectionService {
         for (AcademicInfoEntity academicInfoEntity : sectionEntity.getStudentAcademicInfos()){
             students.add(studentService.getStudentByAcademicInfoId(academicInfoEntity.getId()));
         }
-
-        return null;
+        return students;
     }
 
 
