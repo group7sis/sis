@@ -28,9 +28,7 @@ public class ScheduledCourseEntity {
     private CourseEntity course;
 
     @Column
-    private int yearLevel; // this is already in section so i could remove this
-
-    //private Section section; //dont think ill need this
+    private int yearLevel;
     
     @Column
     private String academicYear;

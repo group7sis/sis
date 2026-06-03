@@ -1,9 +1,5 @@
 package com.group7.sis.service;
 
-import com.group7.sis.repository.CourseRepository;
-import com.group7.sis.repository.FacultyRepository;
-import com.group7.sis.repository.ProgramRepository;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,18 +18,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class ScheduleService {
-    private final FacultyRepository facultyRepository;
-    private final CourseRepository courseRepository;
-    private final ProgramRepository programRepository;
     private final ScheduledCourseRepository scheduledCourseRepository;
     private final ScheduledCourseMapper scheduledCourseMapper;
+
+    private final ProgramService programService;
+    private final CourseService courseService;
+    private final FacultyService facultyService;
 
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
-        schedule.setProgram(programRepository.findById(scheduledCourseDTO.getProgramId()).orElseThrow(() -> new RuntimeException("Program not found")));
-        schedule.setCourse(courseRepository.findById(scheduledCourseDTO.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found")));
-        schedule.setAssignedFaculty(facultyRepository.findById(scheduledCourseDTO.getAssignedFacultyId()).orElseThrow(() -> new RuntimeException("Faculty not found")));
+        schedule.setProgram(programService.getProgramEntity(scheduledCourseDTO.getProgramId()));
+        schedule.setCourse(courseService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setAssignedFaculty(facultyService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
             for (DayDTO dayDTO : scheduledCourseDTO.getDays()){
@@ -48,11 +45,11 @@ public class ScheduleService {
 
     //im tired boss
     public ScheduledCourseDTO updateSchedule(Long id, ScheduledCourseDTO scheduledCourseDTO){
-        ScheduledCourseEntity schedule = scheduledCourseRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
-        
-        schedule.setProgram(programRepository.findById(scheduledCourseDTO.getProgramId()).orElseThrow(() -> new RuntimeException("Program not found")));
-        schedule.setCourse(courseRepository.findById(scheduledCourseDTO.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found")));
-        schedule.setAssignedFaculty(facultyRepository.findById(scheduledCourseDTO.getAssignedFacultyId()).orElseThrow(() -> new RuntimeException("Faculty not found")));
+        ScheduledCourseEntity schedule = getScheduledCourseEntity(id);
+
+        schedule.setProgram(programService.getProgramEntity(scheduledCourseDTO.getProgramId()));
+        schedule.setCourse(courseService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setAssignedFaculty(facultyService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if (scheduledCourseDTO.getDays() != null){
             Map<Long, DayEntity> oldDays = new HashMap<>();
@@ -74,7 +71,7 @@ public class ScheduleService {
     }
 
     public ScheduledCourseDTO getSchedule(Long id){
-        ScheduledCourseEntity scheduleEntity = scheduledCourseRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+        ScheduledCourseEntity scheduleEntity = getScheduledCourseEntity(id);
         ScheduledCourseDTO schedule = scheduledCourseMapper.toDto(scheduleEntity);
 
         schedule.setProgramId(scheduleEntity.getProgram().getId());
@@ -86,5 +83,12 @@ public class ScheduleService {
 
     public List<ScheduledCourseEntity> getAllSchedule(){
         return scheduledCourseRepository.findAll();
+    }
+
+
+    //Helper
+    public ScheduledCourseEntity getScheduledCourseEntity(Long id){
+        return scheduledCourseRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
 }

@@ -1,6 +1,5 @@
 package com.group7.sis.service;
 
-import com.group7.sis.repository.ProgramRepository;
 import org.springframework.stereotype.Service;
 
 import com.group7.sis.dto.StudentDTO;
@@ -10,7 +9,6 @@ import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
 import com.group7.sis.mapper.StudentMapper;
-import com.group7.sis.repository.ScheduledCourseRepository;
 import com.group7.sis.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -23,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class StudentService {
-    private final ProgramRepository programRepository;
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
-    private final ScheduledCourseRepository scheduledCourseRepository;
+
+    private final ProgramService programService;
+    private final SectionService sectionService;
+    private final ScheduleService scheduleService;
 
     //cant add scheduleId to enrolledCourse: "Detached entity passed to persist: com.group7.sis.entity.users.student.AcademicInfoEntity"
     public StudentEntity addStudent(StudentDTO studentDTO){
@@ -37,13 +37,13 @@ public class StudentService {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
 
-                academicInfoEntity.setEnrolledProgram(programRepository.findById(academicInfoDTO.getEnrolledProgramId()).orElseThrow(() -> new RuntimeException("Program not found.")));
-                // academicInfoEntity.setSection(null); ignore for now
+                academicInfoEntity.setEnrolledProgram(programService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                academicInfoEntity.setSection(sectionService.getSectionEntity(academicInfoDTO.getSectionId()));
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
-                        enrolledCourseEntity.setSchedule(scheduledCourseRepository.findById(enrolledCourseDTO.getScheduleId()).orElseThrow(() -> new RuntimeException("Scheduled course not found.")));
+                        enrolledCourseEntity.setSchedule(scheduleService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
                     }
                 }
@@ -54,15 +54,14 @@ public class StudentService {
     }
 
     public StudentDTO getStudent(Long id){
-        return studentMapper.toDto(studentRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Student not found,")));
+        return studentMapper.toDto(getStudentEntity(id));
     }
 
     //god damn
     //cant add academicinfo, enrolledcourse: The given id must not be null
     //when emptying a list: A collection with orphan deletion was no longer referenced by the owning entity
     public StudentDTO updateStudent(Long id, StudentDTO studentDTO){
-        StudentEntity student = studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Student not found."));
+        StudentEntity student = getStudentEntity(id);
         studentMapper.updateEntityFromDTO(studentDTO, student);
 
         if (studentDTO.getAcademicInfo() != null){
@@ -82,8 +81,8 @@ public class StudentService {
                 }
 
                 studentMapper.updateAcademicInfoEntityFromDTO(academicInfoDTO, academicInfoEntity);
-                academicInfoEntity.setEnrolledProgram(programRepository.findById(academicInfoDTO.getEnrolledProgramId()).orElseThrow(() -> new RuntimeException("Program not found.")));
-                // academicInfoEntity.setSection(null); ignore for now
+                academicInfoEntity.setEnrolledProgram(programService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                academicInfoEntity.setSection(sectionService.getSectionEntity(academicInfoDTO.getSectionId()));
 
                 if (academicInfoDTO.getEnrolledCourses() != null) {
                     Map<Long, EnrolledCourseEntity> oldEnrolledCourseMap = new HashMap<>();
@@ -100,7 +99,7 @@ public class StudentService {
                         }
 
                         studentMapper.updateEnrolledCourseEntityFromDTO(enrolledCourseDTO, enrolledCourseEntity);
-                        enrolledCourseEntity.setSchedule(scheduledCourseRepository.findById(enrolledCourseDTO.getScheduleId()).orElseThrow(() -> new RuntimeException("Scheduled course not found.")));
+                        enrolledCourseEntity.setSchedule(scheduleService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         updatedEnrolledCourseEntities.add(enrolledCourseEntity);
                     }
                     academicInfoEntity.getEnrolledCourses().clear();
@@ -116,5 +115,17 @@ public class StudentService {
 
     public List<StudentEntity> getAllStudents(){
         return studentRepository.findAll();
+    }
+
+
+    //Helpers
+    public StudentEntity getStudentEntity(Long id){
+        return studentRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Student not found."));
+    }
+    
+    public StudentDTO getStudentByAcademicInfoId(Long academicInfoId){
+        return studentMapper.toDto(studentRepository.findByAcademicInfoId(academicInfoId)
+        .orElseThrow(() -> new RuntimeException("Student not found.")));
     }
 }

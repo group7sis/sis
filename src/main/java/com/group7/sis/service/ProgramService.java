@@ -36,8 +36,7 @@ public class ProgramService {
 
     //ANGSEINGAWNGINAWIGNAWIdanf IAWINf iawF IWABFK A
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
-        ProgramEntity program = programRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Program not found."));
+        ProgramEntity program = getProgramEntity(id);
 
         programMapper.updateEntityFromDto(programDTO, program);
 
@@ -93,5 +92,12 @@ public class ProgramService {
     public ProgramDTO getProgram(Long id){
         return programMapper.toDto(programRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Program not found.")));
+    }
+
+
+    //Helpers
+    public ProgramEntity getProgramEntity(Long id){
+        return programRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Program not found"));
     }
 }

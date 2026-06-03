@@ -31,7 +31,7 @@ public class StudentDTO {
     public static class AcademicInfoDTO {
         private Long id;
         private Long enrolledProgramId;
-        // private Long sectionId;
+        private Long sectionId;
         private int yearLevel;
         private LocalDate enrollmentDate;
         private ScholasticStatus scholasticStatus;

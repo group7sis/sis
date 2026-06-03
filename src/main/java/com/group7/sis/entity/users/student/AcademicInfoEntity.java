@@ -1,6 +1,6 @@
 package com.group7.sis.entity.users.student;
 
-// import com.group7.sis.entity.academic.Section;
+import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,9 +27,9 @@ public class AcademicInfoEntity {
     @JoinColumn(name="program_id")
     private ProgramEntity enrolledProgram;
 
-    // @OneToOne
-    // @JoinColumn(name="section_id")
-    // private Section section;
+    @ManyToOne
+    @JoinColumn(name="section_id")
+    private SectionEntity section;
 
     @Column
     private int yearLevel;

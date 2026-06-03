@@ -20,26 +20,24 @@ public interface StudentMapper {
     @Mapping(target = "academicInfo", ignore = true)
     StudentEntity toEntity(StudentDTO studentDTO);
 
-
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "academicInfo", ignore = true)
     void updateEntityFromDTO(StudentDTO dto, @MappingTarget StudentEntity entity);
 
 
     @Mapping(target = "enrolledProgramId", source = "enrolledProgram.id")
-    // @Mapping(target = "sectionId", ignore = true) //ignore for now
+    @Mapping(target = "sectionId", source = "section.id")
     AcademicInfoDTO toAcademicInfoDto(AcademicInfoEntity academicInfoEntity);
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "enrolledProgram", ignore = true)
-    //@Mapping(target = "section", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "enrolledCourses", ignore = true)
     AcademicInfoEntity toAcademicInfoEntity(AcademicInfoDTO academicInfoDTO);
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "enrolledProgram", ignore = true)
-    //@Mapping(target = "section", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "enrolledCourses", ignore = true)
     void updateAcademicInfoEntityFromDTO(AcademicInfoDTO dto, @MappingTarget AcademicInfoEntity entity);
 

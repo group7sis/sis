@@ -1,7 +1,5 @@
 package com.group7.sis.service;
 
-import com.group7.sis.repository.CourseRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +17,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class FacultyService {
-    private final CourseRepository courseRepository;
     private final FacultyRepository facultyRepository;
     private final FacultyMapper facultyMapper;
+
+    private final CourseService courseService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         
         if (facultyDTO.getQualifiedCoursesIds() != null && !facultyDTO.getQualifiedCoursesIds().isEmpty()){
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
-                CourseEntity course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty could not be created due to a Course not being found"));
+                CourseEntity course = courseService.getCourseEntity(id);
                 faculty.getQualifiedCourses().add(course);
             }
         }
@@ -37,14 +36,14 @@ public class FacultyService {
     }
 
     public FacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){
-        FacultyEntity facultyEntity = facultyRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty not found"));
+        FacultyEntity facultyEntity = getFacultyEntity(id);
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
         
         if (facultyDTO.getQualifiedCoursesIds() != null){
             facultyEntity.getQualifiedCourses().clear();
 
             for (Long courseId : facultyDTO.getQualifiedCoursesIds()){
-                CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Faculty could not be modified due to a Course not being found"));
+                CourseEntity course = courseService.getCourseEntity(courseId);
                 facultyEntity.getQualifiedCourses().add(course);
             }
         }
@@ -53,7 +52,7 @@ public class FacultyService {
     }
 
     public FacultyDTO getFaculty(Long id){
-        FacultyEntity facultyEntity = facultyRepository.findById(id).orElseThrow(() -> new RuntimeException("Faculty not found"));
+        FacultyEntity facultyEntity = getFacultyEntity(id);
 
         FacultyDTO faculty = facultyMapper.toDto(facultyEntity);
 
@@ -85,4 +84,10 @@ public class FacultyService {
         return facultyRepository.findAll();
     }
 
+
+    //Helpers
+    public FacultyEntity getFacultyEntity(Long id){
+        return facultyRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Faculty not found"));
+    }
 }//ALL THESE IGNORE SCHEDULEDCOURSES

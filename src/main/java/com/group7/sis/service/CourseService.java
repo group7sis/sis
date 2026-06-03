@@ -22,8 +22,7 @@ public class CourseService {
 
         if (request.getPrerequisiteIds() != null){
             for (Long id : request.getPrerequisiteIds()){
-                prereqs.add(courseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Could not create Course. Prerequisite with Course id ("+ id + ") does not exist")));
+                prereqs.add(getCourseEntity(id));
             }
         }
         
@@ -33,14 +32,12 @@ public class CourseService {
     }
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
-        CourseEntity course = courseRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Course does not exist."));
+        CourseEntity course = getCourseEntity(id);
 
         if (courseToModify.getPrerequisiteIds() != null){
             List <CourseEntity> prereqs = new ArrayList<>();
             for (Long prereqId : courseToModify.getPrerequisiteIds()){
-                prereqs.add(courseRepository.findById(prereqId)
-                .orElseThrow(() -> new RuntimeException("Could not update Course. Prerequisite with Course id ("+ prereqId + ") does not exist")));
+                prereqs.add(getCourseEntity(prereqId));
             }
             course.getPrerequisites().clear();
             course.setPrerequisites(prereqs);
@@ -52,8 +49,7 @@ public class CourseService {
     }
 
     public CourseDTO getCourse(Long id){
-        CourseEntity course = courseRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Course not found."));
+        CourseEntity course = getCourseEntity(id);
 
         List <Long> prereqIds = new ArrayList<>();
         if (course.getPrerequisites() != null){
@@ -69,5 +65,12 @@ public class CourseService {
 
     public List<CourseEntity> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+
+    //Helpers
+    public CourseEntity getCourseEntity(Long id){
+        return courseRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Course does not exist."));
     }
 }
