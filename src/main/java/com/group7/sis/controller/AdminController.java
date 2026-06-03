@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -159,4 +161,37 @@ public class AdminController {
     public ScheduledCourseEntity createSchedule(@RequestBody ScheduledCourseDTO scheduledCourseDTO) {
         return scheduleService.addSchedule(scheduledCourseDTO);
     }
+
+
+    //-----------------------------------SECTION-----------------------------------
+    private final SectionService sectionService;
+
+    @GetMapping("/sections")
+    public List<SectionDTO> getAllSections() {
+        return sectionService.getAllSections();
+    }
+
+    @GetMapping("/sections/{id}")
+    public SectionDTO getSection(@PathVariable Long id) {
+        return sectionService.getSection(id);
+    }
+    
+    @PutMapping("/sections/{id}")
+    public SectionDTO updateSection(@PathVariable Long id, @RequestBody SectionDTO sectionDTO) {        
+        return sectionService.updateSection(id, sectionDTO);
+    }
+
+    @GetMapping("/sections/{id}/students")
+    public List<StudentDTO> getSectionStudents(@PathVariable Long id) {
+        return sectionService.getStudentsInSection(id);
+    }
+
+    @PostMapping("/sections/add")
+    public SectionDTO createSection(@RequestBody SectionDTO sectionDTO) {
+        return sectionService.addSection(sectionDTO);
+    }
+    
+    
+    
+
 }
