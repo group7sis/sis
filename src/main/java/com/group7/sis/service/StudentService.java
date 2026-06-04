@@ -61,7 +61,6 @@ public class StudentService {
     }
 
     //god damn
-    //this hasnt been updated to add to section to
     public StudentDTO updateStudent(Long id, StudentDTO studentDTO){
         StudentEntity student = studentQueryService.getStudentEntity(id);
         studentMapper.updateEntityFromDTO(studentDTO, student);

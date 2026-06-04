@@ -29,7 +29,7 @@ public class AcademicInfoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="program_id")
     private ProgramEntity enrolledProgram;
 
