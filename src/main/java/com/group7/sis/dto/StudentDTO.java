@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity.Status;
 
@@ -35,6 +36,7 @@ public class StudentDTO {
         private int yearLevel;
         private LocalDate enrollmentDate;
         private ScholasticStatus scholasticStatus;
+        private EnrollmentStatus enrollmentStatus;
         private List<EnrolledCourseDTO> enrolledCourses;
 
         @Getter

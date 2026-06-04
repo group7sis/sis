@@ -15,11 +15,9 @@ public interface SectionMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "program", ignore = true)
-    @Mapping(target = "studentAcademicInfos", ignore = true)
     SectionEntity toEntity (SectionDTO sectionDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "program", ignore = true)
-    @Mapping(target = "studentAcademicInfos", ignore = true)
     void updateEntityFromDto(SectionDTO sectionDTO, @MappingTarget SectionEntity sectionEntity);
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.StudentDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO.EnrolledCourseDTO;
-import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
@@ -37,7 +36,6 @@ public class StudentService {
     public StudentEntity addStudent(StudentDTO studentDTO){
         StudentEntity student = studentMapper.toEntity(studentDTO);
 
-        AcademicInfoEntity acadInfoToAdd = new AcademicInfoEntity();
         if (studentDTO.getAcademicInfo() != null && !studentDTO.getAcademicInfo().isEmpty()) {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
@@ -52,13 +50,8 @@ public class StudentService {
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
                     }
                 }
-                //store to acadinfotoadd if status is enrolled or whatever
-                acadInfoToAdd = academicInfoEntity;
                 student.getAcademicInfo().add(academicInfoEntity);
             }
-        
-        SectionEntity section = acadInfoToAdd.getSection();
-        section.getStudentAcademicInfos().add(acadInfoToAdd);
         }
         return studentRepository.save(student);
     }

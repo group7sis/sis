@@ -1,11 +1,9 @@
 package com.group7.sis.entity.academic;
 
-import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import jakarta.persistence.*;
 import lombok.Setter;
 import lombok.Getter;
-
-import java.util.List;                                
+                        
 
 @Getter
 @Setter
@@ -46,7 +44,4 @@ public class SectionEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @OneToMany(mappedBy = "section")
-    private List<AcademicInfoEntity> studentAcademicInfos;
 }

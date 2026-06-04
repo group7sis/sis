@@ -4,13 +4,13 @@ import org.springframework.stereotype.Service;
 
 import com.group7.sis.dto.SectionDTO;
 import com.group7.sis.entity.academic.SectionEntity;
-import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.mapper.SectionMapper;
 import com.group7.sis.repository.SectionRepository;
 import com.group7.sis.dto.StudentDTO;
 import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.StudentQueryService;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +55,7 @@ public class SectionService {
     }
 
     public List<StudentDTO> getStudentsInSection(Long sectionId){
-        SectionEntity sectionEntity = sectionQueryService.getSectionEntity(sectionId);
-        List<StudentDTO> students = new ArrayList<>();
-
-        for (AcademicInfoEntity academicInfoEntity : sectionEntity.getStudentAcademicInfos()){
-            students.add(studentQueryService.getStudentByAcademicInfoId(academicInfoEntity.getId()));
-        }
-        return students;
+        sectionQueryService.getSectionEntity(sectionId);
+        return studentQueryService.findStudentsFromSectionWithStatus(sectionId, EnrollmentStatus.ACTIVE);
     }
 }

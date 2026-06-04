@@ -19,6 +19,12 @@ public class AcademicInfoEntity {
         IRREGULAR
     }
 
+    public enum EnrollmentStatus{
+        ACTIVE,
+        COMPLETED,
+        DROPPED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,6 +45,9 @@ public class AcademicInfoEntity {
 
     @Enumerated(EnumType.STRING)
     private ScholasticStatus scholasticStatus;
+
+    @Enumerated(EnumType.STRING)
+    private EnrollmentStatus enrollmentStatus;
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "acad_info_id")
