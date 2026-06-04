@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/admin")
 public class AdminController {
-
+//wala lang
     private final AdminService adminService;
-
+    
     @GetMapping("/accounts")
     public List<AdminDTO> getAllAdmins() {
         return adminService.getAllAdmin();
