@@ -144,7 +144,7 @@ public class AdminController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/schedules")
-    public List<ScheduledCourseEntity> getAllSchedules() {
+    public List<ScheduledCourseDTO> getAllSchedules() {
         return scheduleService.getAllSchedule();
     }
 

@@ -1,5 +1,6 @@
 package com.group7.sis.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.group7.sis.repository.ScheduledCourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.ScheduleQueryService;
+import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,12 +31,14 @@ public class ScheduleService {
     private final ProgramQueryService programQueryService;
     private final CourseQueryService courseQueryService;
     private final FacultyQueryService facultyQueryService;
+    private final SectionQueryService sectionQueryService;
 
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
         schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
         schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
@@ -54,6 +58,7 @@ public class ScheduleService {
 
         schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
         schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
 
         if (scheduledCourseDTO.getDays() != null){
@@ -79,14 +84,15 @@ public class ScheduleService {
         ScheduledCourseEntity scheduleEntity = scheduleQueryService.getScheduledCourseEntity(id);
         ScheduledCourseDTO schedule = scheduledCourseMapper.toDto(scheduleEntity);
 
-        schedule.setProgramId(scheduleEntity.getProgram().getId());
-        schedule.setCourseId(scheduleEntity.getCourse().getId());
-        schedule.setAssignedFacultyId(scheduleEntity.getAssignedFaculty().getId());
-
         return schedule;
     }
 
-    public List<ScheduledCourseEntity> getAllSchedule(){
-        return scheduledCourseRepository.findAll();
+    public List<ScheduledCourseDTO> getAllSchedule(){
+        List<ScheduledCourseDTO> schedules = new ArrayList<>();
+
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.findAll()){
+            schedules.add(scheduledCourseMapper.toDto(schedule));
+        }
+        return schedules;
     }
 }

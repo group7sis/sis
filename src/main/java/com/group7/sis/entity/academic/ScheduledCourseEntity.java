@@ -27,6 +27,10 @@ public class ScheduledCourseEntity {
     @JoinColumn(name = "course_id")
     private CourseEntity course;
 
+    @ManyToOne
+    @JoinColumn(name = "section_id")
+    private SectionEntity section;
+
     @Column
     private int yearLevel;
     

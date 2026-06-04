@@ -14,6 +14,7 @@ public interface ScheduledCourseMapper {
 
     @Mapping(target = "programId", source = "program.id")
     @Mapping(target = "courseId", source = "course.id")
+    @Mapping(target = "sectionId", source = "section.id")
     @Mapping(target = "assignedFacultyId", source = "assignedFaculty.id")
     ScheduledCourseDTO toDto(ScheduledCourseEntity scheduledCourseEntity);
 
@@ -22,6 +23,7 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "program", ignore = true)
     @Mapping(target = "course", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
     ScheduledCourseEntity toEntity(ScheduledCourseDTO scheduledCourseDTO);
 
@@ -36,6 +38,7 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "program", ignore = true)
     @Mapping(target = "course", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
     @Mapping(target = "days", ignore = true)
     void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO, @MappingTarget ScheduledCourseEntity scheduledCourseEntity);

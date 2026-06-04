@@ -10,6 +10,7 @@ import lombok.Setter;
 public class ScheduledCourseDTO {
     private Long programId;
     private Long courseId;
+    private Long sectionId;
     private int yearLevel;
     private String academicYear;
     private List<DayDTO> days;
