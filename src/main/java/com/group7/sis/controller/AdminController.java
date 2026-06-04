@@ -27,17 +27,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/admin")
 public class AdminController {
-    // @PostMapping("/register")
-    // public Admin createAdmin(@RequestBody CreateAdmin newAdmin) {
-    //     //should be added in a list of admins
-    //     Admin admin = new Admin(newAdmin.getUsername(), newAdmin.getPassword());       
-    //     return admin;
-    // }
-    // @PostMapping("/login")
-    // public String adminLogin(@RequestBody Admin login) {
-    //     //add a list of admins so i can add logic here to check if the username and password are correct, for now it just returns a success message
-    //     return "Admin logged in successfully";
-    // }
+
+    private final AdminService adminService;
+
+    @GetMapping("/accounts")
+    public List<AdminDTO> getAllAdmins() {
+        return adminService.getAllAdmin();
+    }
+
+    @GetMapping("/accounts/{id}")
+    public AdminDTO getAdmin(@PathVariable Long id) {
+        return adminService.getAdmin(id);
+    }  
+
+    @PutMapping("/accounts/{id}")
+    public AdminDTO updateAdmin(@PathVariable Long id, @RequestBody AdminDTO adminDto) {
+        return adminService.updateAdmin(id, adminDto);
+    }
+
+    @PostMapping("/accounts/add")
+    public AdminEntity addAdmin(@RequestBody AdminDTO adminDTO) {
+        return adminService.addAdmin(adminDTO);
+    }    
+    
 
     //-----------------------------PROGRAMS-----------------------------------
     private final ProgramService programService;

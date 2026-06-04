@@ -29,5 +29,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+###TODO: ignore application properties once you have sql db
+
 ### VS Code ###
 .vscode/
