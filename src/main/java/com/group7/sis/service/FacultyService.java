@@ -13,6 +13,7 @@ import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
+import com.group7.sis.service.queryservices.ScheduleQueryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +25,7 @@ public class FacultyService {
     private final FacultyMapper facultyMapper;
 
     private final CourseQueryService courseQueryService;
+    private final ScheduleQueryService scheduleQueryService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
@@ -34,6 +36,14 @@ public class FacultyService {
                 faculty.getQualifiedCourses().add(course);
             }
         }
+
+        if (facultyDTO.getScheduledCoursesIds() != null){
+            for (Long id : facultyDTO.getScheduledCoursesIds()){
+                ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
+                faculty.getScheduledCourses().add(schedule);
+            }
+        }
+
         facultyRepository.save(faculty);
         return faculty;
     }
@@ -43,13 +53,25 @@ public class FacultyService {
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
         
         if (facultyDTO.getQualifiedCoursesIds() != null){
-            facultyEntity.getQualifiedCourses().clear();
-
+            List<CourseEntity> newQualifiedCourses = new ArrayList<>();
             for (Long courseId : facultyDTO.getQualifiedCoursesIds()){
                 CourseEntity course = courseQueryService.getCourseEntity(courseId);
-                facultyEntity.getQualifiedCourses().add(course);
+                newQualifiedCourses.add(course);
             }
+            facultyEntity.getQualifiedCourses().clear();
+            facultyEntity.getQualifiedCourses().addAll(newQualifiedCourses);
         }
+
+        if (facultyDTO.getScheduledCoursesIds() != null){
+            List<ScheduledCourseEntity> newScheduledCourses = new ArrayList<>();
+            for (Long scheduleId : facultyDTO.getQualifiedCoursesIds()){
+                ScheduledCourseEntity course = scheduleQueryService.getScheduledCourseEntity(scheduleId);
+                newScheduledCourses.add(course);
+            }
+            facultyEntity.getScheduledCourses().clear();
+            facultyEntity.getScheduledCourses().addAll(newScheduledCourses);
+        }
+
         facultyRepository.save(facultyEntity);
         return getFaculty(facultyEntity.getId());
     }
