@@ -13,7 +13,7 @@ import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
-import com.group7.sis.service.queryservices.ScheduleQueryService;
+// import com.group7.sis.service.queryservices.ScheduleQueryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class FacultyService {
     private final FacultyMapper facultyMapper;
 
     private final CourseQueryService courseQueryService;
-    private final ScheduleQueryService scheduleQueryService;
+    // private final ScheduleQueryService scheduleQueryService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
