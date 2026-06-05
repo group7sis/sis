@@ -22,7 +22,7 @@ public class CourseDTO {
     @Getter
     @Setter
     public static class CourseAssignmentDTO{
-        private Long courseId;
+        private Long id;
         private Long programId;
         private Long curriculumId;
         private int yearLevel;

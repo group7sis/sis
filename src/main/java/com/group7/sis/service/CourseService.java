@@ -2,13 +2,18 @@ package com.group7.sis.service;
 
 import org.springframework.stereotype.Service;
 import com.group7.sis.dto.CourseDTO;
+import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
+import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
+import com.group7.sis.service.queryservices.CurriculumQueryService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +24,10 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
 
+    private final CurriculumQueryService curriculumQueryService;
+
     public CourseEntity addCourse(CourseDTO request) {
+        CourseEntity course = courseMapper.toEntity(request);
         List <CourseEntity> prereqs = new ArrayList<>();
 
         if (request.getPrerequisiteIds() != null){
@@ -28,7 +36,17 @@ public class CourseService {
             }
         }
         
-        CourseEntity course = courseMapper.toEntity(request);
+        List<CourseAssignmentEntity> courseAssignmentEntities = new ArrayList<>();
+        if(request.getCourseAssignments() != null){
+            for(CourseAssignmentDTO courseAssignmentDto : request.getCourseAssignments()){
+                CourseAssignmentEntity courseAssignmentEntity = courseMapper.toEntity(courseAssignmentDto);
+                courseAssignmentEntity.setCourse(course);
+                courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDto.getCurriculumId()));
+
+                courseAssignmentEntities.add(courseAssignmentEntity);
+            }
+        }
+        course.setCourseAssignments(courseAssignmentEntities);
         course.setPrerequisites(prereqs);
         return courseRepository.save(course);
     }
@@ -45,6 +63,30 @@ public class CourseService {
             course.setPrerequisites(prereqs);
         }
 
+        if(courseToModify.getCourseAssignments() != null){
+            Map<Long, CourseAssignmentEntity> oldAssignments = new HashMap<>();
+
+            for(CourseAssignmentEntity courseAssignmentEntity : course.getCourseAssignments()){
+                oldAssignments.put(courseAssignmentEntity.getId(), courseAssignmentEntity);
+            }
+
+            List<CourseAssignmentEntity> newAssignments = new ArrayList<>();
+
+            for(CourseAssignmentDTO courseAssignmentDTO : courseToModify.getCourseAssignments()){
+                CourseAssignmentEntity courseAssignmentEntity = oldAssignments.remove(courseAssignmentDTO.getId());
+
+                if (courseAssignmentEntity == null){
+                    courseAssignmentEntity = new CourseAssignmentEntity();
+                }
+
+                courseMapper.updateEntityFromDTO(courseAssignmentDTO, courseAssignmentEntity);
+                courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                newAssignments.add(courseAssignmentEntity);
+            }
+
+            course.getCourseAssignments().clear();
+            course.getCourseAssignments().addAll(newAssignments);
+        }
         courseMapper.updateEntityFromDTO(courseToModify, course);
         courseRepository.save(course);
         return getCourse(id);
