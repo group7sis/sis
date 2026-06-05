@@ -40,13 +40,20 @@ public class StudentService {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
 
-                academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
-                academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                if(academicInfoDTO.getEnrolledProgramId() != null){
+                    academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                }
+                
+                if(academicInfoDTO.getSectionId() != null){
+                   academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                }
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
-                        enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        if (enrolledCourseDTO.getScheduleId() != null){
+                            enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
                     }
                 }
@@ -82,8 +89,14 @@ public class StudentService {
                 }
 
                 studentMapper.updateAcademicInfoEntityFromDTO(academicInfoDTO, academicInfoEntity);
-                academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
-                academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+
+                if(academicInfoDTO.getEnrolledProgramId() != null){
+                    academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                }
+                
+                if(academicInfoDTO.getSectionId() != null){
+                   academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                }
 
                 if (academicInfoDTO.getEnrolledCourses() != null) {
                     Map<Long, EnrolledCourseEntity> oldEnrolledCourseMap = new HashMap<>();
@@ -100,7 +113,9 @@ public class StudentService {
                         }
 
                         studentMapper.updateEnrolledCourseEntityFromDTO(enrolledCourseDTO, enrolledCourseEntity);
-                        enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        if(enrolledCourseDTO.getScheduleId() != null){
+                            enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                        }
                         updatedEnrolledCourseEntities.add(enrolledCourseEntity);
                     }
                     academicInfoEntity.getEnrolledCourses().clear();

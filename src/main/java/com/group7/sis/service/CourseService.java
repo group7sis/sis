@@ -40,7 +40,9 @@ public class CourseService {
                 CourseAssignmentEntity courseAssignmentEntity = courseMapper.toEntity(courseAssignmentDTO);
 
                 courseAssignmentEntity.setCourse(courseEntity);
-                courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                if(courseAssignmentDTO.getCurriculumId() != null){
+                    courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                }
                 courseEntity.getCourseAssignments().add(courseAssignmentEntity);
             }
         }

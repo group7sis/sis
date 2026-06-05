@@ -28,14 +28,19 @@ public class SectionService {
 
     public SectionDTO addSection(SectionDTO sectionDTO){
         SectionEntity sectionEntity = sectionMapper.toEntity(sectionDTO);
+
+        if(sectionDTO.getProgramId() != null){
         sectionEntity.setProgram(programQueryService.getProgramEntity(sectionDTO.getProgramId()));
+        }
         return sectionMapper.toDto(sectionRepository.save(sectionEntity));
     }
 
     public SectionDTO updateSection(Long id, SectionDTO sectionDTO){
         SectionEntity sectionEntity = sectionQueryService.getSectionEntity(id);
         sectionMapper.updateEntityFromDto(sectionDTO, sectionEntity);
-        sectionEntity.setProgram(programQueryService.getProgramEntity(sectionDTO.getProgramId()));
+        if(sectionDTO.getProgramId() != null){
+            sectionEntity.setProgram(programQueryService.getProgramEntity(sectionDTO.getProgramId()));
+        }
         return sectionMapper.toDto(sectionRepository.save(sectionEntity));
 
     }
