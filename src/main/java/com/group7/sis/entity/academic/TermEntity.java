@@ -19,7 +19,7 @@ public class TermEntity {
     Long id;
 
     @Column
-    private String acadamicYear;
+    private String academicYear;
 
     @Column
     private int semester;

@@ -50,6 +50,7 @@ public class AdminController {
     }    
     
     //-----------------------------TERM-----------------------------------
+    //Not sure if ill need ALL of term crud but it is what it is atm
     private final TermService termService;
 
     @GetMapping("/terms")
