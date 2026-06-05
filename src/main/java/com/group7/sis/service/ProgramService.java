@@ -47,9 +47,13 @@ public class ProgramService {
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
         ProgramEntity program = programQueryService.getProgramEntity(id);
 
-        if (programDTO.getActiveCurriculumId() != null){
-        program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(programDTO.getActiveCurriculumId()));
+        if(programDTO.getActiveCurriculumId() == null){
+            program.setActiveCurriculum(null);
         }
+        else{
+            program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(programDTO.getActiveCurriculumId()));
+        }
+        
         
         programMapper.updateEntityFromDto(programDTO, program);
 
