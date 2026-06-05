@@ -26,7 +26,7 @@ public class CourseService {
 
     private final CurriculumQueryService curriculumQueryService;
 
-    public CourseEntity addCourse(CourseDTO courseDTO){
+    public CourseDTO addCourse(CourseDTO courseDTO){
         CourseEntity courseEntity = courseMapper.toEntity(courseDTO);
 
         if (courseDTO.getPrerequisiteIds() != null){
@@ -46,7 +46,8 @@ public class CourseService {
                 courseEntity.getCourseAssignments().add(courseAssignmentEntity);
             }
         }
-        return courseRepository.save(courseEntity);
+        courseRepository.save(courseEntity);
+        return getCourse(courseEntity.getId());
     }
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
