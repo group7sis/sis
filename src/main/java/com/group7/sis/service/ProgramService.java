@@ -55,14 +55,14 @@ public class ProgramService {
 
         if (programDTO.getCurriculums() != null) {
 
-            Map<String, CurriculumEntity> oldCurriculums = new HashMap<>();
+            Map<Long, CurriculumEntity> oldCurriculums = new HashMap<>();
             for (CurriculumEntity curriculum : program.getCurriculums()){
-                oldCurriculums.put(curriculum.getCode(), curriculum);
+                oldCurriculums.put(curriculum.getId(), curriculum);
             }
             program.getCurriculums().clear();
 
             for (ProgramDTO.CurriculumDTO cDto : programDTO.getCurriculums()){
-                CurriculumEntity curriculumEntity = oldCurriculums.remove(cDto.getCode());
+                CurriculumEntity curriculumEntity = oldCurriculums.remove(cDto.getId());
                 if (curriculumEntity == null) {
                     curriculumEntity = new CurriculumEntity();
                 }
@@ -72,18 +72,17 @@ public class ProgramService {
 
                 if (cDto.getYears() != null) {
 
-                    Map<Integer, YearEntity> oldYears = new HashMap<>();
+                    Map<Long, YearEntity> oldYears = new HashMap<>();
                     for (YearEntity year : curriculumEntity.getYears()){
-                        oldYears.put(year.getLevel(), year);
+                        oldYears.put(year.getId(), year);
                     }
                     curriculumEntity.getYears().clear();
 
                     for (ProgramDTO.YearDTO yDto : cDto.getYears()){
-                    YearEntity yearEntity = oldYears.remove(yDto.getLevel());
+                    YearEntity yearEntity = oldYears.remove(yDto.getId());
                     if (yearEntity == null) {
                             yearEntity = new YearEntity();
                         }
-
                         programMapper.updateEntityFromDto(yDto, yearEntity);
                         yearEntity.setCurriculum(curriculumEntity);
                         curriculumEntity.getYears().add(yearEntity);

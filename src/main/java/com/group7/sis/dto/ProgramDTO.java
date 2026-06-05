@@ -20,6 +20,7 @@ public class ProgramDTO {
     @Getter
     @Setter
     public static class CurriculumDTO{
+        private Long id;
         private String code;
         private String effectiveYear;
         private String durationYear;
@@ -31,6 +32,7 @@ public class ProgramDTO {
     @Getter
     @Setter
     public static class YearDTO {
+        private Long id;
         private int level;
         private int totalSemester;
     }
