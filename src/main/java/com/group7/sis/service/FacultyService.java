@@ -37,12 +37,12 @@ public class FacultyService {
             }
         }
 
-        if (facultyDTO.getScheduledCoursesIds() != null){
-            for (Long id : facultyDTO.getScheduledCoursesIds()){
-                ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
-                faculty.getScheduledCourses().add(schedule);
-            }
-        }
+        // if (facultyDTO.getScheduledCoursesIds() != null){
+        //     for (Long id : facultyDTO.getScheduledCoursesIds()){
+        //         ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
+        //         faculty.getScheduledCourses().add(schedule);
+        //     }
+        // }
 
         facultyRepository.save(faculty);
         return faculty;
@@ -62,15 +62,15 @@ public class FacultyService {
             facultyEntity.getQualifiedCourses().addAll(newQualifiedCourses);
         }
 
-        if (facultyDTO.getScheduledCoursesIds() != null){
-            List<ScheduledCourseEntity> newScheduledCourses = new ArrayList<>();
-            for (Long scheduleId : facultyDTO.getQualifiedCoursesIds()){
-                ScheduledCourseEntity course = scheduleQueryService.getScheduledCourseEntity(scheduleId);
-                newScheduledCourses.add(course);
-            }
-            facultyEntity.getScheduledCourses().clear();
-            facultyEntity.getScheduledCourses().addAll(newScheduledCourses);
-        }
+        // if (facultyDTO.getScheduledCoursesIds() != null){
+        //     List<ScheduledCourseEntity> newScheduledCourses = new ArrayList<>();
+        //     for (Long scheduleId : facultyDTO.getQualifiedCoursesIds()){
+        //         ScheduledCourseEntity course = scheduleQueryService.getScheduledCourseEntity(scheduleId);
+        //         newScheduledCourses.add(course);
+        //     }
+        //     facultyEntity.getScheduledCourses().clear();
+        //     facultyEntity.getScheduledCourses().addAll(newScheduledCourses);
+        // }
 
         facultyRepository.save(facultyEntity);
         return getFaculty(facultyEntity.getId());
