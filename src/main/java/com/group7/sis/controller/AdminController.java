@@ -115,7 +115,7 @@ public class AdminController {
     }
 
     @PostMapping("/courses/add")
-    public CourseEntity createCourse(@RequestBody CourseDTO addCourse) {
+    public CourseDTO createCourse(@RequestBody CourseDTO addCourse) {
         return courseService.addCourse(addCourse);
     }
     
