@@ -45,6 +45,6 @@ public class CourseEntity {
     @ManyToMany
     private List<CourseEntity> prerequisites = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CourseAssignmentEntity> courseAssignments = new ArrayList<>();
 }
