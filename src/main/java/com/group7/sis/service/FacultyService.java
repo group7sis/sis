@@ -28,7 +28,7 @@ public class FacultyService {
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         
-        if (facultyDTO.getQualifiedCoursesIds() != null && !facultyDTO.getQualifiedCoursesIds().isEmpty()){
+        if (facultyDTO.getQualifiedCoursesIds() != null){
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
                 CourseEntity course = courseQueryService.getCourseEntity(id);
                 faculty.getQualifiedCourses().add(course);
@@ -59,13 +59,13 @@ public class FacultyService {
 
         FacultyDTO faculty = facultyMapper.toDto(facultyEntity);
 
-        if (facultyEntity.getQualifiedCourses() != null && !facultyEntity.getQualifiedCourses().isEmpty()){
+        if (facultyEntity.getQualifiedCourses() != null){
             for (CourseEntity courseEntity : facultyEntity.getQualifiedCourses()){
                 faculty.getQualifiedCoursesIds().add(courseEntity.getId());
             }
         }
 
-        if (facultyEntity.getScheduledCourses() != null && !facultyEntity.getScheduledCourses().isEmpty()){
+        if (facultyEntity.getScheduledCourses() != null){
             for (ScheduledCourseEntity schedule : facultyEntity.getScheduledCourses()){
                 faculty.getScheduledCoursesIds().add(schedule.getId());
             }

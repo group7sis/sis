@@ -34,9 +34,18 @@ public class ScheduleService {
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
-        schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        if(scheduledCourseDTO.getCourseId() != null){
+            schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        }
+
+        if(scheduledCourseDTO.getSectionId() != null){
         schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
-        schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        }
+
+        if(scheduledCourseDTO.getAssignedFacultyId() != null){
+            schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        }
+        
 
         if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
             for (DayDTO dayDTO : scheduledCourseDTO.getDays()){
@@ -53,9 +62,17 @@ public class ScheduleService {
     public ScheduledCourseDTO updateSchedule(Long id, ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
 
-        schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        if(scheduledCourseDTO.getCourseId() != null){
+            schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        }
+
+        if(scheduledCourseDTO.getSectionId() != null){
         schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
-        schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        }
+
+        if(scheduledCourseDTO.getAssignedFacultyId() != null){
+            schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
+        }
 
         if (scheduledCourseDTO.getDays() != null){
             Map<Long, DayEntity> oldDays = new HashMap<>();
