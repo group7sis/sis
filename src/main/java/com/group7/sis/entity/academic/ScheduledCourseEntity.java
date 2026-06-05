@@ -20,10 +20,6 @@ public class ScheduledCourseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "program_id")
-    private ProgramEntity program;
-    
-    @ManyToOne
     @JoinColumn(name = "course_id")
     private CourseEntity course;
 

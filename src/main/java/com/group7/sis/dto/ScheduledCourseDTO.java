@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ScheduledCourseDTO {
-    private Long programId;
     private Long courseId;
     private Long sectionId;
     private int yearLevel;

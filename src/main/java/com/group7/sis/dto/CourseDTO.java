@@ -17,4 +17,16 @@ public class CourseDTO {
     private String notes;
     private Status status;
     private List<Long> prerequisiteIds;
+    private List<CourseAssignmentDTO> courseAssignments;
+
+    @Getter
+    @Setter
+    public static class CourseAssignmentDTO{
+        private Long courseId;
+        private Long programId;
+        private Long curriculumId;
+        private int yearLevel;
+        private int semester;
+
+    }
 }

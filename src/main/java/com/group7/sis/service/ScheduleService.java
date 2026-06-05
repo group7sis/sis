@@ -14,7 +14,6 @@ import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.mapper.ScheduledCourseMapper;
 import com.group7.sis.repository.ScheduledCourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
-import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.ScheduleQueryService;
 import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
@@ -28,7 +27,6 @@ public class ScheduleService {
     private final ScheduledCourseRepository scheduledCourseRepository;
     private final ScheduledCourseMapper scheduledCourseMapper;
 
-    private final ProgramQueryService programQueryService;
     private final CourseQueryService courseQueryService;
     private final FacultyQueryService facultyQueryService;
     private final SectionQueryService sectionQueryService;
@@ -36,7 +34,6 @@ public class ScheduleService {
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
-        schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
         schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
         schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
@@ -56,7 +53,6 @@ public class ScheduleService {
     public ScheduledCourseDTO updateSchedule(Long id, ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
 
-        schedule.setProgram(programQueryService.getProgramEntity(scheduledCourseDTO.getProgramId()));
         schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
         schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));

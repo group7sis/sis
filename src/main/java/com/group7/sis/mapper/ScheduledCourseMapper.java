@@ -12,7 +12,6 @@ import com.group7.sis.entity.academic.ScheduledCourseEntity;
 @Mapper(componentModel = "spring")
 public interface ScheduledCourseMapper {
 
-    @Mapping(target = "programId", source = "program.id")
     @Mapping(target = "courseId", source = "course.id")
     @Mapping(target = "sectionId", source = "section.id")
     @Mapping(target = "assignedFacultyId", source = "assignedFaculty.id")
@@ -21,7 +20,6 @@ public interface ScheduledCourseMapper {
     DayDTO toDto(DayEntity dayEntity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "program", ignore = true)
     @Mapping(target = "course", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
@@ -36,7 +34,6 @@ public interface ScheduledCourseMapper {
     void updateEntityFromDto(DayDTO dayDTO, @MappingTarget DayEntity dayEntity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "program", ignore = true)
     @Mapping(target = "course", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
