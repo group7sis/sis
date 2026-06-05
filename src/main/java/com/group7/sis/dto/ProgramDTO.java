@@ -14,7 +14,7 @@ public class ProgramDTO {
     private String title;
     private String code;
     private ProgramStatus status;
-    private String activeCurriculumId;
+    private Long activeCurriculumId;
     private List<CurriculumDTO> curriculums = new ArrayList<>();
 
     @Getter

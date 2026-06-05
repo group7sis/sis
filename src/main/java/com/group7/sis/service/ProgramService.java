@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.ProgramDTO;
 import com.group7.sis.dto.GetProgramDTO;
 import com.group7.sis.repository.ProgramRepository;
+import com.group7.sis.service.queryservices.CurriculumQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
@@ -23,9 +24,13 @@ public class ProgramService {
     private final ProgramRepository programRepository;
     private final ProgramMapper programMapper;
 
+    private final CurriculumQueryService curriculumQueryService;
+
     public ProgramEntity addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
         
+        program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(request.getActiveCurriculumId()));
+
         for (CurriculumEntity curriculum : program.getCurriculums()){
             curriculum.setProgram(program);
 
@@ -40,6 +45,7 @@ public class ProgramService {
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
         ProgramEntity program = programQueryService.getProgramEntity(id);
 
+        program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(programDTO.getActiveCurriculumId()));
         programMapper.updateEntityFromDto(programDTO, program);
 
         if (programDTO.getCurriculums() != null) {

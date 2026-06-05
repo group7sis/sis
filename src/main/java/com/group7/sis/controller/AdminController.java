@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
 @RestController
 @RequiredArgsConstructor
 
 @RequestMapping("/admin")
 public class AdminController {
-//wala lang
+    //TODO: Delete API for all entities (tho kahit ihuli na. not really prioritized atm)
+
+
     private final AdminService adminService;
     
     @GetMapping("/accounts")
@@ -49,6 +49,28 @@ public class AdminController {
         return adminService.addAdmin(adminDTO);
     }    
     
+    //-----------------------------TERM-----------------------------------
+    private final TermService termService;
+
+    @GetMapping("/terms")
+    public List<TermEntity> getAllTerms() {
+        return termService.getAllTerms();
+    }
+
+    @GetMapping("/terms/{id}")
+    public TermDTO getTerm(@PathVariable Long id) {
+        return termService.getTerm(id);
+    }
+
+    @PutMapping("/terms/{id}")
+    public TermEntity updateTerm(@PathVariable Long id, @RequestBody TermDTO termDTO) {        
+        return termService.updateTerm(id, termDTO);
+    }
+
+    @PostMapping("/terms/add")
+    public TermEntity createTerm(@RequestBody TermDTO termDTO) {        
+        return termService.addTerm(termDTO);
+    }
 
     //-----------------------------PROGRAMS-----------------------------------
     private final ProgramService programService;
@@ -95,8 +117,6 @@ public class AdminController {
     public CourseEntity createCourse(@RequestBody CourseDTO addCourse) {
         return courseService.addCourse(addCourse);
     }
-
-    //TODO: Delete (tho kahit ihuli na. not really prioritized atm)
     
     //-----------------------------------STUDENTS-----------------------------------
     private final StudentService studentService;

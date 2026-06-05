@@ -39,6 +39,9 @@ public interface ProgramMapper {
     //GetProgramDTO
     List<GetProgramDTO> toGetDtoList(List<ProgramEntity> programEntityList);
 
+    @Mapping(target = "activeCurriculumId", source = "activeCurriculum.id")
+    GetProgramDTO toGetDto (ProgramEntity programEntity);
+
 
     @Mapping(target = "programId", source = "program.id")
     GetProgramDTO.CurriculumDTO toGetDto(CurriculumEntity curriculumEntity);
@@ -50,6 +53,7 @@ public interface ProgramMapper {
     //Update Entities
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "curriculums", ignore = true)
+    @Mapping(target = "activeCurriculum", ignore = true)
     void updateEntityFromDto(ProgramDTO dto, @MappingTarget ProgramEntity entity);
 
     @Mapping(target = "id", ignore = true)

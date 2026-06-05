@@ -13,7 +13,7 @@ public class GetProgramDTO {
     private String title;
     private String code;
     private ProgramStatus status;
-    private String activeCurriculumId;
+    private Long activeCurriculumId;
     List<CurriculumDTO> curriculums;
 
     @Getter
