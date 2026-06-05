@@ -5,7 +5,6 @@ import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
 import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CourseMapper{

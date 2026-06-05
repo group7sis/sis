@@ -26,29 +26,25 @@ public class CourseService {
 
     private final CurriculumQueryService curriculumQueryService;
 
-    public CourseEntity addCourse(CourseDTO request) {
-        CourseEntity course = courseMapper.toEntity(request);
-        List <CourseEntity> prereqs = new ArrayList<>();
+    public CourseEntity addCourse(CourseDTO courseDTO){
+        CourseEntity courseEntity = courseMapper.toEntity(courseDTO);
 
-        if (request.getPrerequisiteIds() != null){
-            for (Long id : request.getPrerequisiteIds()){
-                prereqs.add(courseQueryService.getCourseEntity(id));
+        if (courseDTO.getPrerequisiteIds() != null){
+            for(Long id : courseDTO.getPrerequisiteIds()){
+                courseEntity.getPrerequisites().add(courseQueryService.getCourseEntity(id));
             }
         }
-        
-        List<CourseAssignmentEntity> courseAssignmentEntities = new ArrayList<>();
-        if(request.getCourseAssignments() != null){
-            for(CourseAssignmentDTO courseAssignmentDto : request.getCourseAssignments()){
-                CourseAssignmentEntity courseAssignmentEntity = courseMapper.toEntity(courseAssignmentDto);
-                courseAssignmentEntity.setCourse(course);
-                courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDto.getCurriculumId()));
 
-                courseAssignmentEntities.add(courseAssignmentEntity);
+        if (courseDTO.getCourseAssignments() != null){
+            for (CourseAssignmentDTO courseAssignmentDTO : courseDTO.getCourseAssignments()){
+                CourseAssignmentEntity courseAssignmentEntity = courseMapper.toEntity(courseAssignmentDTO);
+
+                courseAssignmentEntity.setCourse(courseEntity);
+                courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                courseEntity.getCourseAssignments().add(courseAssignmentEntity);
             }
         }
-        course.setCourseAssignments(courseAssignmentEntities);
-        course.setPrerequisites(prereqs);
-        return courseRepository.save(course);
+        return courseRepository.save(courseEntity);
     }
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
