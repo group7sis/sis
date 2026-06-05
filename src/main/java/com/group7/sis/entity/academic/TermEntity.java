@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@Table(name = "terms")
 public class TermEntity {
     public enum TermStatus {
         ENROLLMENT,
