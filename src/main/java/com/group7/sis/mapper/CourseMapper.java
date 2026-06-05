@@ -5,6 +5,7 @@ import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
 import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CourseMapper{
@@ -13,12 +14,13 @@ public interface CourseMapper{
     @Mapping(target = "prerequisites", ignore = true)
     @Mapping(target = "courseAssignments", ignore = true)
     CourseEntity toEntity(CourseDTO courseDTO);
-
+    
     @Mapping(target ="course", ignore = true)
     @Mapping(target ="curriculum", ignore = true)
     CourseAssignmentEntity toEntity(CourseAssignmentDTO courseAssignmentDTO);
 
     @Mapping(target="prerequisiteIds", ignore = true)
+    @Mapping(target="courseAssignments", ignore = true)
     CourseDTO toDto(CourseEntity courseEntity);
 
     @Mapping(target = "curriculumId", source = "curriculum.id")

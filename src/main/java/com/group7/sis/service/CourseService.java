@@ -102,8 +102,15 @@ public class CourseService {
             }
         }
 
+        List<CourseAssignmentDTO> courseAssignmentDTOs = new ArrayList<>();
+        if(course.getCourseAssignments() != null){
+            for(CourseAssignmentEntity courseAssignmentEntity : course.getCourseAssignments()){
+                courseAssignmentDTOs.add(courseMapper.toDto(courseAssignmentEntity));
+            }
+        }
         CourseDTO courseDto = courseMapper.toDto(course);
         courseDto.setPrerequisiteIds(prereqIds);
+        courseDto.setCourseAssignments(courseAssignmentDTOs);
         return courseDto;
     }
 

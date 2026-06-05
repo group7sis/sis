@@ -29,7 +29,9 @@ public class ProgramService {
     public ProgramEntity addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
         
-        program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(request.getActiveCurriculumId()));
+        if (request.getActiveCurriculumId() != null){
+            program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(request.getActiveCurriculumId()));
+        }
 
         for (CurriculumEntity curriculum : program.getCurriculums()){
             curriculum.setProgram(program);
@@ -45,7 +47,10 @@ public class ProgramService {
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
         ProgramEntity program = programQueryService.getProgramEntity(id);
 
+        if (programDTO.getActiveCurriculumId() != null){
         program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(programDTO.getActiveCurriculumId()));
+        }
+        
         programMapper.updateEntityFromDto(programDTO, program);
 
         if (programDTO.getCurriculums() != null) {

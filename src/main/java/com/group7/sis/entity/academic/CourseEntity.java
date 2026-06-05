@@ -46,5 +46,5 @@ public class CourseEntity {
     private List<CourseEntity> prerequisites = new ArrayList<>();
 
     @OneToMany(mappedBy = "course")
-    private List<CourseAssignmentEntity> courseAssignments;
+    private List<CourseAssignmentEntity> courseAssignments = new ArrayList<>();
 }
