@@ -1,9 +1,30 @@
 API JSON DOCUMENTATION
-- these are the json structures of Add/Update APIs of the core entities. Get methods do return the same structure as well.
-- Status values are still changeable and not finalized yet
+- These are the JSON structures for Add/Update APIs of the core resources. GET methods return the same structure as well.
+- Status values are still changeable and not finalized yet.
 
--------------------------------------
+Core API Endpoint: /admin
+
+Other endpoints:
+GET /admin/{resource} - Retrieves all records of the specified resource in a list
+POST /admin/{resource}/add - Create a new resource
+GET /admin/{resource}/{id} - Returns a specific resource by its ID
+PUT /admin/{resource}/{id} - Updates an existing resource by its ID
+
+Resources:
+accounts - manage admin accounts
+terms - manage terms
+programs - manage programs
+courses - manage courses
+students - manage students
+faculty - manage faculty
+schedules - manage schedule
+sections - manage section
+
+----------------------------------------------
+GET endpoints typically return these objects, and POST/PUT requests use the same JSON structure:
+
 PROGRAM:
+
 {
   "activeCurriculumId": null,
   "code": null,
@@ -29,6 +50,7 @@ PROGRAM:
 
 --------------------------------------
 COURSE:
+
 {
   "code": null,
   "courseAssignments": [
@@ -140,14 +162,17 @@ SECTION:
 }
 
 --------------------------------
-ADMIN:
+ADMIN: 
+
 {
   "username": null,
   "password": null
 }
 
+
 --------------------------------
 TERM:
+
 {
   "academicYear": null,
   "semester": 0,
