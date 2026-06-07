@@ -1,0 +1,155 @@
+API JSON DOCUMENTATION
+- these are the json structures of Add/Update APIs of the core entities. Get methods do return the same structure as well.
+- Status values are still changeable and not finalized yet
+
+-------------------------------------
+PROGRAM:
+{
+  "activeCurriculumId": null,
+  "code": null,
+  "curriculums": [
+    {
+      "code": null,
+      "durationYear": null,
+      "effectiveYear": null,
+      "id": 1,
+      "status": ACTIVE, (ACTIVE or INACTIVE)
+      "years": [
+        {
+          "id": 1,
+          "level": 1,
+          "totalSemester": 0
+        }
+      ]
+    }
+  ],
+  "status": ACTIVE, (ACTIVE or INACTIVE)
+  "title": null
+}
+
+--------------------------------------
+COURSE:
+{
+  "code": null,
+  "courseAssignments": [
+    {
+      "curriculumId": 1,
+      "id": 1,
+      "programId": 1, //not managed. this can be excluded in requests as this is automatically set by curriculumId 
+      "semester": 0,
+      "yearLevel": 0
+    }
+  ],
+  "labHours": null,
+  "lectureHours": null,
+  "notes": null,
+  "prerequisiteIds": [],
+  "status": ACTIVE, (ACTIVE or INACTIVE)
+  "title": null,
+  "units": 0
+}
+
+--------------------------------------
+FACULTY:
+{
+  "account": {
+    "email": null,
+    "password": null,
+    "role": null,
+    "status": null,
+    "username": null
+  },
+  "dateHired": null,
+  "department": null,
+  "employmentType": "FULL_TIME", (PART_TIME or FULL_TIME)
+  "facultyNumber": null,
+  "position": null,
+  "profile": {
+    "civilStatus": null,
+    "dateOfBirth": null,
+    "firstName": null,
+    "lastName": null,
+    "middleName": null,
+    "mobileNumber": null,
+    "nationality": null,
+    "sex": null,
+    "suffix": null
+  },
+  "qualifiedCoursesIds": [],
+  "scheduledCoursesIds": [], //THIS ISNT MANAGED BY ADD FACULTY, BUT BY ADD SCHEDULE INSTEAD. ADD A SCHEDULE AND ASSIGN A FACULTY TO IT POPULATE THIS LIST  
+  "status": ACTIVE (ACTIVE or INACTIVE)
+}
+
+------------------------------------
+STUDENT:
+{
+  "academicInfo": [
+    {
+      "enrolledCourses": [
+        {
+          "grade": 0.0,
+          "id": 1,
+          "scheduleId": null,
+          "status": PASSED (PASSED, FAILED, DROPPED)
+        }
+      ],
+      "enrolledProgramId": null,
+      "enrollmentDate": null,
+      "enrollmentStatus": "DROPPED", (ACTIVE, COMPLETED, or DROPPED)
+      "id": 1,
+      "scholasticStatus": REGULAR, (REGULAR or IRREGULAR)
+      "sectionId": null,
+      "yearLevel": 0
+    }
+  ],
+  "account": {
+    "email": null,
+    "password": null,
+    "role": null,
+    "status": null,
+    "username": null
+  },
+  "profile": {
+    "civilStatus": null,
+    "dateOfBirth": null,
+    "firstName": null,
+    "lastName": null,
+    "middleName": null,
+    "mobileNumber": null,
+    "nationality": null,
+    "sex": null,
+    "suffix": null
+  },
+  "studentNumber": null,
+  "studentStatus": null, (ACTIVE, INACTIVE, GRADUATED, or DROPPED)
+  "yearAdmitted": null
+}
+
+-------------------------------
+SECTION:
+{
+  "academicYear": null,
+  "code": null,
+  "maxCapacity": 0,
+  "name": null,
+  "notes": null,
+  "programId": null,
+  "semester": 0,
+  "status": OPEN, (OPEN or CLOSED)
+  "yearLevel": 0
+}
+
+--------------------------------
+ADMIN:
+{
+  "username": null,
+  "password": null
+}
+
+--------------------------------
+TERM:
+{
+  "academicYear": null,
+  "semester": 0,
+  "status": "CLOSED" (ENROLLMENT, ONGOING, or CLOSE)
+}
