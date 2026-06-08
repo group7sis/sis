@@ -31,7 +31,7 @@ public class CurriculumEntity {
     private String effectiveYear;
 
     @Column
-    private String durationYear;
+    private int durationYear;
 
     @Enumerated(EnumType.STRING)
     private CurriculumStatus status;

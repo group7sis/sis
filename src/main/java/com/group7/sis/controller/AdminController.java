@@ -9,6 +9,7 @@ import com.group7.sis.entity.academic.*;
 import com.group7.sis.dto.*;
 import com.group7.sis.service.*;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -87,12 +88,12 @@ public class AdminController {
     }
 
     @PutMapping("/programs/{id}")
-    public ProgramDTO updateProgram(@PathVariable Long id, @RequestBody ProgramDTO programDTO) {
+    public ProgramDTO updateProgram(@PathVariable Long id, @Valid @RequestBody ProgramDTO programDTO) {
         return programService.updateProgram(id, programDTO);
     }
 
     @PostMapping("/programs/add")
-    public ProgramEntity createProgram(@RequestBody ProgramDTO addProgram) {
+    public ProgramEntity createProgram(@Valid @RequestBody ProgramDTO addProgram) {
         return programService.addProgram(addProgram);
     }
 

@@ -39,6 +39,8 @@ public class ProgramService {
             for (YearEntity year : curriculum.getYears()){
                 year.setCurriculum(curriculum);
             }
+
+            curriculum.setDurationYear(curriculum.getYears().size());
         }
         return programRepository.save(program);
     }
@@ -92,7 +94,7 @@ public class ProgramService {
                         curriculumEntity.getYears().add(yearEntity);
                     }
                 }
-
+                curriculumEntity.setDurationYear(curriculumEntity.getYears().size());
                 program.getCurriculums().add(curriculumEntity);
             }
         }

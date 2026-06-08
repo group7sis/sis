@@ -1,6 +1,7 @@
 API JSON DOCUMENTATION
 - These are the JSON structures for Add/Update APIs of the core resources. GET methods return the same structure as well.
 - Status values are still changeable and not finalized yet.
+- All Id fields can be excluded but not in PUT requests because it relies on it to identify the object being modified.
 
 Core API Endpoint: /admin
 
@@ -31,7 +32,7 @@ PROGRAM:
   "curriculums": [
     {
       "code": null,
-      "durationYear": null,
+      "durationYear": null, //automatically set by system according to the size of years list. so this can be excluded
       "effectiveYear": null,
       "id": 1,
       "status": ACTIVE, (ACTIVE or INACTIVE)
