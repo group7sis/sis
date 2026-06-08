@@ -1,6 +1,7 @@
 package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.SectionEntity;
+import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,6 +33,10 @@ public class AcademicInfoEntity {
     @ManyToOne
     @JoinColumn(name="program_id")
     private ProgramEntity enrolledProgram;
+    
+    @ManyToOne
+    @JoinColumn(name="program_curriculum_id")
+    private CurriculumEntity programCurriculum;
 
     @ManyToOne
     @JoinColumn(name="section_id")

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Entity
 public class EnrolledCourseEntity {
     public enum Status {
-        PASSED, FAILED, DROPPED
+        PASSED, FAILED, INCOMPLETE, ONGOING, DROPPED
     }
 
     @Id

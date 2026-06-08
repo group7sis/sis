@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.entity.users.FacultyEntity.Status;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,19 +16,34 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FacultyDTO {
+
+    @NotEmpty(message = "Faculty number is required")
     private String facultyNumber;
 
-    @NotNull
+    @Valid
+    @NotNull(message = "An account is required")
     private AccountDTO account;
 
-    @NotNull
+    @Valid
+    @NotNull(message = "Profile details are required")
     private ProfileDTO profile;
 
+    @NotEmpty(message = "Please specify the department")
     private String department;
+
+    @NotNull(message = "Please specify employment type of faculty")
     private EmploymentType employmentType;
+
+    @NotEmpty(message = "Faculty position is required")
     private String position;
+
+    @NotNull(message = "Please specify date of hiring")
+    @PastOrPresent(message = "Date of hiring cannot be set from the future")
     private LocalDate dateHired;
+
     private List<Long> qualifiedCoursesIds = new ArrayList<>();
     private List<Long> scheduledCoursesIds = new ArrayList<>();
+    
+    @NotNull(message = "Faculty member status must be defined")
     private Status status;
 }

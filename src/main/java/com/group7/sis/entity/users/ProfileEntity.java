@@ -1,5 +1,7 @@
 package com.group7.sis.entity.users;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,7 +44,7 @@ public class ProfileEntity {
     private Sex sex;
 
     @Column
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     private CivilStatus civilStatus;

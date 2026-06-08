@@ -1,7 +1,7 @@
 API JSON DOCUMENTATION
 - These are the JSON structures for Add/Update APIs of the core resources. GET methods return the same structure as well.
 - Status values are still changeable and not finalized yet.
-- All Id fields can be excluded but not in PUT requests because it relies on it to identify the object being modified.
+- All Id fields can be excluded but not in PUT requests because it is used to identify the object being modified.
 
 Core API Endpoint: /admin
 
@@ -113,10 +113,13 @@ STUDENT:
           "grade": 0.0,
           "id": 1,
           "scheduleId": null,
-          "status": PASSED (PASSED, FAILED, DROPPED)
+          "programId": null, //automatically set through scheduleId
+          "courseId": null, //automatically set through scheduleId
+          "status": PASSED (PASSED, FAILED, INCOMPLETE, ONGOING, DROPPED)
         }
       ],
       "enrolledProgramId": null,
+      "programCurriculumId: null, //automatically set to the active curriculum of enrolled program
       "enrollmentDate": null,
       "enrollmentStatus": "DROPPED", (ACTIVE, COMPLETED, or DROPPED)
       "id": 1,
@@ -178,4 +181,25 @@ TERM:
   "academicYear": null,
   "semester": 0,
   "status": "CLOSED" (ENROLLMENT, ONGOING, or CLOSE)
+}
+
+--------------------------------
+SCHEDULE
+{
+  "courseId": null,
+  "sectionId": null,
+  "assignedFacultyId": null,
+  "yearLevel": 1,
+  "academicYear": "2025-2026",
+  "room": "Room 301",
+  "notes": "Evening class schedule",
+  "status": "ACTIVE",
+  "days": [
+    {
+      "name": "Monday",
+      "startTime": "10:00",
+      "endTime": "12:00",
+      "breakTime": "11:00"
+    }
+  ]
 }

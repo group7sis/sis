@@ -31,10 +31,10 @@ public class CourseEntity {
     private int units;
 
     @Column
-    private String lectureHours;
+    private int lectureHours;
 
     @Column
-    private String labHours;
+    private int labHours;
 
     @Column
     private String notes;

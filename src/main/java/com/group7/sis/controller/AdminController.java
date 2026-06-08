@@ -111,12 +111,12 @@ public class AdminController {
     }
 
     @PutMapping("/courses/{id}")
-    public CourseDTO modifyCourseByCode(@PathVariable Long id, @RequestBody CourseDTO modifyCourse) {
+    public CourseDTO modifyCourseByCode(@PathVariable Long id, @Valid @RequestBody CourseDTO modifyCourse) {
         return courseService.updateCourse(id, modifyCourse);
     }
 
     @PostMapping("/courses/add")
-    public CourseDTO createCourse(@RequestBody CourseDTO addCourse) {
+    public CourseDTO createCourse(@Valid @RequestBody CourseDTO addCourse) {
         return courseService.addCourse(addCourse);
     }
     
@@ -134,12 +134,12 @@ public class AdminController {
     }
 
     @PutMapping("/students/{id}")
-    public StudentDTO updateStudent(@PathVariable Long id, @RequestBody StudentDTO studentDTO) {
+    public StudentDTO updateStudent(@PathVariable Long id, @Valid @RequestBody StudentDTO studentDTO) {
         return studentService.updateStudent(id, studentDTO);
     }
 
     @PostMapping("/students/add")
-    public StudentEntity createStudent(@RequestBody StudentDTO studentDTO) {
+    public StudentEntity createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         return studentService.addStudent(studentDTO);
     }
     
@@ -163,12 +163,12 @@ public class AdminController {
     }
 
     @PutMapping("/faculty/{id}")
-    public FacultyDTO updateFaculty(@PathVariable Long id, @RequestBody FacultyDTO facultyDTO) {
+    public FacultyDTO updateFaculty(@PathVariable Long id, @Valid @RequestBody FacultyDTO facultyDTO) {
         return facultyService.updateFaculty(id, facultyDTO);
     }
     
     @PostMapping("/faculty/add")
-    public FacultyEntity createFaculty(@RequestBody FacultyDTO facultyDTO) {
+    public FacultyEntity createFaculty(@Valid @RequestBody FacultyDTO facultyDTO) {
         return facultyService.addFaculty(facultyDTO);
     }
 
@@ -187,11 +187,11 @@ public class AdminController {
     }
 
     @PutMapping("/schedules/{id}")
-    public ScheduledCourseDTO updateSchedule(@PathVariable Long id, @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
+    public ScheduledCourseDTO updateSchedule(@PathVariable Long id, @Valid @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
         return scheduleService.updateSchedule(id, scheduledCourseDTO);
     }
     @PostMapping("/schedules/add")
-    public ScheduledCourseEntity createSchedule(@RequestBody ScheduledCourseDTO scheduledCourseDTO) {
+    public ScheduledCourseEntity createSchedule(@Valid @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
         return scheduleService.addSchedule(scheduledCourseDTO);
     }
 
@@ -210,7 +210,7 @@ public class AdminController {
     }
     
     @PutMapping("/sections/{id}")
-    public SectionDTO updateSection(@PathVariable Long id, @RequestBody SectionDTO sectionDTO) {        
+    public SectionDTO updateSection(@PathVariable Long id, @Valid @RequestBody SectionDTO sectionDTO) {        
         return sectionService.updateSection(id, sectionDTO);
     }
 
@@ -220,11 +220,7 @@ public class AdminController {
     }
 
     @PostMapping("/sections/add")
-    public SectionDTO createSection(@RequestBody SectionDTO sectionDTO) {
+    public SectionDTO createSection(@Valid @RequestBody SectionDTO sectionDTO) {
         return sectionService.addSection(sectionDTO);
     }
-    
-    
-    
-
 }

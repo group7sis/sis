@@ -65,9 +65,11 @@ public class ProgramDTO {
 
         private Long id;
 
+        @NotNull(message = "Please specify the year level")
         @Positive(message = "Year level must be positive")
         private int level;
 
+        @NotNull(message = "Total semester is required")
         @Positive(message = "Total semester must be positive")
         private int totalSemester;
     }

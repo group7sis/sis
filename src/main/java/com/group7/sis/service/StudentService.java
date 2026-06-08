@@ -42,6 +42,10 @@ public class StudentService {
 
                 if(academicInfoDTO.getEnrolledProgramId() != null){
                     academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+
+                    if (programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum() != null){
+                        academicInfoEntity.setProgramCurriculum(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum());
+                    }
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
@@ -92,6 +96,10 @@ public class StudentService {
 
                 if(academicInfoDTO.getEnrolledProgramId() != null){
                     academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+
+                    if (programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum() != null){
+                        academicInfoEntity.setProgramCurriculum(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum());
+                    }
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
