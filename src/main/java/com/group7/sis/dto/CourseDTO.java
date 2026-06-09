@@ -12,6 +12,8 @@ import jakarta.validation.constraints.*;
 @Setter
 public class CourseDTO {
 
+    private Long id;
+    
     @NotBlank(message = "Course code is required")
     private String code;
 

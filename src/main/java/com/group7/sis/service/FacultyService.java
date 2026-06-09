@@ -1,3 +1,5 @@
+//ALL THESE IGNORE SCHEDULEDCOURSES
+
 package com.group7.sis.service;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class FacultyService {
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
-        
+        faculty.setFacultyNumber(facultyNumberGenerator());
         if (facultyDTO.getQualifiedCoursesIds() != null){
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
                 CourseEntity course = courseQueryService.getCourseEntity(id);
@@ -108,4 +110,20 @@ public class FacultyService {
     public List<FacultyEntity> getAllFaculty(){
         return facultyRepository.findAll();
     }
-}//ALL THESE IGNORE SCHEDULEDCOURSES
+
+    private String facultyNumberGenerator(){
+        FacultyEntity latest = facultyRepository.findTopByOrderByIdDesc();
+        int seq;
+
+        if (latest == null){
+            seq = 1;
+        }
+        else{ 
+            String ref = latest.getFacultyNumber().substring(latest.getFacultyNumber().lastIndexOf("-")+1);
+            seq = Integer.parseInt(ref) + 1;
+        }
+        
+        String id = "FAC-" + String.format("%05d", seq);
+        return id;
+    }
+}

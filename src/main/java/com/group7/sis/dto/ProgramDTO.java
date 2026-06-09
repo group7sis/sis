@@ -3,6 +3,7 @@ package com.group7.sis.dto;
 import lombok.Getter;
 import lombok.Setter;
 import com.group7.sis.entity.academic.ProgramEntity.ProgramStatus;
+import com.group7.sis.validation.ValidateYear;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -45,6 +46,7 @@ public class ProgramDTO {
             regexp = "^\\d{4}-\\d{4}$",
             message = "Format must be YYYY-YYYY"
         )
+        @ValidateYear
         private String effectiveYear;
 
         private int durationYear; //set in service by system

@@ -101,7 +101,7 @@ public class AdminController {
     private final CourseService courseService;
 
     @GetMapping("/courses")
-    public List<CourseEntity> getAllCourses() {
+    public List<CourseDTO> getAllCourses() {
         return courseService.getAllCourses();
     }
 
@@ -124,7 +124,7 @@ public class AdminController {
     private final StudentService studentService;
 
     @GetMapping("/students")
-    public List<StudentEntity> getAllStudents() {
+    public List<StudentDTO> getAllStudents() {
         return studentService.getAllStudents();
     }
 
@@ -147,12 +147,12 @@ public class AdminController {
     //-----------------------------------FACULTY-----------------------------------
     private final FacultyService facultyService;
     
-    @GetMapping("/facultydto")
+    @GetMapping("/faculty")
     public List<FacultyDTO> getAllFacultyByDTO() {
         return facultyService.getAllFacultyDTO();
     }
 
-    @GetMapping("/faculty")
+    @GetMapping("/facultyentity")
     public List<FacultyEntity> getAllFaculty() {
         return facultyService.getAllFaculty();
     }

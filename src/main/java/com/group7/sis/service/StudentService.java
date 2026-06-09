@@ -36,6 +36,8 @@ public class StudentService {
     public StudentEntity addStudent(StudentDTO studentDTO){
         StudentEntity student = studentMapper.toEntity(studentDTO);
 
+        student.setStudentNumber(studentNumberGenerator(student.getYearAdmitted()));
+
         if (studentDTO.getAcademicInfo() != null && !studentDTO.getAcademicInfo().isEmpty()) {
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
@@ -137,7 +139,30 @@ public class StudentService {
         return studentMapper.toDto(studentRepository.save(student));
     }
 
-    public List<StudentEntity> getAllStudents(){
-        return studentRepository.findAll();
+    public List<StudentDTO> getAllStudents(){
+        List<StudentDTO> students = new ArrayList<>();
+        for (StudentEntity student : studentRepository.findAll()){
+            students.add(studentMapper.toDto(student));
+        }
+        return students;
+    }
+
+
+    private String studentNumberGenerator(String yearAdmission){
+        StudentEntity latest = studentRepository.findTopByYearAdmittedOrderByStudentNumberDesc(yearAdmission);
+        int seq;
+        if (latest == null){
+            seq = 1;
+        }
+        else{
+            String ref = latest.getStudentNumber().substring(latest.getStudentNumber().lastIndexOf("-")+1);
+
+            seq = Integer.parseInt(ref) + 1;
+        }
+
+        String startYear = yearAdmission.substring(0, 4);
+        
+        String id = "STU-" + startYear + "-" + String.format("%05d", seq);
+        return id;
     }
 }

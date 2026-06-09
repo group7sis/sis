@@ -16,8 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FacultyDTO {
-
-    @NotEmpty(message = "Faculty number is required")
     private String facultyNumber;
 
     @Valid

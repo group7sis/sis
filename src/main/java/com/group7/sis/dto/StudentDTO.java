@@ -7,6 +7,7 @@ import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity.Status;
+import com.group7.sis.validation.ValidateYear;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 public class StudentDTO {
+    private Long id;
     private String studentNumber;
 
     @NotNull(message = "Student status must be defined")
@@ -35,6 +37,7 @@ public class StudentDTO {
         regexp = "^\\d{4}-\\d{4}$",
         message = "Format must be YYYY-YYYY"
     )
+    @ValidateYear
     private String yearAdmitted;
 
     @Valid

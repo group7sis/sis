@@ -41,6 +41,7 @@ public class ProgramService {
             }
 
             curriculum.setDurationYear(curriculum.getYears().size());
+            curriculum.setCode(curriculumCodeGenerator(program.getCode(), curriculum.getEffectiveYear()));
         }
         return programRepository.save(program);
     }
@@ -75,7 +76,8 @@ public class ProgramService {
 
                 programMapper.updateEntityFromDto(cDto, curriculumEntity);
                 curriculumEntity.setProgram(program);
-
+                curriculumEntity.setCode(curriculumCodeGenerator(program.getCode(), curriculumEntity.getEffectiveYear()));
+                
                 if (cDto.getYears() != null) {
 
                     Map<Long, YearEntity> oldYears = new HashMap<>();
@@ -109,5 +111,9 @@ public class ProgramService {
 
     public ProgramDTO getProgram(Long id){
         return programMapper.toDto(programQueryService.getProgramEntity(id));
+    }
+
+    public String curriculumCodeGenerator(String programCode, String year){
+        return programCode + "-" + year.substring(0, 4);
     }
 }

@@ -26,4 +26,8 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
         @Param("status") EnrollmentStatus status,
         @Param("sectionId") Long sectionId
     );
+
+    List<StudentEntity> findByYearAdmitted(String yearAdmitted);
+
+    StudentEntity findTopByYearAdmittedOrderByStudentNumberDesc(String yearAdmitted);
 }

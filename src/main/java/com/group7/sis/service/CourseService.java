@@ -113,7 +113,12 @@ public class CourseService {
         return courseDto;
     }
 
-    public List<CourseEntity> getAllCourses() {
-        return courseRepository.findAll();
+    public List<CourseDTO> getAllCourses() {
+        List<CourseDTO> courses = new ArrayList<>();
+
+        for (CourseEntity course : courseRepository.findAll()){
+            courses.add(getCourse(course.getId()));
+        }
+        return courses;
     }
 }

@@ -1,6 +1,7 @@
 package com.group7.sis.dto;
 
 import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
+import com.group7.sis.validation.ValidateYear;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -28,6 +29,7 @@ public class ScheduledCourseDTO {
         regexp = "^\\d{4}-\\d{4}$",
         message = "Format must be YYYY-YYYY"
     )
+    @ValidateYear
     private String academicYear;
 
     @Valid

@@ -18,10 +18,12 @@ public interface StudentMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "academicInfo", ignore = true)
+    @Mapping(target = "studentNumber", ignore = true)
     StudentEntity toEntity(StudentDTO studentDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "academicInfo", ignore = true)
+    @Mapping(target = "studentNumber", ignore = true)
     void updateEntityFromDTO(StudentDTO dto, @MappingTarget StudentEntity entity);
 
 
