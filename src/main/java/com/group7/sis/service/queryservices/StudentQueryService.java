@@ -32,6 +32,4 @@ public class StudentQueryService {
         }
         return students;
     }
-
-
 }
