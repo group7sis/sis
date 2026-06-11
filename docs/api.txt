@@ -35,7 +35,7 @@ PROGRAM:
       "durationYear": null, //automatically set by system according to the size of years list. so this can be excluded
       "effectiveYear": null,
       "id": 1,
-      "status": ACTIVE, (ACTIVE or INACTIVE)
+      "status": ACTIVE, (ACTIVE or INACTIVE) //automatically set according to activeCurriculum
       "years": [
         {
           "id": 1,
@@ -108,6 +108,7 @@ STUDENT:
 {
   "academicInfo": [
     {
+      "academicYear": null,
       "enrolledCourses": [
         {
           "grade": 0.0,
@@ -119,7 +120,7 @@ STUDENT:
         }
       ],
       "enrolledProgramId": null,
-      "programCurriculumId: null, //automatically set to the active curriculum of enrolled program
+      "programCurriculumId: null,
       "enrollmentDate": null,
       "enrollmentStatus": "DROPPED", (ACTIVE, COMPLETED, or DROPPED)
       "id": 1,

@@ -26,9 +26,6 @@ public class ScheduledCourseEntity {
     @ManyToOne
     @JoinColumn(name = "section_id")
     private SectionEntity section;
-
-    @Column
-    private int yearLevel;
     
     @Column
     private String academicYear;

@@ -51,10 +51,19 @@ public class StudentDTO {
         @NotNull(message = "Program must be assigned")
         private Long enrolledProgramId;
 
+        @NotNull(message = "Curriculum must be assigned")
         private Long programCurriculumId;
 
         @NotNull(message = "Section must be assigned")
         private Long sectionId;
+
+        @NotBlank(message = "Academic year is required")
+        @Pattern(
+            regexp = "^\\d{4}-\\d{4}$",
+            message = "Format must be YYYY-YYYY"
+        )
+        @ValidateYear
+        private String academicYear;
 
         @NotNull(message = "Please specify year level")
         @Positive(message = "Year level must be positive")

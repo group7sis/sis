@@ -5,11 +5,14 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.StudentDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO.EnrolledCourseDTO;
+import com.group7.sis.entity.academic.CurriculumEntity;
+import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
+import com.group7.sis.service.queryservices.CurriculumQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.ScheduleQueryService;
 import com.group7.sis.service.queryservices.SectionQueryService;
@@ -32,6 +35,7 @@ public class StudentService {
     private final ProgramQueryService programQueryService;
     private final SectionQueryService sectionQueryService;
     private final ScheduleQueryService scheduleQueryService;
+    private final CurriculumQueryService curriculumQueryService;
 
     public StudentEntity addStudent(StudentDTO studentDTO){
         StudentEntity student = studentMapper.toEntity(studentDTO);
@@ -44,20 +48,23 @@ public class StudentService {
 
                 if(academicInfoDTO.getEnrolledProgramId() != null){
                     academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
-
-                    if (programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum() != null){
-                        academicInfoEntity.setProgramCurriculum(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum());
-                    }
+                }
+                
+                if (academicInfoDTO.getProgramCurriculumId() != null){
+                    validateCurriculum(academicInfoDTO.getEnrolledProgramId(), academicInfoDTO.getProgramCurriculumId());
+                    academicInfoEntity.setProgramCurriculum(curriculumQueryService.getCurriculumEntity(academicInfoDTO.getProgramCurriculumId()));
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
-                   academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                    validateAcademicYear(academicInfoDTO.getAcademicYear(), sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()).getAcademicYear());
+                    academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
                         if (enrolledCourseDTO.getScheduleId() != null){
+                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
                             enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
@@ -98,14 +105,16 @@ public class StudentService {
 
                 if(academicInfoDTO.getEnrolledProgramId() != null){
                     academicInfoEntity.setEnrolledProgram(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                }
 
-                    if (programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum() != null){
-                        academicInfoEntity.setProgramCurriculum(programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()).getActiveCurriculum());
-                    }
+                if (academicInfoDTO.getProgramCurriculumId() != null){
+                    validateCurriculum(academicInfoDTO.getEnrolledProgramId(), academicInfoDTO.getProgramCurriculumId());
+                    academicInfoEntity.setProgramCurriculum(curriculumQueryService.getCurriculumEntity(academicInfoDTO.getProgramCurriculumId()));
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
-                   academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                    validateAcademicYear(academicInfoDTO.getAcademicYear(), sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()).getAcademicYear());
+                    academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 
                 if (academicInfoDTO.getEnrolledCourses() != null) {
@@ -124,6 +133,7 @@ public class StudentService {
 
                         studentMapper.updateEnrolledCourseEntityFromDTO(enrolledCourseDTO, enrolledCourseEntity);
                         if(enrolledCourseDTO.getScheduleId() != null){
+                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
                             enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         updatedEnrolledCourseEntities.add(enrolledCourseEntity);
@@ -164,5 +174,20 @@ public class StudentService {
         
         String id = "STU-" + startYear + "-" + String.format("%05d", seq);
         return id;
+    }
+
+    private void validateAcademicYear(String year1, String year2){
+        if (!year1.equals(year2)){
+            throw new RuntimeException("Academic years must match");
+        }
+    }
+
+    private void validateCurriculum(Long programId, Long curriculumId){
+        ProgramEntity program = programQueryService.getProgramEntity(programId);
+        CurriculumEntity curriculum = curriculumQueryService.getCurriculumEntity(curriculumId);
+
+        if (!program.getCurriculums().contains(curriculum)){
+            throw new RuntimeException("Curricilum must belong to enrolled program");
+        }
     }
 }

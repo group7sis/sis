@@ -20,10 +20,6 @@ public class ScheduledCourseDTO {
     @NotNull(message = "Schedule must be assigned to a section")
     private Long sectionId;
 
-    @NotNull(message = "Please specify year level")
-    @Positive(message = "Year level must be positive")
-    private int yearLevel;
-
     @NotBlank(message = "Academic year is required")
     @Pattern(
         regexp = "^\\d{4}-\\d{4}$",

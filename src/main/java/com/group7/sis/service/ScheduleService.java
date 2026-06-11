@@ -39,10 +39,12 @@ public class ScheduleService {
         }
 
         if(scheduledCourseDTO.getSectionId() != null){
-        schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
+            validateAcademicYear(scheduledCourseDTO.getAcademicYear(), sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()).getAcademicYear());
+            schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
 
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
+            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getCourseId());
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
         }
         
@@ -67,10 +69,12 @@ public class ScheduleService {
         }
 
         if(scheduledCourseDTO.getSectionId() != null){
-        schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
+            validateAcademicYear(scheduledCourseDTO.getAcademicYear(), sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()).getAcademicYear());
+            schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
 
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
+            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getCourseId());
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
         }
 
@@ -107,5 +111,20 @@ public class ScheduleService {
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
         return schedules;
+    }
+
+    private void validateFaculty(Long facultyId, Long courseId){
+        if (!facultyQueryService.getFacultyEntity(facultyId)
+            .getQualifiedCourses().contains(
+            courseQueryService.getCourseEntity(courseId))){
+            
+            throw new RuntimeException("Faculty member isn't qualified to teach this course");
+        }
+    }
+
+    private void validateAcademicYear(String year1, String year2){
+        if (!year1.equals(year2)){
+            throw new RuntimeException("Academic years must match");
+        }
     }
 }

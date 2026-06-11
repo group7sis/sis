@@ -43,6 +43,9 @@ public class AcademicInfoEntity {
     private SectionEntity section;
 
     @Column
+    private String academicYear;
+    
+    @Column
     private int yearLevel;
     
     @Column

@@ -26,6 +26,7 @@ public interface ProgramMapper {
     @Mapping(target = "code", ignore = true)
     @Mapping(target = "durationYear", ignore = true)
     @Mapping(target = "program", ignore = true)
+    @Mapping(target = "status", ignore = true)
     CurriculumEntity toEntity(ProgramDTO.CurriculumDTO curriculumDTO);
 
     @Mapping(target = "id", ignore = true)
@@ -63,6 +64,7 @@ public interface ProgramMapper {
     @Mapping(target = "durationYear", ignore = true)
     @Mapping(target = "years", ignore = true)
     @Mapping(target = "program", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void updateEntityFromDto(ProgramDTO.CurriculumDTO dto, @MappingTarget CurriculumEntity entity);
 
     @Mapping(target = "id", ignore = true)

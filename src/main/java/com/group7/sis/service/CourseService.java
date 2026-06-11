@@ -5,6 +5,8 @@ import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
 import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.CurriculumEntity;
+import com.group7.sis.entity.academic.YearEntity;
 import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
@@ -43,6 +45,8 @@ public class CourseService {
                 if(courseAssignmentDTO.getCurriculumId() != null){
                     courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
                 }
+
+                validateCourseAssignment(courseAssignmentDTO);
                 courseEntity.getCourseAssignments().add(courseAssignmentEntity);
             }
         }
@@ -80,6 +84,7 @@ public class CourseService {
 
                 courseMapper.updateEntityFromDTO(courseAssignmentDTO, courseAssignmentEntity);
                 courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                validateCourseAssignment(courseAssignmentDTO);
                 newAssignments.add(courseAssignmentEntity);
             }
 
@@ -120,5 +125,24 @@ public class CourseService {
             courses.add(getCourse(course.getId()));
         }
         return courses;
+    }
+
+    private void validateCourseAssignment(CourseAssignmentDTO courseAssignmentDTO){
+        CurriculumEntity curriculumAssignment = curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId());
+
+        if (courseAssignmentDTO.getYearLevel() > curriculumAssignment.getDurationYear()){
+            throw new RuntimeException("The year being assigned to does not exist");
+        }
+
+        YearEntity yearAssignment = new YearEntity();
+        for (YearEntity year : curriculumAssignment.getYears()){
+                if (courseAssignmentDTO.getYearLevel() == year.getLevel()){
+                    yearAssignment = year;
+                }
+        }
+
+        if (courseAssignmentDTO.getSemester() > yearAssignment.getTotalSemester()){
+            throw new RuntimeException("The semester being assigned to does not exist");
+        }
     }
 }

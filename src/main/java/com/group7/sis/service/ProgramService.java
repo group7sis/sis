@@ -9,6 +9,7 @@ import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
+import com.group7.sis.entity.academic.CurriculumEntity.CurriculumStatus;
 import com.group7.sis.mapper.ProgramMapper;
 
 import java.util.List;
@@ -28,10 +29,6 @@ public class ProgramService {
 
     public ProgramEntity addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
-        
-        if (request.getActiveCurriculumId() != null){
-            program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(request.getActiveCurriculumId()));
-        }
 
         for (CurriculumEntity curriculum : program.getCurriculums()){
             curriculum.setProgram(program);
@@ -41,6 +38,7 @@ public class ProgramService {
             }
 
             curriculum.setDurationYear(curriculum.getYears().size());
+            curriculum.setStatus(CurriculumStatus.INACTIVE);
             curriculum.setCode(curriculumCodeGenerator(program.getCode(), curriculum.getEffectiveYear()));
         }
         return programRepository.save(program);
@@ -51,10 +49,20 @@ public class ProgramService {
         ProgramEntity program = programQueryService.getProgramEntity(id);
 
         if(programDTO.getActiveCurriculumId() == null){
+
+            if(program.getActiveCurriculum() != null){
+                program.getActiveCurriculum().setStatus(CurriculumStatus.INACTIVE);
+            }
+
             program.setActiveCurriculum(null);
         }
         else{
+            if(program.getActiveCurriculum() != null){
+                program.getActiveCurriculum().setStatus(CurriculumStatus.INACTIVE);
+            }
+
             program.setActiveCurriculum(curriculumQueryService.getCurriculumEntity(programDTO.getActiveCurriculumId()));
+            program.getActiveCurriculum().setStatus(CurriculumStatus.ACTIVE);
         }
         
         
@@ -72,6 +80,7 @@ public class ProgramService {
                 CurriculumEntity curriculumEntity = oldCurriculums.remove(cDto.getId());
                 if (curriculumEntity == null) {
                     curriculumEntity = new CurriculumEntity();
+                    curriculumEntity.setStatus(CurriculumStatus.INACTIVE);
                 }
 
                 programMapper.updateEntityFromDto(cDto, curriculumEntity);

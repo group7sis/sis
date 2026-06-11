@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CourseQueryService {
-    private final CourseRepository courseRepository;       
+    private final CourseRepository courseRepository;   
 
     public CourseEntity getCourseEntity(Long id){
         return courseRepository.findById(id)
