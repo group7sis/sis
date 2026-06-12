@@ -214,9 +214,9 @@ public class AdminController {
         return sectionService.updateSection(id, sectionDTO);
     }
 
-    @GetMapping("/sections/{id}/students")
-    public List<StudentDTO> getSectionStudents(@PathVariable Long id) {
-        return sectionService.getStudentsInSection(id);
+    @PostMapping("/sections/{id}/students")
+    public List<StudentDTO> getSectionStudents(@PathVariable Long id, @Valid @RequestBody SearchForSectionDTO searchForSectionDTO) {
+        return sectionService.getStudentsInSection(id, searchForSectionDTO);
     }
 
     @PostMapping("/sections/add")

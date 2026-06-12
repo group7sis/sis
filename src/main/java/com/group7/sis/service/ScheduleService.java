@@ -34,17 +34,17 @@ public class ScheduleService {
     public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
-        if(scheduledCourseDTO.getCourseId() != null){
-            schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        if(scheduledCourseDTO.getCourseAssignmentId() != null){
+            schedule.setCourseAssignment(courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()));
         }
 
         if(scheduledCourseDTO.getSectionId() != null){
-            validateAcademicYear(scheduledCourseDTO.getAcademicYear(), sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()).getAcademicYear());
+            validateSection(scheduledCourseDTO.getSectionId(), scheduledCourseDTO.getCourseAssignmentId());
             schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
 
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
-            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getCourseId());
+            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()).getCourse().getId());
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
         }
         
@@ -65,17 +65,17 @@ public class ScheduleService {
     public ScheduledCourseDTO updateSchedule(Long id, ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(id);
 
-        if(scheduledCourseDTO.getCourseId() != null){
-            schedule.setCourse(courseQueryService.getCourseEntity(scheduledCourseDTO.getCourseId()));
+        if(scheduledCourseDTO.getCourseAssignmentId() != null){
+            schedule.setCourseAssignment(courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()));
         }
 
         if(scheduledCourseDTO.getSectionId() != null){
-            validateAcademicYear(scheduledCourseDTO.getAcademicYear(), sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()).getAcademicYear());
+            validateSection(scheduledCourseDTO.getSectionId(), scheduledCourseDTO.getCourseAssignmentId());
             schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
 
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
-            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getCourseId());
+            validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()).getCourse().getId());
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
         }
 
@@ -123,9 +123,9 @@ public class ScheduleService {
         }
     }
 
-    private void validateAcademicYear(String year1, String year2){
-        if (!year1.equals(year2)){
-            throw new RuntimeException("Academic years must match");
+    private void validateSection(Long sectionId, Long courseAssignmentId){
+        if (sectionQueryService.getSectionEntity(sectionId).getProgram().getId() != courseQueryService.getCourseAssignmentEntity(courseAssignmentId).getCurriculum().getProgram().getId()){
+            throw new RuntimeException("Cannot assign a section with Program that doesn't own the Course Assignment");
         }
     }
 

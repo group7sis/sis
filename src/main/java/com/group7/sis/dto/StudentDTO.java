@@ -65,6 +65,11 @@ public class StudentDTO {
         @ValidateYear
         private String academicYear;
 
+        @NotNull(message = "Semester is required")
+        @Positive(message = "Semester must be positive")
+        private int semester;
+
+
         @NotNull(message = "Please specify year level")
         @Positive(message = "Year level must be positive")
         private int yearLevel;

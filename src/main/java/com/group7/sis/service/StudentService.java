@@ -56,7 +56,6 @@ public class StudentService {
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
-                    validateAcademicYear(academicInfoDTO.getAcademicYear(), sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()).getAcademicYear());
                     academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 
@@ -113,7 +112,6 @@ public class StudentService {
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
-                    validateAcademicYear(academicInfoDTO.getAcademicYear(), sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()).getAcademicYear());
                     academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 

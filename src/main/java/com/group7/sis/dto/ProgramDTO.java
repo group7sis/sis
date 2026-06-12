@@ -38,7 +38,6 @@ public class ProgramDTO {
 
         private Long id;
 
-        @NotBlank(message = "Curriculum code is required")
         private String code; //must be system generated
 
         @NotBlank(message = "Effective year is required")
@@ -53,7 +52,6 @@ public class ProgramDTO {
 
         // private Long facultyHeadId;
 
-        @NotNull(message = "Curriculum status must be defined")
         private CurriculumStatus status;
         
         @Valid

@@ -17,7 +17,13 @@ public class ScheduledCourseDTO {
     private String code;
 
     @NotNull(message = "Schedule must be assigned to a course")
+    private Long courseAssignmentId;
+
     private Long courseId;
+    private Long programId;
+    private Long curriculumId;
+    private int yearLevel;
+    private int semester;
 
     @NotNull(message = "Schedule must be assigned to a section")
     private Long sectionId;

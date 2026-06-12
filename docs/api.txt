@@ -21,6 +21,14 @@ faculty - manage faculty
 schedules - manage schedule
 sections - manage section
 
+Additional sections endpoint:
+GET /sections/{id}/students - Searches students of section id using body:
+{
+  "enrollmentStatus": "ACTIVE",
+  "academicYear": "2025-2026",
+  "semester": 2,
+}
+
 ----------------------------------------------
 GET endpoints typically return these objects, and POST/PUT requests use the same JSON structure:
 
@@ -155,13 +163,11 @@ STUDENT:
 -------------------------------
 SECTION:
 {
-  "academicYear": null,
   "code": null, //auto generated
   "maxCapacity": 0,
   "name": null,
   "notes": null,
   "programId": null,
-  "semester": 0,
   "status": OPEN, (OPEN or CLOSED)
   "yearLevel": 0
 }

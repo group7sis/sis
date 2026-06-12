@@ -31,12 +31,6 @@ public class SectionEntity {
     private int yearLevel;
 
     @Column
-    private String academicYear;
-
-    @Column
-    private int semester;
-
-    @Column
     private int maxCapacity;
 
     @Column

@@ -24,10 +24,10 @@ public class StudentQueryService {
         .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
-    public List<StudentDTO> findStudentsFromSectionWithStatus(Long sectionId, EnrollmentStatus enrollmentStatus){
+    public List<StudentDTO> findStudentsFromSection(Long sectionId, EnrollmentStatus enrollmentStatus, String academicYear, int semester){
         List<StudentDTO> students = new ArrayList<>();
-
-        for (StudentEntity student : studentRepository.findStudentsByStatusNSection(enrollmentStatus, sectionId)){
+        
+        for (StudentEntity student : studentRepository.findByAcademicInfoEnrollmentStatusAndAcademicInfoSectionIdAndAcademicInfoAcademicYearAndAcademicInfoSemester(enrollmentStatus, sectionId, academicYear, semester)){
             students.add(studentMapper.toDto(student));
         }
         return students;

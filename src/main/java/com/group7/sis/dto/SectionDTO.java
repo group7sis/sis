@@ -3,7 +3,6 @@ package com.group7.sis.dto;
 import lombok.Getter;
 import lombok.Setter;
 import com.group7.sis.entity.academic.SectionEntity.Status;
-import com.group7.sis.validation.ValidateYear;
 
 import jakarta.validation.constraints.*;
 
@@ -11,7 +10,6 @@ import jakarta.validation.constraints.*;
 @Setter
 public class SectionDTO {
 
-    @NotEmpty(message = "Section code is required")
     private String code;
 
     @NotEmpty(message = "Section name is required")
@@ -23,18 +21,6 @@ public class SectionDTO {
     @NotNull(message = "Please specify year level")
     @Positive(message = "Year level must be positive")
     private int yearLevel;
-
-    @NotBlank(message = "Academic year is required")
-    @Pattern(
-        regexp = "^\\d{4}-\\d{4}$",
-        message = "Format must be YYYY-YYYY"
-    )
-    @ValidateYear
-    private String academicYear;
-
-    @NotNull(message = "Please specify semester assignment")
-    @Positive(message = "Semester must be positive")
-    private int semester;
 
     @NotNull(message = "Max capacity is required")
     private int maxCapacity;

@@ -2,8 +2,8 @@ package com.group7.sis.service;
 
 import org.springframework.stereotype.Service;
 
+import com.group7.sis.dto.SearchForSectionDTO;
 import com.group7.sis.dto.SectionDTO;
-import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.mapper.SectionMapper;
 import com.group7.sis.repository.SectionRepository;
@@ -11,7 +11,6 @@ import com.group7.sis.dto.StudentDTO;
 import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.StudentQueryService;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ public class SectionService {
         SectionEntity sectionEntity = sectionMapper.toEntity(sectionDTO);
 
         if(sectionDTO.getProgramId() != null){
-            validateCurriculumCoverage(sectionDTO.getAcademicYear(), sectionDTO.getProgramId());
             sectionEntity.setProgram(programQueryService.getProgramEntity(sectionDTO.getProgramId()));
         }
         
@@ -42,13 +40,9 @@ public class SectionService {
 
     public SectionDTO updateSection(Long id, SectionDTO sectionDTO){
         SectionEntity sectionEntity = sectionQueryService.getSectionEntity(id);
-        // sectionDTO.setAcademicYear(sectionEntity.getAcademicYear());
-        // sectionDTO.setProgramId(sectionEntity.getProgram().getId());
-        // sectionDTO.setSemester(sectionEntity.getSemester());
         // sectionDTO.setYearLevel(sectionEntity.getYearLevel());
 
         if(sectionDTO.getProgramId() != null){
-            validateCurriculumCoverage(sectionDTO.getAcademicYear(), sectionDTO.getProgramId());
             sectionEntity.setProgram(programQueryService.getProgramEntity(sectionDTO.getProgramId()));
         }
         sectionMapper.updateEntityFromDto(sectionDTO, sectionEntity);
@@ -71,9 +65,9 @@ public class SectionService {
         return sections;
     }
 
-    public List<StudentDTO> getStudentsInSection(Long sectionId){
+    public List<StudentDTO> getStudentsInSection(Long sectionId, SearchForSectionDTO search){
         sectionQueryService.getSectionEntity(sectionId);
-        return studentQueryService.findStudentsFromSectionWithStatus(sectionId, EnrollmentStatus.ACTIVE);
+        return studentQueryService.findStudentsFromSection(sectionId, search.getEnrollmentStatus(), search.getAcademicYear(), search.getSemester());
     }
 
     private String sectionCodeGenerate(Long programId, SectionEntity section){
@@ -87,33 +81,33 @@ public class SectionService {
     }
 
     private int sequenceGenerator(SectionDTO sectionDTO){
-        SectionEntity latest = sectionRepository.findTopByProgramIdAndAcademicYearAndSemesterOrderBySequenceDesc(sectionDTO.getProgramId(), sectionDTO.getAcademicYear(), sectionDTO.getSemester());
+        SectionEntity latest = sectionRepository.findTopByProgramIdOrderBySequenceDesc(sectionDTO.getProgramId());
         return latest == null ? 1 : latest.getSequence() + 1;
     }
 
 
-    //this is very very very very very very confusing. 
-    private void validateCurriculumCoverage(String year, Long programId){
-        int startYear = Integer.parseInt(year.substring(0, 4));
-        int endYear = Integer.parseInt(year.substring(5, 9));
+    // //this is very very very very very very confusing. 
+    // private void validateCurriculumCoverage(String year, Long programId){
+    //     int startYear = Integer.parseInt(year.substring(0, 4));
+    //     int endYear = Integer.parseInt(year.substring(5, 9));
 
-        int lowestYear = 5000;
-        int highestYear = 0;
+    //     int lowestYear = 5000;
+    //     int highestYear = 0;
 
-        for(CurriculumEntity curriculum : programQueryService.getProgramEntity(programId).getCurriculums()){
-            int cStartYear = Integer.parseInt(curriculum.getEffectiveYear().substring(0, 4));
-            int cEndYear = Integer.parseInt(curriculum.getEffectiveYear().substring(5, 9));
+    //     for(CurriculumEntity curriculum : programQueryService.getProgramEntity(programId).getCurriculums()){
+    //         int cStartYear = Integer.parseInt(curriculum.getEffectiveYear().substring(0, 4));
+    //         int cEndYear = Integer.parseInt(curriculum.getEffectiveYear().substring(5, 9));
 
-            lowestYear = cStartYear < lowestYear ? cStartYear : lowestYear;
-            highestYear = cEndYear > highestYear ? cEndYear : highestYear;
-        }
+    //         lowestYear = cStartYear < lowestYear ? cStartYear : lowestYear;
+    //         highestYear = cEndYear > highestYear ? cEndYear : highestYear;
+    //     }
 
-        if(startYear < lowestYear){
-            throw new RuntimeException("No curriculum exists before " + lowestYear);
-        }
+    //     if(startYear < lowestYear){
+    //         throw new RuntimeException("No curriculum exists before " + lowestYear);
+    //     }
 
-        if(endYear > highestYear){
-            throw new RuntimeException("No curriculum exists after " + highestYear);
-        }
-    }
+    //     if(endYear > highestYear){
+    //         throw new RuntimeException("No curriculum exists after " + highestYear);
+    //     }
+    // }
 }

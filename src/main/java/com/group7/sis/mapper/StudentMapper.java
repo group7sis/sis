@@ -47,7 +47,7 @@ public interface StudentMapper {
     void updateAcademicInfoEntityFromDTO(AcademicInfoDTO dto, @MappingTarget AcademicInfoEntity entity);
 
     @Mapping(target = "scheduleId", source = "schedule.id")
-    @Mapping(target = "courseId", source = "schedule.course.id")
+    @Mapping(target = "courseId", source = "schedule.courseAssignment.course.id")
     @Mapping(target = "programId", source = "schedule.section.program.id")
     EnrolledCourseDTO toEnrolledCourseDto(EnrolledCourseEntity enrolledCourseEntity);
     

@@ -23,8 +23,8 @@ public class ScheduledCourseEntity {
     private String code;
     
     @ManyToOne
-    @JoinColumn(name = "course_id")
-    private CourseEntity course;
+    @JoinColumn(name = "course_assignment_id")
+    private CourseAssignmentEntity courseAssignment;
 
     @ManyToOne
     @JoinColumn(name = "section_id")

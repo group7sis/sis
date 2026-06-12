@@ -12,7 +12,12 @@ import com.group7.sis.entity.academic.ScheduledCourseEntity;
 @Mapper(componentModel = "spring")
 public interface ScheduledCourseMapper {
 
-    @Mapping(target = "courseId", source = "course.id")
+    @Mapping(target = "courseAssignmentId", source = "courseAssignment.id")
+    @Mapping(target = "courseId", source = "courseAssignment.course.id")
+    @Mapping(target = "programId", source = "courseAssignment.curriculum.program.id")
+    @Mapping(target = "curriculumId", source = "courseAssignment.curriculum.id")
+    @Mapping(target = "yearLevel", source = "courseAssignment.yearLevel")
+    @Mapping(target = "semester", source = "courseAssignment.semester")
     @Mapping(target = "sectionId", source = "section.id")
     @Mapping(target = "assignedFacultyId", source = "assignedFaculty.id")
     ScheduledCourseDTO toDto(ScheduledCourseEntity scheduledCourseEntity);
@@ -21,7 +26,7 @@ public interface ScheduledCourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "code", ignore = true)
-    @Mapping(target = "course", ignore = true)
+    @Mapping(target = "courseAssignment", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
     ScheduledCourseEntity toEntity(ScheduledCourseDTO scheduledCourseDTO);
@@ -36,9 +41,10 @@ public interface ScheduledCourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "code", ignore = true)
-    @Mapping(target = "course", ignore = true)
+    @Mapping(target = "courseAssignment", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
     @Mapping(target = "days", ignore = true)
-    void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO, @MappingTarget ScheduledCourseEntity scheduledCourseEntity);
+    void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO,
+            @MappingTarget ScheduledCourseEntity scheduledCourseEntity);
 }
