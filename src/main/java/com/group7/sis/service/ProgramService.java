@@ -39,7 +39,9 @@ public class ProgramService {
 
             curriculum.setDurationYear(curriculum.getYears().size());
             curriculum.setStatus(CurriculumStatus.INACTIVE);
-            curriculum.setCode(curriculumCodeGenerator(program.getCode(), curriculum.getEffectiveYear()));
+            String curCode = curriculumCodeGenerator(program.getCode(), curriculum.getEffectiveYear());
+            curriculumQueryService.checkExistenceByCode(curCode, curriculum, program.getCode());
+            curriculum.setCode(curCode);
         }
         return programRepository.save(program);
     }

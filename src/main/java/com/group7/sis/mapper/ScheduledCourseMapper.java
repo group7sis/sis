@@ -20,6 +20,7 @@ public interface ScheduledCourseMapper {
     DayDTO toDto(DayEntity dayEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "code", ignore = true)
     @Mapping(target = "course", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
@@ -34,6 +35,7 @@ public interface ScheduledCourseMapper {
     void updateEntityFromDto(DayDTO dayDTO, @MappingTarget DayEntity dayEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "code", ignore = true)
     @Mapping(target = "course", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)

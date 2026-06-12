@@ -19,6 +19,9 @@ public class ScheduledCourseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String code;
+    
     @ManyToOne
     @JoinColumn(name = "course_id")
     private CourseEntity course;

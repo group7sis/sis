@@ -16,4 +16,11 @@ public class CurriculumQueryService {
         return curriculumRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Curriculum not found."));
     }
+
+    public void checkExistenceByCode(String code, CurriculumEntity curriculumEntity, String programCode){
+        String year = curriculumEntity.getEffectiveYear();
+        if (curriculumRepository.existsByCode(code)){
+            throw new RuntimeException("A curriculum for the program '" + programCode +"' and year '" + year +"'' already exists");
+        }
+    }
 }

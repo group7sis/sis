@@ -187,11 +187,12 @@ TERM:
 --------------------------------
 SCHEDULE
 {
+  "code": null, //auto generated
   "courseId": null,
   "sectionId": null,
   "assignedFacultyId": null,
   "yearLevel": 1,
-  "academicYear": "2025-2026",
+  "academicYear": "2025-2026", //cannot be edited?
   "room": "Room 301",
   "notes": "Evening class schedule",
   "status": "ACTIVE",

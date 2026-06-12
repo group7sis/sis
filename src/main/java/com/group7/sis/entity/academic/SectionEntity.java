@@ -44,4 +44,7 @@ public class SectionEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column
+    private int sequence;
 }

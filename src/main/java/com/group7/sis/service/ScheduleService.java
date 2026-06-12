@@ -48,7 +48,8 @@ public class ScheduleService {
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
         }
         
-
+        schedule.setCode(scheduleCodeGenerator(scheduledCourseDTO.getAcademicYear()));
+        
         if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
             for (DayDTO dayDTO : scheduledCourseDTO.getDays()){
                 DayEntity dayEntity = scheduledCourseMapper.toEntity(dayDTO);
@@ -126,5 +127,20 @@ public class ScheduleService {
         if (!year1.equals(year2)){
             throw new RuntimeException("Academic years must match");
         }
+    }
+
+    private String scheduleCodeGenerator(String academicYear){
+        ScheduledCourseEntity latest = scheduledCourseRepository.findTopByAcademicYearOrderByCodeDesc(academicYear);
+        int seq;
+        if (latest == null){
+            seq = 1;
+        }else{
+            String ref = latest.getCode().substring(latest.getCode().lastIndexOf("-")+1);
+            seq = Integer.parseInt(ref) + 1;
+        }
+        String startYear = academicYear.substring(0, 4);
+
+        String id = "SCH-" + startYear + "-" + String.format("%05d", seq);
+        return id;
     }
 }

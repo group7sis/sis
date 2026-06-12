@@ -14,10 +14,14 @@ public interface SectionMapper {
     SectionDTO toDto (SectionEntity sectionEntity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "code", ignore = true)
     @Mapping(target = "program", ignore = true)
+    @Mapping(target = "sequence", ignore = true)
     SectionEntity toEntity (SectionDTO sectionDTO);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "code", ignore = true)
     @Mapping(target = "program", ignore = true)
+    @Mapping(target = "sequence", ignore = true)
     void updateEntityFromDto(SectionDTO sectionDTO, @MappingTarget SectionEntity sectionEntity);
 }
