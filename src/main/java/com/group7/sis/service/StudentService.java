@@ -59,6 +59,7 @@ public class StudentService {
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
+                    validateSectionYearLevel(academicInfoDTO);
                     academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 
@@ -119,6 +120,7 @@ public class StudentService {
                 }
                 
                 if(academicInfoDTO.getSectionId() != null){
+                    validateSectionYearLevel(academicInfoDTO);
                     academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
                 }
 
@@ -181,6 +183,12 @@ public class StudentService {
         
         String id = "STU-" + startYear + "-" + String.format("%05d", seq);
         return id;
+    }
+
+    private void validateSectionYearLevel(AcademicInfoDTO academicInfoDTO){
+        if(academicInfoDTO.getYearLevel() != sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()).getYearLevel()){
+            throw new RuntimeException("Cannot enroll in section due to incompatible year level");
+        }
     }
 
     private void validateAcademicYear(String year1, String year2){
