@@ -16,10 +16,4 @@ public class ScheduleQueryService {
         return scheduledCourseRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
-
-    public void checkForScheduleDuplicates(Long courseAssignmentId, Long sectionId, String academicYear){
-        if(scheduledCourseRepository.existsByCourseAssignmentIdAndSectionIdAndAcademicYear(courseAssignmentId, sectionId, academicYear)){
-            throw new RuntimeException("Schedule with course assignment '" + courseAssignmentId + "', section '" + sectionId + "', and year '" + academicYear + "' already exists");
-        }        
-    }
 }

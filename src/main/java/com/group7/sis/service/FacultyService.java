@@ -33,6 +33,8 @@ public class FacultyService {
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         faculty.setFacultyNumber(facultyNumberGenerator());
         if (facultyDTO.getQualifiedCoursesIds() != null){
+
+            checkForQualifiedCoursesIdsDuplicates(facultyDTO.getQualifiedCoursesIds());
             for (Long id : facultyDTO.getQualifiedCoursesIds()){
                 CourseEntity course = courseQueryService.getCourseEntity(id);
                 faculty.getQualifiedCourses().add(course);
@@ -55,6 +57,7 @@ public class FacultyService {
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
         
         if (facultyDTO.getQualifiedCoursesIds() != null){
+            checkForQualifiedCoursesIdsDuplicates(facultyDTO.getQualifiedCoursesIds());
             List<CourseEntity> newQualifiedCourses = new ArrayList<>();
             for (Long courseId : facultyDTO.getQualifiedCoursesIds()){
                 CourseEntity course = courseQueryService.getCourseEntity(courseId);
@@ -125,5 +128,20 @@ public class FacultyService {
         
         String id = "FAC-" + String.format("%05d", seq);
         return id;
+    }
+
+    private void checkForQualifiedCoursesIdsDuplicates(List <Long> qualifiedCoursesIds) {
+
+        for (int i = 0; i < qualifiedCoursesIds.size(); i++){
+            Long current = qualifiedCoursesIds.get(i);
+            
+            for(int j = i + 1; j < qualifiedCoursesIds.size(); j++){
+                Long compare = qualifiedCoursesIds.get(j);
+
+                if(current == compare){
+                    throw new RuntimeException("Duplicates found. Course ID '" + current + "' was already entered");
+                }
+            }
+        }
     }
 }

@@ -1,11 +1,14 @@
 package com.group7.sis.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.group7.sis.entity.academic.DayEntity.DayName;
 import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 import com.group7.sis.validation.ValidateYear;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,15 +59,16 @@ public class ScheduledCourseDTO {
     public static class DayDTO{
         private Long id;
 
-        @NotEmpty(message = "Day name is required")
-        private String name;
+        @NotNull(message = "Day name is required")
+        private DayName name;
 
-        @NotEmpty(message = "Start time is required")
-        private String startTime;
+        @NotNull(message = "Start time is required")
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime startTime;
 
-        @NotEmpty(message = "End time is required")
-        private String endTime;
-        
-        private String breakTime;
+        @NotNull(message = "End time is required")
+        @JsonFormat(pattern = "HH:mm")
+        private LocalTime endTime;
+
     }
 }

@@ -45,6 +45,5 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "assignedFaculty", ignore = true)
     @Mapping(target = "days", ignore = true)
-    void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO,
-            @MappingTarget ScheduledCourseEntity scheduledCourseEntity);
+    void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO, @MappingTarget ScheduledCourseEntity scheduledCourseEntity);
 }

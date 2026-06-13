@@ -1,5 +1,7 @@
 package com.group7.sis.entity.academic;
 
+import java.time.LocalTime;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +12,10 @@ import lombok.Setter;
 @Table(name ="days")
 public class DayEntity {
 
+    public enum DayName{
+        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,14 +25,11 @@ public class DayEntity {
     private ScheduledCourseEntity scheduledCourse;
 
     @Column
-    private String name;
+    private DayName name;
 
     @Column
-    private String startTime;
+    private LocalTime startTime;
 
     @Column
-    private String endTime;
-
-    @Column
-    private String breakTime;
+    private LocalTime endTime;
 }
