@@ -43,6 +43,9 @@ public class StudentService {
         student.setStudentNumber(studentNumberGenerator(student.getYearAdmitted()));
 
         if (studentDTO.getAcademicInfo() != null && !studentDTO.getAcademicInfo().isEmpty()) {
+
+            checkForAcadInfoDuplicates(studentDTO.getAcademicInfo());
+
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
 
@@ -60,6 +63,8 @@ public class StudentService {
                 }
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
+                    checkForEnrolledCoursesDuplicates(academicInfoDTO);
+
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
                         if (enrolledCourseDTO.getScheduleId() != null){
@@ -93,6 +98,8 @@ public class StudentService {
             
             List<AcademicInfoEntity> updatedAcademicInfoEntities = new ArrayList<>();
 
+            checkForAcadInfoDuplicates(studentDTO.getAcademicInfo());
+
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = oldAcademicInfoMap.remove(academicInfoDTO.getId());
                 
@@ -122,6 +129,8 @@ public class StudentService {
                     }
                     List<EnrolledCourseEntity> updatedEnrolledCourseEntities = new ArrayList<>();
                     
+                    checkForEnrolledCoursesDuplicates(academicInfoDTO);
+
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = oldEnrolledCourseMap.remove(enrolledCourseDTO.getId());
                         
@@ -186,6 +195,39 @@ public class StudentService {
 
         if (!program.getCurriculums().contains(curriculum)){
             throw new RuntimeException("Curricilum must belong to enrolled program");
+        }
+    }
+
+    private void checkForAcadInfoDuplicates(List <AcademicInfoDTO> academicInfoDTOs) {
+
+        for (int i = 0; i < academicInfoDTOs.size(); i++){
+            AcademicInfoDTO current = academicInfoDTOs.get(i);
+            
+            for(int j = i + 1; j < academicInfoDTOs.size(); j++){
+                AcademicInfoDTO compare = academicInfoDTOs.get(j);
+
+                if(current.getAcademicYear().equals(compare.getAcademicYear()) 
+                    && current.getSemester() == compare.getSemester()){
+                    throw new RuntimeException("Enrollment for the year '" + current.getAcademicYear() + "' and semester '" + current.getSemester() + "' already exists");
+                }
+
+            }
+        }
+    }
+
+    private void checkForEnrolledCoursesDuplicates(AcademicInfoDTO academicInfoDTO){
+        List <EnrolledCourseDTO> enrolledCourseDTOs = academicInfoDTO.getEnrolledCourses();
+
+        for (int i = 0; i < enrolledCourseDTOs.size(); i++){
+            EnrolledCourseDTO current = enrolledCourseDTOs.get(i);
+            
+            for(int j = i + 1; j < enrolledCourseDTOs.size(); j++){
+                EnrolledCourseDTO compare = enrolledCourseDTOs.get(j);
+
+                if(current.getScheduleId() == compare.getScheduleId()){
+                    throw new RuntimeException("Enrollment for the Course schedule '" + current.getScheduleId() + "' in year '" + academicInfoDTO.getAcademicYear() + "' and semester '"+ academicInfoDTO.getSemester() + "' already exists");
+                }
+            }
         }
     }
 }

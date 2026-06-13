@@ -43,6 +43,8 @@ public class ScheduleService {
             schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
 
+        scheduleQueryService.checkForScheduleDuplicates(scheduledCourseDTO.getCourseAssignmentId(), scheduledCourseDTO.getSectionId(), scheduledCourseDTO.getAcademicYear());
+
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
             validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()).getCourse().getId());
             schedule.setAssignedFaculty(facultyQueryService.getFacultyEntity(scheduledCourseDTO.getAssignedFacultyId()));
@@ -73,6 +75,8 @@ public class ScheduleService {
             validateSection(scheduledCourseDTO.getSectionId(), scheduledCourseDTO.getCourseAssignmentId());
             schedule.setSection(sectionQueryService.getSectionEntity(scheduledCourseDTO.getSectionId()));
         }
+
+        scheduleQueryService.checkForScheduleDuplicates(scheduledCourseDTO.getCourseAssignmentId(), scheduledCourseDTO.getSectionId(), scheduledCourseDTO.getAcademicYear());
 
         if(scheduledCourseDTO.getAssignedFacultyId() != null){
             validateFaculty(scheduledCourseDTO.getAssignedFacultyId(), courseQueryService.getCourseAssignmentEntity(scheduledCourseDTO.getCourseAssignmentId()).getCourse().getId());
