@@ -194,7 +194,7 @@ TERM:
 SCHEDULE
 {
   "code": null, //auto generated
-  "courseId": null,
+  "courseAssignmentId": null,
   "sectionId": null,
   "assignedFacultyId": null,
   "yearLevel": 1,
