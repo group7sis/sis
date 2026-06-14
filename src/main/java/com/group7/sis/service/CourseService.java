@@ -33,6 +33,10 @@ public class CourseService {
     public CourseDTO addCourse(CourseDTO courseDTO){
         CourseEntity courseEntity = courseMapper.toEntity(courseDTO);
 
+        if (courseDTO.getDepartmentId() != null){
+            courseEntity.setDepartment(departmentQueryService.getDepartmentEntity(courseDTO.getDepartmentId()));
+        }
+
         if (courseDTO.getPrerequisiteIds() != null){
             for(Long id : courseDTO.getPrerequisiteIds()){
                 courseEntity.getPrerequisites().add(courseQueryService.getCourseEntity(id));
@@ -66,6 +70,10 @@ public class CourseService {
 
     public CourseDTO updateCourse(Long id, CourseDTO courseToModify){
         CourseEntity course = courseQueryService.getCourseEntity(id);
+
+        if (courseToModify.getDepartmentId() != null){
+            course.setDepartment(departmentQueryService.getDepartmentEntity(courseToModify.getDepartmentId()));
+        }
 
         if (courseToModify.getPrerequisiteIds() != null){
             List <CourseEntity> prereqs = new ArrayList<>();
