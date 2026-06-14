@@ -17,6 +17,8 @@ import java.util.List;
 @Setter
 public class ProgramDTO {
 
+    private Long id;
+
     @NotBlank(message = "Program title is required")
     private String title;
 

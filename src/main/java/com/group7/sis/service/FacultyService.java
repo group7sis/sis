@@ -11,6 +11,7 @@ import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
+import com.group7.sis.entity.users.FacultyEntity.Status;
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
@@ -118,10 +119,10 @@ public class FacultyService {
         return faculty;
     }
 
-    public List<FacultyDTO> getAllFacultyDTO(){
+    public List<FacultyDTO> getAllFacultyDTO(String name, Status status, Long departmentId, EmploymentType employmentType){
         List<FacultyDTO> faculties = new ArrayList<>();
 
-        for (FacultyEntity facultyEntity : facultyRepository.findAll()){
+        for (FacultyEntity facultyEntity : facultyRepository.search(name, status, departmentId, employmentType)){
             faculties.add(getFaculty(facultyEntity.getId()));
         }
         return faculties;

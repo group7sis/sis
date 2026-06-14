@@ -10,6 +10,7 @@ import jakarta.validation.constraints.*;
 @Setter
 public class SectionDTO {
 
+    private Long id;
     private String code;
 
     @NotEmpty(message = "Section name is required")

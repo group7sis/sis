@@ -7,6 +7,7 @@ import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
+import com.group7.sis.entity.academic.CourseEntity.Status;
 import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
@@ -54,6 +55,7 @@ public class CourseService {
                 courseAssignmentEntity.setCourse(courseEntity);
                 if(courseAssignmentDTO.getCurriculumId() != null){
                     courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                    courseAssignmentEntity.setProgram(courseAssignmentEntity.getCurriculum().getProgram());
                 }
 
                 validateCourseAssignment(courseAssignmentDTO);
@@ -108,6 +110,7 @@ public class CourseService {
 
                 courseMapper.updateEntityFromDTO(courseAssignmentDTO, courseAssignmentEntity);
                 courseAssignmentEntity.setCurriculum(curriculumQueryService.getCurriculumEntity(courseAssignmentDTO.getCurriculumId()));
+                courseAssignmentEntity.setProgram(courseAssignmentEntity.getCurriculum().getProgram());
                 validateCourseAssignment(courseAssignmentDTO);
                 newAssignments.add(courseAssignmentEntity);
             }
@@ -147,10 +150,10 @@ public class CourseService {
         return courseDto;
     }
 
-    public List<CourseDTO> getAllCourses() {
+    public List<CourseDTO> getAllCourses(String title, Long departmentId, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Status status) {
         List<CourseDTO> courses = new ArrayList<>();
 
-        for (CourseEntity course : courseRepository.findAll()){
+        for (CourseEntity course : courseRepository.search(title, departmentId, programId, curriculumId, yearLevel, semester, status)){
             courses.add(getCourse(course.getId()));
         }
         return courses;

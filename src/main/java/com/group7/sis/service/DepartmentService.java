@@ -1,5 +1,6 @@
 package com.group7.sis.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -37,7 +38,12 @@ public class DepartmentService {
         return departmentMapper.toDto(departmentQueryService.getDepartmentEntity(id));
     }
 
-    public List<DepartmentEntity> getAllDepartment(){
-        return departmentRepository.findAll();
+    public List<DepartmentDTO> getAllDepartment(String name){
+        List<DepartmentDTO> departments = new ArrayList<>();
+
+        for(DepartmentEntity department : departmentRepository.search(name)){
+            departments.add(departmentMapper.toDto(department));
+        }
+        return departments;
     }
 }

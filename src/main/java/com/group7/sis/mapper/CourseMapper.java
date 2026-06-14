@@ -18,6 +18,7 @@ public interface CourseMapper{
     
     @Mapping(target ="course", ignore = true)
     @Mapping(target ="curriculum", ignore = true)
+    @Mapping(target ="program", ignore = true)
     CourseAssignmentEntity toEntity(CourseAssignmentDTO courseAssignmentDTO);
 
     @Mapping(target="prerequisiteIds", ignore = true)
@@ -26,7 +27,7 @@ public interface CourseMapper{
     CourseDTO toDto(CourseEntity courseEntity);
 
     @Mapping(target = "curriculumId", source = "curriculum.id")
-    @Mapping(target = "programId", source = "curriculum.program.id")
+    @Mapping(target = "programId", source = "program.id")
     CourseAssignmentDTO toDto(CourseAssignmentEntity courseAssignmentEntity);
 
     @Mapping(target = "id", ignore = true)
@@ -39,5 +40,6 @@ public interface CourseMapper{
     @Mapping(target ="id", ignore = true)
     @Mapping(target ="course", ignore = true)
     @Mapping(target ="curriculum", ignore = true)
+    @Mapping(target ="program", ignore = true)
     void updateEntityFromDTO(CourseAssignmentDTO dto, @MappingTarget CourseAssignmentEntity entity);
 }

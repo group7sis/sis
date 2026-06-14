@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DepartmentDTO {
-
+    private Long id;
+    
     @NotEmpty(message = "Department name is required")
     private String name;
 

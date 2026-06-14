@@ -21,6 +21,10 @@ public class CourseAssignmentEntity {
     @ManyToOne
     @JoinColumn(name = "curriculum_id")
     private CurriculumEntity curriculum;
+
+    @ManyToOne
+    @JoinColumn(name = "program_id")
+    private ProgramEntity program;
     
     @Column
     private int yearLevel;

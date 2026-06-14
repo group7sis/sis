@@ -16,6 +16,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FacultyDTO {
+
+    private Long id;
+    
     private String facultyNumber;
 
     @Valid

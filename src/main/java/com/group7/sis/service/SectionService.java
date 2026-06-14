@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.SearchForSectionDTO;
 import com.group7.sis.dto.SectionDTO;
 import com.group7.sis.entity.academic.SectionEntity;
+import com.group7.sis.entity.academic.SectionEntity.Status;
 import com.group7.sis.mapper.SectionMapper;
 import com.group7.sis.repository.SectionRepository;
 import com.group7.sis.dto.StudentDTO;
@@ -56,10 +57,10 @@ public class SectionService {
         return sectionMapper.toDto(sectionEntity);
     }
 
-    public List<SectionDTO> getAllSections(){
+    public List<SectionDTO> getAllSections(String name, Long programId, Integer yearLevel, Status status){
         List<SectionDTO> sections = new ArrayList<>();
 
-        for (SectionEntity sectionEntity : sectionRepository.findAll()){
+        for (SectionEntity sectionEntity : sectionRepository.search(name, programId, yearLevel, status)){
             sections.add(sectionMapper.toDto(sectionEntity));
         }
         return sections;

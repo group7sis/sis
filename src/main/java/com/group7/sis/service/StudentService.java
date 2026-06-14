@@ -8,8 +8,11 @@ import com.group7.sis.dto.StudentDTO.AcademicInfoDTO.EnrolledCourseDTO;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.users.StudentEntity;
+import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
@@ -170,9 +173,9 @@ public class StudentService {
         return studentMapper.toDto(studentRepository.save(student));
     }
 
-    public List<StudentDTO> getAllStudents() {
+    public List<StudentDTO> getAllStudents(String name, StudentStatus studentStatus, EnrollmentStatus status, ScholasticStatus scholasticStatus, Long programId, Long curriculumId, String academicYear, Integer yearLevel, Long sectionId) {
         List<StudentDTO> students = new ArrayList<>();
-        for (StudentEntity student : studentRepository.findAll()) {
+        for (StudentEntity student : studentRepository.search(name, studentStatus, status, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId)) {
             students.add(studentMapper.toDto(student));
         }
         return students;

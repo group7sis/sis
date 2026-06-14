@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ScheduledCourseDTO {
-
+    private String id;
     private String code;
 
     @NotNull(message = "Schedule must be assigned to a course")

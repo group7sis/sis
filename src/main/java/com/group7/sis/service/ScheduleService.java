@@ -11,6 +11,7 @@ import com.group7.sis.dto.ScheduledCourseDTO;
 import com.group7.sis.dto.ScheduledCourseDTO.DayDTO;
 import com.group7.sis.entity.academic.DayEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 import com.group7.sis.mapper.ScheduledCourseMapper;
 import com.group7.sis.repository.ScheduledCourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
@@ -114,10 +115,10 @@ public class ScheduleService {
         return schedule;
     }
 
-    public List<ScheduledCourseDTO> getAllSchedule(){
+    public List<ScheduledCourseDTO> getAllSchedule(String academicYear, Long programId, Long curriculumId, Integer semester, Long sectionId, ScheduleStatus status){
         List<ScheduledCourseDTO> schedules = new ArrayList<>();
 
-        for (ScheduledCourseEntity schedule : scheduledCourseRepository.findAll()){
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, semester, sectionId, status)){
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
         return schedules;

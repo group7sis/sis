@@ -12,6 +12,7 @@ import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
 import com.group7.sis.entity.academic.CurriculumEntity.CurriculumStatus;
+import com.group7.sis.entity.academic.ProgramEntity.ProgramStatus;
 import com.group7.sis.mapper.ProgramMapper;
 
 import java.util.List;
@@ -129,8 +130,8 @@ public class ProgramService {
     }
 
     
-    public List<GetProgramDTO> getAllPrograms(){
-        return programMapper.toGetDtoList(programRepository.findAll());
+    public List<GetProgramDTO> getAllPrograms(String title, ProgramStatus status){
+        return programMapper.toGetDtoList(programRepository.search(title, status));
     }
 
     public ProgramDTO getProgram(Long id){
