@@ -53,7 +53,9 @@ public class ScheduleService {
         schedule.setCode(scheduleCodeGenerator(scheduledCourseDTO.getAcademicYear()));
         
         checkExistingScheduleOverlap(scheduledCourseDTO, schedule);
-        if(scheduledCourseDTO.getDays() != null && !scheduledCourseDTO.getDays().isEmpty()){
+        if(scheduledCourseDTO.getDays() != null){
+            checkSubmittedDaysOverlap(scheduledCourseDTO);
+
             for (DayDTO dayDTO : scheduledCourseDTO.getDays()){
                 DayEntity dayEntity = scheduledCourseMapper.toEntity(dayDTO);
                 dayEntity.setScheduledCourse(schedule);
@@ -214,6 +216,27 @@ public class ScheduleService {
                                 day2.getName(),
                                 day2.getStartTime(), day2.getEndTime()
                             ));
+                }
+            }
+        }
+    }
+
+    private void checkSubmittedDaysOverlap(ScheduledCourseDTO schedule){
+        List<DayDTO> scheduleDays = schedule.getDays();
+
+        if (scheduleDays != null){
+            for (int i = 0; i < scheduleDays.size(); i++){
+                DayDTO current = scheduleDays.get(i);
+
+                for(int j = i + 1; j < scheduleDays.size(); j++){
+                    DayDTO compare = scheduleDays.get(j);
+
+                    if (current.getName().equals(compare.getName()) &&
+                        current.getStartTime().isBefore(compare.getEndTime()) &&
+                        current.getEndTime().isAfter(compare.getStartTime())
+                    ){
+                        throw new RuntimeException("Conflicting schedule being submitted on day '" + current.getName() + "'");
+                    }
                 }
             }
         }

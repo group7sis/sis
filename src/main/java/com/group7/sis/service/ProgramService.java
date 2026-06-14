@@ -2,6 +2,8 @@ package com.group7.sis.service;
 
 import org.springframework.stereotype.Service;
 import com.group7.sis.dto.ProgramDTO;
+import com.group7.sis.dto.ProgramDTO.CurriculumDTO;
+import com.group7.sis.dto.ProgramDTO.YearDTO;
 import com.group7.sis.dto.GetProgramDTO;
 import com.group7.sis.repository.ProgramRepository;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
@@ -29,6 +31,15 @@ public class ProgramService {
 
     public ProgramEntity addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
+        
+        validateCurriculums(request.getCurriculums());
+
+        if(request.getCurriculums() != null){
+            for(CurriculumDTO curriculum : request.getCurriculums()){
+                validateCurriculumYears(curriculum);
+            }
+        }
+        
 
         for (CurriculumEntity curriculum : program.getCurriculums()){
             curriculum.setProgram(program);
@@ -46,7 +57,6 @@ public class ProgramService {
         return programRepository.save(program);
     }
 
-    //ANGSEINGAWNGINAWIGNAWIdanf IAWINf iawF IWABFK A
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
         ProgramEntity program = programQueryService.getProgramEntity(id);
 
@@ -71,6 +81,7 @@ public class ProgramService {
         programMapper.updateEntityFromDto(programDTO, program);
 
         if (programDTO.getCurriculums() != null) {
+            validateCurriculums(programDTO.getCurriculums());
 
             Map<Long, CurriculumEntity> oldCurriculums = new HashMap<>();
             for (CurriculumEntity curriculum : program.getCurriculums()){
@@ -90,6 +101,8 @@ public class ProgramService {
                 curriculumEntity.setCode(curriculumCodeGenerator(program.getCode(), curriculumEntity.getEffectiveYear()));
                 
                 if (cDto.getYears() != null) {
+
+                    validateCurriculumYears(cDto);
 
                     Map<Long, YearEntity> oldYears = new HashMap<>();
                     for (YearEntity year : curriculumEntity.getYears()){
@@ -126,5 +139,37 @@ public class ProgramService {
 
     public String curriculumCodeGenerator(String programCode, String year){
         return programCode + "-" + year.substring(0, 4);
+    }
+
+    private void validateCurriculumYears(CurriculumDTO curriculumDTO){
+        if(curriculumDTO.getYears() != null){
+            for (int i = 0; i < curriculumDTO.getYears().size(); i++){
+                YearDTO current = curriculumDTO.getYears().get(i);
+
+                for(int j = i + 1; j < curriculumDTO.getYears().size(); j++){
+                    YearDTO compare = curriculumDTO.getYears().get(j);
+
+                    if(current.getLevel() == compare.getLevel()){
+                        throw new RuntimeException("Duplicated year level found");
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateCurriculums(List<CurriculumDTO> curriculums){
+        if (curriculums != null){
+            for (int i = 0; i < curriculums.size(); i++){
+                CurriculumDTO current = curriculums.get(i);
+
+                for(int j = i + 1; j < curriculums.size(); j++){
+                    CurriculumDTO compare = curriculums.get(j);
+
+                    if(current.getEffectiveYear().equals(compare.getEffectiveYear())){
+                        throw new RuntimeException("A curriculum for the year '" + current.getEffectiveYear() +"' is already being submitted");
+                    }
+                }
+            }
+        }
     }
 }

@@ -38,6 +38,9 @@ public class CourseService {
         }
 
         if (courseDTO.getCourseAssignments() != null){
+
+            checkCourseAssignmentsDuplicates(courseDTO);
+
             for (CourseAssignmentDTO courseAssignmentDTO : courseDTO.getCourseAssignments()){
                 CourseAssignmentEntity courseAssignmentEntity = courseMapper.toEntity(courseAssignmentDTO);
 
@@ -60,6 +63,7 @@ public class CourseService {
         if (courseToModify.getPrerequisiteIds() != null){
             List <CourseEntity> prereqs = new ArrayList<>();
             for (Long prereqId : courseToModify.getPrerequisiteIds()){
+                selfPrerequisiteCheck(course, prereqId);
                 prereqs.add(courseQueryService.getCourseEntity(prereqId));
             }
             course.getPrerequisites().clear();
@@ -67,6 +71,9 @@ public class CourseService {
         }
 
         if(courseToModify.getCourseAssignments() != null){
+
+            checkCourseAssignmentsDuplicates(courseToModify);
+
             Map<Long, CourseAssignmentEntity> oldAssignments = new HashMap<>();
 
             for(CourseAssignmentEntity courseAssignmentEntity : course.getCourseAssignments()){
@@ -143,6 +150,33 @@ public class CourseService {
 
         if (courseAssignmentDTO.getSemester() > yearAssignment.getTotalSemester()){
             throw new RuntimeException("The semester being assigned to does not exist");
+        }
+    }
+
+    private void checkCourseAssignmentsDuplicates(CourseDTO courseDTO){
+        List <CourseAssignmentDTO> courseAssignments = courseDTO.getCourseAssignments();
+        
+        if(courseAssignments != null){
+            for (int i = 0; i < courseAssignments.size(); i++){
+                CourseAssignmentDTO current = courseAssignments.get(i);
+
+                for(int j = i + 1; j < courseAssignments.size(); j++){
+                    CourseAssignmentDTO compare = courseAssignments.get(j);
+
+                    if (current.getCurriculumId() == compare.getCurriculumId() &&
+                        current.getSemester() == compare.getSemester() &&
+                        current.getYearLevel() == compare.getYearLevel()
+                    ){
+                        throw new RuntimeException("Duplicated course assignments found");
+                    }
+                }
+            }
+        }
+    }
+
+    private void selfPrerequisiteCheck(CourseEntity courseEntity, Long prereqId ){
+        if (prereqId == courseEntity.getId()){
+            throw new RuntimeException("You cannot set a course to become it's own prerequisite");
         }
     }
 }
