@@ -149,7 +149,7 @@ public class ScheduleService {
         }
         String startYear = academicYear.substring(0, 4);
 
-        String id = "SCH-" + startYear + "-" + String.format("%05d", seq);
+        String id = "SCH-" + startYear + "-" + String.format("%04d", seq);
         return id;
     }
 
