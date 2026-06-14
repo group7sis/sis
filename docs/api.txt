@@ -20,6 +20,7 @@ students - manage students
 faculty - manage faculty
 schedules - manage schedule
 sections - manage section
+departments - manage department labels
 
 Additional sections endpoint:
 GET /sections/{id}/students - Searches students of section id using body:
@@ -61,7 +62,8 @@ PROGRAM:
 COURSE:
 
 {
-  "code": null, //manual input
+  "code": null, //auto generated
+  "departmentId": null,
   "courseAssignments": [
     {
       "curriculumId": 1,
@@ -91,7 +93,7 @@ FACULTY:
     "username": null
   },
   "dateHired": null,
-  "department": null,
+  "departmentId": null, //full time faculties must be assigned to a department, part time are optional
   "employmentType": "FULL_TIME", (PART_TIME or FULL_TIME)
   "facultyNumber": null, //auto generated
   "position": null,
@@ -210,4 +212,11 @@ SCHEDULE
       "breakTime": "11:00"
     }
   ]
+}
+
+---------------------------------
+DEPARTMENT LABEL
+{
+  "name": null,
+  "code": null
 }

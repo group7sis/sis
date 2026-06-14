@@ -13,6 +13,7 @@ public interface CourseMapper{
     @Mapping(target = "prerequisites", ignore = true)
     @Mapping(target = "courseAssignments", ignore = true)
     @Mapping(target = "department", ignore = true)
+    @Mapping(target = "code", ignore = true)
     CourseEntity toEntity(CourseDTO courseDTO);
     
     @Mapping(target ="course", ignore = true)
@@ -32,6 +33,7 @@ public interface CourseMapper{
     @Mapping(target = "prerequisites", ignore = true)
     @Mapping(target = "department", ignore = true)
     @Mapping(target = "courseAssignments", ignore = true)
+    @Mapping(target = "code", ignore = true)
     void updateEntityFromDTO(CourseDTO dto, @MappingTarget CourseEntity entity);
 
     @Mapping(target ="id", ignore = true)

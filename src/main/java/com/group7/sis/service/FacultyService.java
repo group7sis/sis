@@ -40,7 +40,8 @@ public class FacultyService {
             faculty.setDepartment(departmentQueryService.getDepartmentEntity(facultyDTO.getDepartmentId()));
         }
 
-        faculty.setFacultyNumber(facultyNumberGenerator());
+        faculty.setFacultyNumber(facultyNumberGenerator(facultyDTO.getDepartmentId()));
+
         if (facultyDTO.getQualifiedCoursesIds() != null){
 
             checkForQualifiedCoursesIdsDuplicates(facultyDTO.getQualifiedCoursesIds());
@@ -70,6 +71,8 @@ public class FacultyService {
         if(facultyDTO.getDepartmentId() != null){
             facultyEntity.setDepartment(departmentQueryService.getDepartmentEntity(facultyDTO.getDepartmentId()));
         }
+
+        facultyEntity.setFacultyNumber(facultyNumberGenerator(facultyDTO.getDepartmentId()));
 
         if (facultyDTO.getQualifiedCoursesIds() != null){
             checkForQualifiedCoursesIdsDuplicates(facultyDTO.getQualifiedCoursesIds());
@@ -129,8 +132,9 @@ public class FacultyService {
         return facultyRepository.findAll();
     }
 
-    private String facultyNumberGenerator(){
-        FacultyEntity latest = facultyRepository.findTopByOrderByIdDesc();
+    private String facultyNumberGenerator(Long departmentId){
+        String depCode = departmentId == null ? "" : departmentQueryService.getDepartmentEntity(departmentId).getCode() + "-";
+        FacultyEntity latest = facultyRepository.findTopByDepartmentIdOrderByFacultyNumberDesc();
         int seq;
 
         if (latest == null){
@@ -141,7 +145,7 @@ public class FacultyService {
             seq = Integer.parseInt(ref) + 1;
         }
         
-        String id = "FAC-" + String.format("%05d", seq);
+        String id = "FAC-" + depCode + String.format("%04d", seq);
         return id;
     }
 

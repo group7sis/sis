@@ -35,6 +35,7 @@ public class CourseService {
 
         if (courseDTO.getDepartmentId() != null){
             courseEntity.setDepartment(departmentQueryService.getDepartmentEntity(courseDTO.getDepartmentId()));
+            courseEntity.setCode(courseCodeGenerator(courseDTO));
         }
 
         if (courseDTO.getPrerequisiteIds() != null){
@@ -73,6 +74,7 @@ public class CourseService {
 
         if (courseToModify.getDepartmentId() != null){
             course.setDepartment(departmentQueryService.getDepartmentEntity(courseToModify.getDepartmentId()));
+            course.setCode(courseCodeGenerator(courseToModify));
         }
 
         if (courseToModify.getPrerequisiteIds() != null){
@@ -198,5 +200,22 @@ public class CourseService {
         if (prereqId == courseEntity.getId()){
             throw new RuntimeException("You cannot set a course to become it's own prerequisite");
         }
+    }
+
+    private String courseCodeGenerator(CourseDTO courseDTO){
+        String depCode = departmentQueryService.getDepartmentEntity(courseDTO.getDepartmentId()).getCode();
+        CourseEntity latest = courseRepository.findTopByDepartmentIdOrderByCodeDesc(courseDTO.getDepartmentId());
+        int seq;
+        
+        if (latest == null){
+            seq = 1;
+        }
+        else{
+            String latestCode = latest.getCode().substring(latest.getCode().lastIndexOf("-")+1);
+            seq = Integer.parseInt(latestCode) + 1;   
+        }
+
+        String code = depCode + "-" + String.format("%03d", seq);
+        return code;
     }
 }

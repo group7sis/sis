@@ -6,5 +6,5 @@ import com.group7.sis.entity.users.FacultyEntity;
 
 
 public interface FacultyRepository extends JpaRepository<FacultyEntity, Long> {
-    FacultyEntity findTopByOrderByIdDesc();
+    FacultyEntity findTopByDepartmentIdOrderByFacultyNumberDesc();
 }

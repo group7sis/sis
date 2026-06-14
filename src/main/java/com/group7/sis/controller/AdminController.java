@@ -230,22 +230,22 @@ public class AdminController {
     //DEPARTMENTS
     private final DepartmentService departmentService;
 
-    @GetMapping("/settings/departments")
+    @GetMapping("/departments")
     public List<DepartmentEntity> getAllDepartments() {
         return departmentService.getAllDepartment();
     }
 
-    @GetMapping("/settings/departments/{id}")
+    @GetMapping("/departments/{id}")
     public DepartmentDTO getDepartment(@PathVariable Long id) {
         return departmentService.getDepartment(id);
     }
 
-    @PutMapping("/settings/departments/{id}")
+    @PutMapping("/departments/{id}")
     public DepartmentEntity updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDTO departmentDTO) {
         return departmentService.updateDepartment(id, departmentDTO);
     }
 
-    @PostMapping("/settings/departments/add")
+    @PostMapping("/departments/add")
     public DepartmentEntity createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
         return departmentService.addDepartment(departmentDTO);
     }
