@@ -134,7 +134,7 @@ public class FacultyService {
 
     private String facultyNumberGenerator(Long departmentId){
         String depCode = departmentId == null ? "" : departmentQueryService.getDepartmentEntity(departmentId).getCode() + "-";
-        FacultyEntity latest = facultyRepository.findTopByDepartmentIdOrderByFacultyNumberDesc();
+        FacultyEntity latest = facultyRepository.findTopByDepartmentIdOrderByFacultyNumberDesc(departmentId);
         int seq;
 
         if (latest == null){

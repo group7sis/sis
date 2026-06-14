@@ -14,7 +14,6 @@ public class CourseDTO {
 
     private Long id;
     
-    @NotBlank(message = "Course code is required")
     private String code;
 
     @NotBlank(message = "Course title is required")
