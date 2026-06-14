@@ -11,6 +11,8 @@ POST /admin/{resource}/add - Create a new resource
 GET /admin/{resource}/{id} - Returns a specific resource by its ID
 PUT /admin/{resource}/{id} - Updates an existing resource by its ID
 
+GET /admin/dashboard - Returns global dashboard stats
+
 Resources:
 accounts - manage admin accounts
 terms - manage terms
@@ -18,20 +20,27 @@ programs - manage programs
 courses - manage courses
 students - manage students
 faculty - manage faculty
-schedules - manage schedule
-sections - manage section
+schedules - manage schedules
+sections - manage sections
 departments - manage department labels
 
-Additional endpoints:
+debugging:
+GET /admin/facultyentity - Returns all faculty entities (debugging endpoint)
 
-GET /sections/{id}/students - Searches students of section id using body:
-{
-  "enrollmentStatus": "ACTIVE",
-  "academicYear": "2025-2026",
-  "semester": 2,
-}
+------------------------------------------------
+/admin/{resource} behavior
+- For each resource endpoint under /admin/{resource}:
 
-GET /facultyentity - Returns all faculty entities (debugging endpoint)
+GET /admin/{resource} returns a result object with:
+- a filtered list of matching items
+- summary stats computed from the same search filters
+
+Search is controlled by optional query params specific to each resource.
+
+- If no filters are passed, the endpoint returns all items.
+- If filters are passed, the list and stats are both based on those filters.
+
+The stats counts are derived from the same query conditions as the list, so they reflect the same search result set.
 
 ----------------------------------------------
 FILTERING/SEARCH CAPABILITIES:
@@ -49,10 +58,9 @@ GET /admin/courses?title={title}&department={departmentId}&program={programId}&c
 - semester: optional, semester number
 - status: optional, ACTIVE or INACTIVE
 
-GET /admin/students?name={name}&studentStatus={studentStatus}&enrollmentStatus={enrollmentStatus}&scholasticStatus={scholasticStatus}&program={programId}&curriculum={curriculumId}&academicYear={academicYear}&yearLevel={yearLevel}&section={sectionId}
+GET /admin/students?name={name}&studentStatus={studentStatus}&scholasticStatus={scholasticStatus}&program={programId}&curriculum={curriculumId}&academicYear={academicYear}&yearLevel={yearLevel}&section={sectionId}
 - name: optional, partial name match (case-insensitive, searches first + middle + last name)
 - studentStatus: optional, ACTIVE, INACTIVE, GRADUATED, or DROPPED
-- enrollmentStatus: optional, ACTIVE, COMPLETED, or DROPPED
 - scholasticStatus: optional, REGULAR or IRREGULAR
 - program: optional, program ID
 - curriculum: optional, curriculum ID
@@ -60,25 +68,29 @@ GET /admin/students?name={name}&studentStatus={studentStatus}&enrollmentStatus={
 - yearLevel: optional, year level
 - section: optional, section ID
 
-GET /admin/faculty?name={name}&status={status}&department={departmentId}&employmentType={employmentType}
+GET /admin/faculty?name={name}&status={status}&department={departmentId}&employmentType={employmentType}&qualifiedCourse={qualifiedCourseId}&scheduledCourse={scheduledCourseId}
 - name: optional, partial name match (case-insensitive, searches first + middle + last name)
 - status: optional, ACTIVE or INACTIVE
 - department: optional, department ID
 - employmentType: optional, FULL_TIME or PART_TIME
+- qualifiedCourse: optional, course ID
+- scheduledCourse: optional, course ID //filters through courses that are scheduled
 
-GET /admin/schedules?academicYear={academicYear}&program={programId}&curriculum={curriculumId}&semester={semester}&sectionId={sectionId}&status={status}
+GET /admin/schedules?academicYear={academicYear}&program={programId}&curriculum={curriculumId}&yearLevel={yearLevel}&semester={semester}&section={sectionId}&status={status}&day={day}
 - academicYear: optional, academic year string
 - program: optional, program ID
 - curriculum: optional, curriculum ID
+- yearLevel: optional, year level
 - semester: optional, semester number
-- sectionId: optional, section ID
+- section: optional, section ID
 - status: optional, ACTIVE or INACTIVE
+- day: optional, day name
 
 GET /admin/sections?name={name}&program={programId}&yearLevel={yearLevel}&status={status}
 - name: optional, partial name match (case-insensitive)
 - program: optional, program ID
 - yearLevel: optional, year level
-- status: optional, OPEN or CLOSED
+- status: optional, ACTIVE or INACTIVE
 
 GET /admin/departments?name={name}
 - name: optional, partial name match (case-insensitive)
@@ -90,14 +102,14 @@ PROGRAM:
 
 {
   "activeCurriculumId": null,
-  "code": null, //manual input
+  "code": null, // manual input
   "curriculums": [
     {
-      "code": null, //auto generated 
-      "durationYear": null, //automatically set by system according to the size of years list. so this can be excluded
+      "code": null, // auto generated
+      "durationYear": null, // automatically set by system based on the number of years
       "effectiveYear": null,
       "id": 1,
-      "status": ACTIVE, (ACTIVE or INACTIVE) //automatically set according to activeCurriculum
+      "status": ACTIVE, // (ACTIVE or INACTIVE) automatically set according to activeCurriculum
       "years": [
         {
           "id": 1,
@@ -107,7 +119,7 @@ PROGRAM:
       ]
     }
   ],
-  "status": ACTIVE, (ACTIVE or INACTIVE)
+  "status": ACTIVE, // (ACTIVE or INACTIVE)
   "title": null
 }
 
@@ -115,13 +127,13 @@ PROGRAM:
 COURSE:
 
 {
-  "code": null, //auto generated
+  "code": null, // auto generated
   "departmentId": null,
   "courseAssignments": [
     {
       "curriculumId": 1,
       "id": 1,
-      "programId": 1, //not managed. this can be excluded in requests as this is automatically set by curriculumId 
+      "programId": 1, // not managed. this can be excluded in requests as it is automatically set by curriculumId
       "semester": 0,
       "yearLevel": 0
     }
@@ -130,7 +142,7 @@ COURSE:
   "lectureHours": null,
   "notes": null,
   "prerequisiteIds": [],
-  "status": ACTIVE, (ACTIVE or INACTIVE)
+  "status": ACTIVE, // (ACTIVE or INACTIVE)
   "title": null,
   "units": 0
 }
@@ -146,9 +158,9 @@ FACULTY:
     "username": null
   },
   "dateHired": null,
-  "departmentId": null, //full time faculties must be assigned to a department, part time are optional
-  "employmentType": "FULL_TIME", (PART_TIME or FULL_TIME)
-  "facultyNumber": null, //auto generated
+  "departmentId": null, // full time faculties must be assigned to a department, part time are optional
+  "employmentType": "FULL_TIME", // (PART_TIME or FULL_TIME)
+  "facultyNumber": null, // auto generated
   "position": null,
   "profile": {
     "civilStatus": null,
@@ -162,8 +174,8 @@ FACULTY:
     "suffix": null
   },
   "qualifiedCoursesIds": [],
-  "scheduledCoursesIds": [], //THIS ISNT MANAGED BY ADD FACULTY, BUT BY ADD SCHEDULE INSTEAD. ADD A SCHEDULE AND ASSIGN A FACULTY TO IT POPULATE THIS LIST  
-  "status": ACTIVE (ACTIVE or INACTIVE)
+  "scheduledCoursesIds": [], // THIS ISN'T MANAGED BY ADD FACULTY, BUT BY ADD SCHEDULE INSTEAD. ADD A SCHEDULE AND ASSIGN A FACULTY TO IT POPULATES THIS LIST
+  "status": ACTIVE // (ACTIVE or INACTIVE)
 }
 
 ------------------------------------
@@ -177,17 +189,17 @@ STUDENT:
           "grade": 0.0,
           "id": 1,
           "scheduleId": null,
-          "programId": null, //automatically set through scheduleId
-          "courseId": null, //automatically set through scheduleId
-          "status": PASSED (PASSED, FAILED, INCOMPLETE, ONGOING, DROPPED)
+          "programId": null, // automatically set through scheduleId
+          "courseId": null, // automatically set through scheduleId
+          "status": PASSED // (PASSED, FAILED, INCOMPLETE, ONGOING, DROPPED)
         }
       ],
       "enrolledProgramId": null,
-      "programCurriculumId: null,
+      "programCurriculumId": null,
       "enrollmentDate": null,
-      "enrollmentStatus": "DROPPED", (ACTIVE, COMPLETED, or DROPPED)
+      "enrollmentStatus": "DROPPED", // (ACTIVE, COMPLETED, or DROPPED)
       "id": 1,
-      "scholasticStatus": REGULAR, (REGULAR or IRREGULAR)
+      "scholasticStatus": REGULAR, // (REGULAR or IRREGULAR)
       "sectionId": null,
       "yearLevel": 0
     }
@@ -210,31 +222,31 @@ STUDENT:
     "sex": null,
     "suffix": null
   },
-  "studentNumber": null, //auto generated
-  "studentStatus": null, (ACTIVE, INACTIVE, GRADUATED, or DROPPED)
+  "studentNumber": null, // auto generated
+  "studentStatus": null, // (ACTIVE, INACTIVE, GRADUATED, or DROPPED)
+  "scholasticStatus": null, // (REGULAR or IRREGULAR)
   "yearAdmitted": null
 }
 
 -------------------------------
 SECTION:
 {
-  "code": null, //auto generated
+  "code": null, // auto generated
   "maxCapacity": 0,
   "name": null,
   "notes": null,
   "programId": null,
-  "status": OPEN, (OPEN or CLOSED)
+  "status": OPEN, // (OPEN or CLOSED)
   "yearLevel": 0
 }
 
 --------------------------------
-ADMIN: 
+ADMIN:
 
 {
   "username": null,
   "password": null
 }
-
 
 --------------------------------
 TERM:
@@ -242,18 +254,18 @@ TERM:
 {
   "academicYear": null,
   "semester": 0,
-  "status": "CLOSED" (ENROLLMENT, ONGOING, or CLOSE)
+  "status": "CLOSED" // (ENROLLMENT, ONGOING, or CLOSE)
 }
 
 --------------------------------
-SCHEDULE
+SCHEDULE:
 {
-  "code": null, //auto generated
+  "code": null, // auto generated
   "courseAssignmentId": null,
   "sectionId": null,
   "assignedFacultyId": null,
   "yearLevel": 1,
-  "academicYear": "2025-2026", //cannot be edited?
+  "academicYear": "2025-2026", // cannot be edited?
   "room": "Room 301",
   "notes": "Evening class schedule",
   "status": "ACTIVE",
@@ -268,7 +280,7 @@ SCHEDULE
 }
 
 ---------------------------------
-DEPARTMENT LABEL
+DEPARTMENT LABEL:
 {
   "name": null,
   "code": null
