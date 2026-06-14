@@ -28,15 +28,14 @@ debugging:
 GET /admin/facultyentity - Returns all faculty entities (debugging endpoint)
 
 ------------------------------------------------
-/admin/{resource} behavior
-- For each resource endpoint under /admin/{resource}:
+BEHAVIOR OF /admin/{resource} 
+For each resource endpoint under /admin/{resource}:
 
 GET /admin/{resource} returns a result object with:
 - a filtered list of matching items
 - summary stats computed from the same search filters
 
 Search is controlled by optional query params specific to each resource.
-
 - If no filters are passed, the endpoint returns all items.
 - If filters are passed, the list and stats are both based on those filters.
 
