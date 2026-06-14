@@ -5,14 +5,15 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.StudentDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO.EnrolledCourseDTO;
+import com.group7.sis.dto.pagedResponse.StudentsPageDTO;
+import com.group7.sis.dto.statsDtos.StudentsStatsDTO;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
+import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
@@ -173,12 +174,30 @@ public class StudentService {
         return studentMapper.toDto(studentRepository.save(student));
     }
 
-    public List<StudentDTO> getAllStudents(String name, StudentStatus studentStatus, EnrollmentStatus status, ScholasticStatus scholasticStatus, Long programId, Long curriculumId, String academicYear, Integer yearLevel, Long sectionId) {
+    public StudentsPageDTO getAllStudents(String name, StudentStatus studentStatus, ScholasticStatus scholasticStatus, Long programId, Long curriculumId, String academicYear, Integer yearLevel, Long sectionId) {
+        StudentsPageDTO page = new StudentsPageDTO();
+        StudentsStatsDTO stats = getStudentsStats(name, studentStatus, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId);
+
         List<StudentDTO> students = new ArrayList<>();
-        for (StudentEntity student : studentRepository.search(name, studentStatus, status, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId)) {
+        for (StudentEntity student : studentRepository.search(name, studentStatus, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId)) {
             students.add(studentMapper.toDto(student));
         }
-        return students;
+
+        page.setStudents(students);
+        page.setStats(stats);
+        
+        return page;
+    }
+
+        private StudentsStatsDTO getStudentsStats(String name, StudentStatus studentStatus, ScholasticStatus scholasticStatus, Long programId, Long curriculumId, String academicYear, Integer yearLevel, Long sectionId){
+        StudentsStatsDTO stats = new StudentsStatsDTO();
+
+        stats.setTotalStudents(studentRepository.countSearch(name, studentStatus, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId));
+        stats.setTotalActiveStudents(studentRepository.countSearch(name, StudentStatus.ACTIVE, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId));
+        stats.setTotalIrregularStudents(studentRepository.countSearch(name, studentStatus, ScholasticStatus.IRREGULAR, programId, curriculumId, academicYear, yearLevel, sectionId));
+        stats.setTotalGraduatedStudents(studentRepository.countSearch(name, StudentStatus.GRADUATED, scholasticStatus, programId, curriculumId, academicYear, yearLevel, sectionId));   
+        
+        return stats;
     }
 
     private String studentNumberGenerator(String yearAdmission) {

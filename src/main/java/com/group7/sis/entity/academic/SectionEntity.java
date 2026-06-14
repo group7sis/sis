@@ -10,7 +10,7 @@ import lombok.Getter;
 @Entity
 public class SectionEntity {
     public enum Status {
-        OPEN, CLOSED
+        ACTIVE, INACTIVE
     }
 
     @Id

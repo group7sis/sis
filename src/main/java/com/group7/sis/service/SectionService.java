@@ -2,13 +2,13 @@ package com.group7.sis.service;
 
 import org.springframework.stereotype.Service;
 
-import com.group7.sis.dto.SearchForSectionDTO;
 import com.group7.sis.dto.SectionDTO;
+import com.group7.sis.dto.pagedResponse.SectionPageDTO;
 import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.academic.SectionEntity.Status;
 import com.group7.sis.mapper.SectionMapper;
 import com.group7.sis.repository.SectionRepository;
-import com.group7.sis.dto.StudentDTO;
+import com.group7.sis.dto.statsDtos.SectionStatsDto;
 import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.StudentQueryService;
@@ -57,18 +57,39 @@ public class SectionService {
         return sectionMapper.toDto(sectionEntity);
     }
 
-    public List<SectionDTO> getAllSections(String name, Long programId, Integer yearLevel, Status status){
+    public SectionPageDTO getAllSections(String name, Long programId, Integer yearLevel, Status status){
+        SectionPageDTO page = new SectionPageDTO();
         List<SectionDTO> sections = new ArrayList<>();
 
         for (SectionEntity sectionEntity : sectionRepository.search(name, programId, yearLevel, status)){
             sections.add(sectionMapper.toDto(sectionEntity));
         }
-        return sections;
+
+        SectionStatsDto stats = getSectionStats(name, programId, yearLevel, status);
+        page.setSections(sections);
+        page.setStats(stats);
+        return page;
     }
 
-    public List<StudentDTO> getStudentsInSection(Long sectionId, SearchForSectionDTO search){
-        sectionQueryService.getSectionEntity(sectionId);
-        return studentQueryService.findStudentsFromSection(sectionId, search.getEnrollmentStatus(), search.getAcademicYear(), search.getSemester());
+    private SectionStatsDto getSectionStats(String name, Long programId, Integer yearLevel, Status status){
+        SectionStatsDto stats = new SectionStatsDto();
+        
+        stats.setTotalSections(sectionRepository.countSearch(name, programId, yearLevel, status));
+        stats.setTotalActiveSections(sectionRepository.countSearch(name, programId, yearLevel, Status.ACTIVE));
+        stats.setTotalInactiveSections(sectionRepository.countSearch(name, programId, yearLevel, Status.INACTIVE));
+        stats.setTotalEnrolledStudentsPerSection(getTotalEnrolledStudents(sectionRepository.search(name, programId, yearLevel, status)));
+        return stats;
+    }
+
+    public long getTotalEnrolledStudents(List<SectionEntity> sections){
+        long total = 0;
+
+        for(SectionEntity section : sections){
+            long countPerSection = studentQueryService.getTotalStudentsFromSection(section.getId());
+            total += countPerSection; 
+        }
+
+        return total;
     }
 
     private String sectionCodeGenerate(Long programId, SectionEntity section){

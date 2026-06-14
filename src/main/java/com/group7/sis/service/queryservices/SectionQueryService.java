@@ -16,4 +16,8 @@ public class SectionQueryService {
         return sectionRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Section not found"));
     }
+
+    public long getTotalSections(){
+        return sectionRepository.count();
+    }
 }

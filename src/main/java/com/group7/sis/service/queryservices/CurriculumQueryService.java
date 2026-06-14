@@ -23,4 +23,8 @@ public class CurriculumQueryService {
             throw new RuntimeException("A curriculum for the program '" + programCode +"' and year '" + year +"'' already exists");
         }
     }
+
+    public long getTotalCurriculums(){
+        return curriculumRepository.count();
+    }
 }

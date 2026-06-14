@@ -13,12 +13,15 @@ import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.entity.users.FacultyEntity.Status;
 import com.group7.sis.dto.FacultyDTO;
+import com.group7.sis.dto.pagedResponse.FacultyPageDTO;
+import com.group7.sis.dto.statsDtos.FacultyStatsDTO;
 import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.DepartmentQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
 // import com.group7.sis.service.queryservices.ScheduleQueryService;
+import com.group7.sis.service.queryservices.ScheduleQueryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +34,7 @@ public class FacultyService {
 
     private final CourseQueryService courseQueryService;
     private final DepartmentQueryService departmentQueryService;
-    // private final ScheduleQueryService scheduleQueryService;
+    private final ScheduleQueryService scheduleQueryService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
@@ -119,13 +122,38 @@ public class FacultyService {
         return faculty;
     }
 
-    public List<FacultyDTO> getAllFacultyDTO(String name, Status status, Long departmentId, EmploymentType employmentType){
+    public FacultyPageDTO getAllFacultyDTO(String name, Status status, Long departmentId, EmploymentType employmentType, Long qualifiedCourseId, Long courseScheduleId){
+        FacultyPageDTO page = new FacultyPageDTO();
         List<FacultyDTO> faculties = new ArrayList<>();
 
-        for (FacultyEntity facultyEntity : facultyRepository.search(name, status, departmentId, employmentType)){
+        for (FacultyEntity facultyEntity : facultyRepository.search(name, status, departmentId, employmentType, qualifiedCourseId, courseScheduleId)){
             faculties.add(getFaculty(facultyEntity.getId()));
         }
-        return faculties;
+
+        FacultyStatsDTO stats = getFacultyStats(name, status, departmentId, employmentType, qualifiedCourseId, courseScheduleId);
+        page.setFaculties(faculties);
+        page.setStats(stats);
+        return page;
+    }
+
+    private FacultyStatsDTO getFacultyStats(String name, Status status, Long departmentId, EmploymentType employmentType, Long qualifiedCourseId, Long courseScheduleId){
+        FacultyStatsDTO stats = new FacultyStatsDTO();
+
+        stats.setTotalFaculty(facultyRepository.countSearch(name, status, departmentId, employmentType, qualifiedCourseId, courseScheduleId));
+        stats.setTotalActiveFaculty(facultyRepository.countSearch(name, Status.ACTIVE, departmentId, employmentType, qualifiedCourseId, courseScheduleId));
+        stats.setTotalInactiveFaculty(facultyRepository.countSearch(name, Status.INACTIVE, departmentId, employmentType, qualifiedCourseId, courseScheduleId));
+        stats.setTotalSchedulesAssignedPerFaculty(computeTotalSchedules(facultyRepository.search(name, status, departmentId, employmentType, qualifiedCourseId, courseScheduleId)));
+
+        return stats;
+    }
+
+    private long computeTotalSchedules(List<FacultyEntity> faculties){
+        long total = 0;
+
+        for(FacultyEntity faculty : faculties){
+            total += scheduleQueryService.getTotalSchedulesByFaculty(faculty.getId());
+        }
+        return total;
     }
 
     //for debugging

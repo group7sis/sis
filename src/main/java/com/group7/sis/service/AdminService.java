@@ -9,6 +9,7 @@ import com.group7.sis.dto.AdminDTO;
 import com.group7.sis.entity.AdminEntity;
 import com.group7.sis.mapper.AdminMapper;
 import com.group7.sis.repository.AdminRepository;
+import com.group7.sis.service.queryservices.AdminQueryService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminService {
     private final AdminRepository adminRepository;
     private final AdminMapper adminMapper;
+    private final AdminQueryService adminQueryService;
 
     public AdminEntity addAdmin(AdminDTO adminDTO){
         AdminEntity adminEntity = adminMapper.toEntity(adminDTO);
@@ -24,14 +26,14 @@ public class AdminService {
     }
 
     public AdminDTO updateAdmin (Long id, AdminDTO adminDTO){
-        AdminEntity admin = getAdminEntity(id);
+        AdminEntity admin = adminQueryService.getAdminEntity(id);
         adminMapper.updateEntityFromDto(adminDTO, admin);
 
-        return adminMapper.toDto(adminRepository.save(admin));
+        return getAdmin(id);
     }
 
     public AdminDTO getAdmin(Long id){
-        return adminMapper.toDto(getAdminEntity(id));
+        return adminMapper.toDto(adminQueryService.getAdminEntity(id));
     }
 
     public List<AdminDTO> getAllAdmin(){
@@ -41,12 +43,5 @@ public class AdminService {
             admins.add(adminMapper.toDto(admin));
         }
         return admins;
-    }
-
-
-    //Queries
-    private AdminEntity getAdminEntity(Long id){
-        return adminRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Admin not found."));
     }
 }

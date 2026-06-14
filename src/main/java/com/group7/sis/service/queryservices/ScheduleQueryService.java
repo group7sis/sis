@@ -16,4 +16,12 @@ public class ScheduleQueryService {
         return scheduledCourseRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
+
+    public long getTotalSchedules(){
+        return scheduledCourseRepository.count();
+    }
+
+    public long getTotalSchedulesByFaculty(Long facultyId){
+        return scheduledCourseRepository.countByAssignedFacultyId(facultyId);
+    }
 }

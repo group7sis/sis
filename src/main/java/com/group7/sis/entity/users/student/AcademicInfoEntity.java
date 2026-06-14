@@ -1,6 +1,7 @@
 package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.SectionEntity;
+import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
 import jakarta.persistence.*;
@@ -15,10 +16,6 @@ import java.time.LocalDate;
 @Setter
 @Entity
 public class AcademicInfoEntity {
-    public enum ScholasticStatus {
-        REGULAR,
-        IRREGULAR
-    }
 
     public enum EnrollmentStatus{
         ACTIVE,

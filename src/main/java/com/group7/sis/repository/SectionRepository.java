@@ -25,4 +25,18 @@ public interface SectionRepository extends JpaRepository<SectionEntity, Long> {
         @Param("yearLevel") Integer yearLevel,
         @Param("status") Status status
     );
+
+    @Query("""
+    SELECT COUNT(s) FROM SectionEntity s
+    WHERE (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%')))
+    AND (:programId IS NULL OR s.program.id = :programId)
+    AND (:yearLevel IS NULL OR s.yearLevel = :yearLevel)
+    AND (:status IS NULL OR s.status = :status)
+    """)
+    long countSearch(
+        @Param("name") String name,
+        @Param("programId") Long programId,
+        @Param("yearLevel") Integer yearLevel,
+        @Param("status") Status status
+    );
 }

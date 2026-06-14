@@ -15,4 +15,8 @@ public class FacultyQueryService {
         return facultyRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Faculty not found"));
     }
+
+    public long getTotalFaculty(){
+        return facultyRepository.count();
+    }
 }

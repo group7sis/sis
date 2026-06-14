@@ -8,13 +8,19 @@ import com.group7.sis.entity.*;
 import com.group7.sis.entity.users.*;
 import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
+import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.entity.academic.*;
 import com.group7.sis.entity.academic.CourseEntity.Status;
+import com.group7.sis.entity.academic.DayEntity.DayName;
 import com.group7.sis.entity.academic.ProgramEntity.ProgramStatus;
 import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 import com.group7.sis.dto.*;
+import com.group7.sis.dto.pagedResponse.CoursePageDTO;
+import com.group7.sis.dto.pagedResponse.FacultyPageDTO;
+import com.group7.sis.dto.pagedResponse.SchedulePageDTO;
+import com.group7.sis.dto.pagedResponse.SectionPageDTO;
+import com.group7.sis.dto.pagedResponse.StudentsPageDTO;
+import com.group7.sis.dto.statsDtos.DashboardStatsDTO;
 import com.group7.sis.service.*;
 
 import jakarta.validation.Valid;
@@ -36,6 +42,16 @@ public class AdminController {
     // TODO: Delete API for all entities (tho kahit ihuli na. not really prioritized
     // atm)
 
+    // -----------------------------DASHBOARD-----------------------------------
+    private final DashboardService dashboardService;
+
+    @GetMapping("/dashboard")
+    public DashboardStatsDTO getGlobalStats() {
+        return dashboardService.getGlobalStats();
+    }
+    
+
+    // -----------------------------ACCOUNTS-----------------------------------
     private final AdminService adminService;
 
     @GetMapping("/accounts")
@@ -111,7 +127,7 @@ public class AdminController {
     private final CourseService courseService;
 
     @GetMapping("/courses")
-    public List<CourseDTO> getAllCourses(
+    public CoursePageDTO getAllCourses(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Long department,
             @RequestParam(required = false) Long program,
@@ -136,23 +152,22 @@ public class AdminController {
     public CourseDTO createCourse(@Valid @RequestBody CourseDTO addCourse) {
         return courseService.addCourse(addCourse);
     }
+    
 
     // -----------------------------------STUDENTS-----------------------------------
     private final StudentService studentService;
 
     @GetMapping("/students")
-    public List<StudentDTO> getAllStudents(
+    public StudentsPageDTO getAllStudents(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) StudentStatus studentStatus,
-            @RequestParam(required = false) EnrollmentStatus enrollmentStatus,
             @RequestParam(required = false) ScholasticStatus scholasticStatus,
             @RequestParam(required = false) Long program,
             @RequestParam(required = false) Long curriculum,
             @RequestParam(required = false) String academicYear,
             @RequestParam(required = false) Integer yearLevel,
             @RequestParam(required = false) Long section) {
-        return studentService.getAllStudents(name, studentStatus, enrollmentStatus, scholasticStatus, program,
-                curriculum, academicYear, yearLevel, section);
+        return studentService.getAllStudents(name, studentStatus, scholasticStatus, program, curriculum, academicYear, yearLevel, section);
     }
 
     @GetMapping("/students/{id}")
@@ -169,17 +184,21 @@ public class AdminController {
     public StudentEntity createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         return studentService.addStudent(studentDTO);
     }
+    
 
     // -----------------------------------FACULTY-----------------------------------
     private final FacultyService facultyService;
 
     @GetMapping("/faculty")
-    public List<FacultyDTO> getAllFacultyByDTO(
+    public FacultyPageDTO getAllFacultyByDTO(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) FacultyEntity.Status status,
             @RequestParam(required = false) Long department,
-            @RequestParam(required = false) EmploymentType employmentType) {
-        return facultyService.getAllFacultyDTO(name, status, department, employmentType);
+            @RequestParam(required = false) EmploymentType employmentType,
+            @RequestParam(required = false) Long qualifiedCourse,
+            @RequestParam(required = false) Long scheduledCourse
+        ) {
+        return facultyService.getAllFacultyDTO(name, status, department, employmentType, qualifiedCourse, scheduledCourse);
     }
 
     // debugging
@@ -207,14 +226,17 @@ public class AdminController {
     private final ScheduleService scheduleService;
 
     @GetMapping("/schedules")
-    public List<ScheduledCourseDTO> getAllSchedules(
+    public SchedulePageDTO getAllSchedules(
             @RequestParam(required = false) String academicYear,
             @RequestParam(required = false) Long program,
             @RequestParam(required = false) Long curriculum,
+            @RequestParam(required = false) Integer yearLevel,
             @RequestParam(required = false) Integer semester,
-            @RequestParam(required = false) Long sectionId,
-            @RequestParam(required = false) ScheduleStatus status) {
-        return scheduleService.getAllSchedule(academicYear, program, curriculum, semester, sectionId, status);
+            @RequestParam(required = false) Long section,
+            @RequestParam(required = false) ScheduleStatus status,
+            @RequestParam(required = false) DayName day
+        ) {
+        return scheduleService.getAllSchedule(academicYear, program, curriculum, yearLevel, semester, section, status, day);
     }
 
     @GetMapping("/schedules/{id}")
@@ -237,7 +259,7 @@ public class AdminController {
     private final SectionService sectionService;
 
     @GetMapping("/sections")
-    public List<SectionDTO> getAllSections(
+    public SectionPageDTO getAllSections(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long program,
             @RequestParam(required = false) Integer yearLevel,
@@ -255,20 +277,12 @@ public class AdminController {
         return sectionService.updateSection(id, sectionDTO);
     }
 
-    @PostMapping("/sections/{id}/students")
-    public List<StudentDTO> getSectionStudents(@PathVariable Long id,
-            @Valid @RequestBody SearchForSectionDTO searchForSectionDTO) {
-        return sectionService.getStudentsInSection(id, searchForSectionDTO);
-    }
-
     @PostMapping("/sections/add")
     public SectionDTO createSection(@Valid @RequestBody SectionDTO sectionDTO) {
         return sectionService.addSection(sectionDTO);
     }
 
-    // -----------------------------------SETTINGS-----------------------------------
-
-    // DEPARTMENTS
+    // -----------------------------------DEPARTMENT-----------------------------------
     private final DepartmentService departmentService;
 
     @GetMapping("/departments")

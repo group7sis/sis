@@ -24,4 +24,8 @@ public class CourseQueryService {
         return courseAssignmentRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Course Assignment does not exist"));
     }
+
+    public long getTotalCourses(){
+        return courseAssignmentRepository.count();
+    }
 }

@@ -24,6 +24,10 @@ public class StudentEntity {
         DROPPED
     }
 
+    public enum ScholasticStatus{
+        REGULAR, IRREGULAR
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,6 +37,9 @@ public class StudentEntity {
 
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
+
+    @Enumerated(EnumType.STRING)
+    private ScholasticStatus scholasticStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)

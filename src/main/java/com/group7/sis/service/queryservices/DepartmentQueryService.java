@@ -16,4 +16,8 @@ public class DepartmentQueryService {
         return departmentRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Department label not found"));
     }
+
+    public long getTotalDepartments(){
+        return departmentRepository.count();
+    }
 }

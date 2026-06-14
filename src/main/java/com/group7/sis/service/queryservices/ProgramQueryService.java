@@ -15,4 +15,8 @@ public class ProgramQueryService {
         return programRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Program not found"));
     }
+
+    public long getTotalPrograms(){
+        return programRepository.count();
+    }
 }

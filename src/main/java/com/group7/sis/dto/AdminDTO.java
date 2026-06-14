@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminDTO {
+    private Long id;
 
     @NotBlank(message = "username is required")
     private String username;

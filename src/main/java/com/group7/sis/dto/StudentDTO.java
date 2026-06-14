@@ -3,9 +3,9 @@ package com.group7.sis.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
-import com.group7.sis.entity.users.student.AcademicInfoEntity.ScholasticStatus;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity.Status;
 import com.group7.sis.validation.ValidateYear;
 
@@ -23,6 +23,9 @@ public class StudentDTO {
 
     @NotNull(message = "Student status must be defined")
     private StudentStatus studentStatus;
+
+    @NotNull(message = "Scholastic status must be defined")
+    private ScholasticStatus scholasticStatus;
 
     @Valid
     @NotNull(message = "An account is required")

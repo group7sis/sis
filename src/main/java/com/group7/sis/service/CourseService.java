@@ -3,6 +3,8 @@ package com.group7.sis.service;
 import org.springframework.stereotype.Service;
 import com.group7.sis.dto.CourseDTO;
 import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
+import com.group7.sis.dto.pagedResponse.CoursePageDTO;
+import com.group7.sis.dto.statsDtos.CourseStatsDTO;
 import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
@@ -150,13 +152,28 @@ public class CourseService {
         return courseDto;
     }
 
-    public List<CourseDTO> getAllCourses(String title, Long departmentId, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Status status) {
+    public CoursePageDTO getAllCourses(String title, Long departmentId, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Status status) {
+        CoursePageDTO page = new CoursePageDTO();
         List<CourseDTO> courses = new ArrayList<>();
-
+        
         for (CourseEntity course : courseRepository.search(title, departmentId, programId, curriculumId, yearLevel, semester, status)){
             courses.add(getCourse(course.getId()));
         }
-        return courses;
+
+        CourseStatsDTO stats = getCoursesStats(title, departmentId, programId, curriculumId, yearLevel, semester, status);
+        page.setCourses(courses);
+        page.setStats(stats);
+        return page;
+    }
+
+    public CourseStatsDTO getCoursesStats(String title, Long departmentId, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Status status){
+        CourseStatsDTO stats = new CourseStatsDTO();
+
+        stats.setTotalCourses(courseRepository.countSearch(title, departmentId, programId, curriculumId, yearLevel, semester, status));
+        stats.setTotalActiveCourses(courseRepository.countSearch(title, departmentId, programId, curriculumId, yearLevel, semester, Status.ACTIVE));
+        stats.setTotalInactiveCourses(courseRepository.countSearch(title, departmentId, programId, curriculumId, yearLevel, semester, Status.INACTIVE));
+
+        return stats;
     }
 
     private void validateCourseAssignment(CourseAssignmentDTO courseAssignmentDTO){

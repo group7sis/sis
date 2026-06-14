@@ -1,5 +1,7 @@
 package com.group7.sis.service;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.group7.sis.dto.ScheduledCourseDTO;
 import com.group7.sis.dto.ScheduledCourseDTO.DayDTO;
+import com.group7.sis.dto.pagedResponse.SchedulePageDTO;
+import com.group7.sis.dto.statsDtos.SchedulesStatsDTO;
 import com.group7.sis.entity.academic.DayEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.entity.academic.DayEntity.DayName;
 import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 import com.group7.sis.mapper.ScheduledCourseMapper;
 import com.group7.sis.repository.ScheduledCourseRepository;
@@ -115,13 +120,29 @@ public class ScheduleService {
         return schedule;
     }
 
-    public List<ScheduledCourseDTO> getAllSchedule(String academicYear, Long programId, Long curriculumId, Integer semester, Long sectionId, ScheduleStatus status){
+    public SchedulePageDTO getAllSchedule(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, ScheduleStatus status, DayName dayName){
+        SchedulePageDTO page = new SchedulePageDTO();
         List<ScheduledCourseDTO> schedules = new ArrayList<>();
 
-        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, semester, sectionId, status)){
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName)){
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
-        return schedules;
+
+        SchedulesStatsDTO stats = getSchedulesStats(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName);
+        page.setSchedules(schedules);
+        page.setStats(stats);
+        return page;
+    }
+
+    private SchedulesStatsDTO getSchedulesStats(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, ScheduleStatus status, DayName dayName){
+        SchedulesStatsDTO stats = new SchedulesStatsDTO();
+
+        stats.setTotalSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName));
+        stats.setTotalActiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, ScheduleStatus.ACTIVE, dayName));
+        stats.setTotalInactiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, ScheduleStatus.INACTIVE, dayName));
+        stats.setWeeklyHours(computeWeeklyHours(scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName)));
+        stats.setDailyHours(computeHoursByDay(dayName));
+        return stats;
     }
 
     private void validateFaculty(Long facultyId, Long courseId){
@@ -241,5 +262,43 @@ public class ScheduleService {
                 }
             }
         }
+    }
+
+    private double computeHoursByDay(DayName dayName){
+
+        if (dayName == null){
+            return 0;
+        }
+
+        double total = 0;
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.findAll()){
+            for (DayEntity day : schedule.getDays()){
+
+                if(day.getName().equals(dayName)){
+                    LocalTime start = day.getStartTime();
+                    LocalTime end = day.getEndTime();
+
+                    double hours = Duration.between(start, end).toMinutes() / 60.0;
+
+                    total += hours;
+                }
+            }
+        }
+        return total;
+    }
+
+    private double computeWeeklyHours(List<ScheduledCourseEntity> schedules){
+        double total = 0;
+        for (ScheduledCourseEntity schedule : schedules){
+            for (DayEntity day : schedule.getDays()){
+                LocalTime start = day.getStartTime();
+                LocalTime end = day.getEndTime();
+
+                double hours = Duration.between(start, end).toMinutes() / 60.0;
+
+                total += hours;
+            }
+        }
+        return total;
     }
 }
