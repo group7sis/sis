@@ -22,13 +22,66 @@ schedules - manage schedule
 sections - manage section
 departments - manage department labels
 
-Additional sections endpoint:
+Additional endpoints:
+
 GET /sections/{id}/students - Searches students of section id using body:
 {
   "enrollmentStatus": "ACTIVE",
   "academicYear": "2025-2026",
   "semester": 2,
 }
+
+GET /facultyentity - Returns all faculty entities (debugging endpoint)
+
+----------------------------------------------
+FILTERING/SEARCH CAPABILITIES:
+
+GET /admin/programs?title={title}&status={status}
+- title: optional, partial name match (case-insensitive)
+- status: optional, ACTIVE or INACTIVE
+
+GET /admin/courses?title={title}&department={departmentId}&program={programId}&curriculum={curriculumId}&yearLevel={yearLevel}&semester={semester}&status={status}
+- title: optional, partial name match (case-insensitive)
+- department: optional, department ID
+- program: optional, program ID
+- curriculum: optional, curriculum ID
+- yearLevel: optional, year level
+- semester: optional, semester number
+- status: optional, ACTIVE or INACTIVE
+
+GET /admin/students?name={name}&studentStatus={studentStatus}&enrollmentStatus={enrollmentStatus}&scholasticStatus={scholasticStatus}&program={programId}&curriculum={curriculumId}&academicYear={academicYear}&yearLevel={yearLevel}&section={sectionId}
+- name: optional, partial name match (case-insensitive, searches first + middle + last name)
+- studentStatus: optional, ACTIVE, INACTIVE, GRADUATED, or DROPPED
+- enrollmentStatus: optional, ACTIVE, COMPLETED, or DROPPED
+- scholasticStatus: optional, REGULAR or IRREGULAR
+- program: optional, program ID
+- curriculum: optional, curriculum ID
+- academicYear: optional, academic year string (e.g., "2025-2026")
+- yearLevel: optional, year level
+- section: optional, section ID
+
+GET /admin/faculty?name={name}&status={status}&department={departmentId}&employmentType={employmentType}
+- name: optional, partial name match (case-insensitive, searches first + middle + last name)
+- status: optional, ACTIVE or INACTIVE
+- department: optional, department ID
+- employmentType: optional, FULL_TIME or PART_TIME
+
+GET /admin/schedules?academicYear={academicYear}&program={programId}&curriculum={curriculumId}&semester={semester}&sectionId={sectionId}&status={status}
+- academicYear: optional, academic year string
+- program: optional, program ID
+- curriculum: optional, curriculum ID
+- semester: optional, semester number
+- sectionId: optional, section ID
+- status: optional, ACTIVE or INACTIVE
+
+GET /admin/sections?name={name}&program={programId}&yearLevel={yearLevel}&status={status}
+- name: optional, partial name match (case-insensitive)
+- program: optional, program ID
+- yearLevel: optional, year level
+- status: optional, OPEN or CLOSED
+
+GET /admin/departments?name={name}
+- name: optional, partial name match (case-insensitive)
 
 ----------------------------------------------
 GET endpoints typically return these objects, and POST/PUT requests use the same JSON structure:
