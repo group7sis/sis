@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.users.FacultyEntity;
+import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.mapper.FacultyMapper;
 import com.group7.sis.repository.FacultyRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
+import com.group7.sis.service.queryservices.DepartmentQueryService;
 import com.group7.sis.service.queryservices.FacultyQueryService;
 // import com.group7.sis.service.queryservices.ScheduleQueryService;
 
@@ -27,10 +29,17 @@ public class FacultyService {
     private final FacultyMapper facultyMapper;
 
     private final CourseQueryService courseQueryService;
+    private final DepartmentQueryService departmentQueryService;
     // private final ScheduleQueryService scheduleQueryService;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
+        departmentValidation(facultyDTO);
+
+        if(facultyDTO.getDepartmentId() != null){
+            faculty.setDepartment(departmentQueryService.getDepartmentEntity(facultyDTO.getDepartmentId()));
+        }
+
         faculty.setFacultyNumber(facultyNumberGenerator());
         if (facultyDTO.getQualifiedCoursesIds() != null){
 
@@ -54,8 +63,14 @@ public class FacultyService {
 
     public FacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){
         FacultyEntity facultyEntity = facultyQueryService.getFacultyEntity(id);
+
+        departmentValidation(facultyDTO);
         facultyMapper.updateEntityFromDto(facultyDTO, facultyEntity);
-        
+
+        if(facultyDTO.getDepartmentId() != null){
+            facultyEntity.setDepartment(departmentQueryService.getDepartmentEntity(facultyDTO.getDepartmentId()));
+        }
+
         if (facultyDTO.getQualifiedCoursesIds() != null){
             checkForQualifiedCoursesIdsDuplicates(facultyDTO.getQualifiedCoursesIds());
             List<CourseEntity> newQualifiedCourses = new ArrayList<>();
@@ -142,6 +157,12 @@ public class FacultyService {
                     throw new RuntimeException("Duplicates found. Course ID '" + current + "' was already entered");
                 }
             }
+        }
+    }
+
+    private void departmentValidation(FacultyDTO facultyDTO){
+        if(facultyDTO.getEmploymentType() == EmploymentType.FULL_TIME && facultyDTO.getDepartmentId() == null){
+            throw new RuntimeException("A faculty with FULL TIME employment must be assigned to a department");
         }
     }
 }

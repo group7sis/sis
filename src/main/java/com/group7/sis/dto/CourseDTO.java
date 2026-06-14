@@ -20,6 +20,9 @@ public class CourseDTO {
     @NotBlank(message = "Course title is required")
     private String title;
 
+    @NotNull(message = "Department label is required")
+    private Long departmentId;
+
     @NotNull(message = "Units are required")
     @Positive(message = "Units must be positive numbers")
     private int units;

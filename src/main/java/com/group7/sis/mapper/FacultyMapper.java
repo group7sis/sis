@@ -12,17 +12,20 @@ public interface FacultyMapper {
 
     @Mapping(target = "qualifiedCoursesIds", ignore = true)
     @Mapping(target = "scheduledCoursesIds", ignore = true)
+    @Mapping(target = "departmentId", ignore = true)
     FacultyDTO toDto(FacultyEntity facultyEntity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "facultyNumber", ignore = true)
     @Mapping(target = "qualifiedCourses", ignore = true)
     @Mapping(target = "scheduledCourses", ignore = true)
+    @Mapping(target = "department", ignore = true)
     FacultyEntity toEntity(FacultyDTO facultyDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "facultyNumber", ignore = true)
     @Mapping(target = "qualifiedCourses", ignore = true)
     @Mapping(target = "scheduledCourses", ignore = true)
+    @Mapping(target = "department", ignore = true)
     void updateEntityFromDto(FacultyDTO facultyDTO, @MappingTarget FacultyEntity facultyEntity);
 }

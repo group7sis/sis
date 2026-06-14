@@ -11,6 +11,7 @@ import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.repository.CourseRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
+import com.group7.sis.service.queryservices.DepartmentQueryService;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class CourseService {
     private final CourseMapper courseMapper;
 
     private final CurriculumQueryService curriculumQueryService;
+    private final DepartmentQueryService departmentQueryService;
 
     public CourseDTO addCourse(CourseDTO courseDTO){
         CourseEntity courseEntity = courseMapper.toEntity(courseDTO);
@@ -53,6 +55,11 @@ public class CourseService {
                 courseEntity.getCourseAssignments().add(courseAssignmentEntity);
             }
         }
+
+        if(courseDTO.getDepartmentId() != null){
+            courseEntity.setDepartment(departmentQueryService.getDepartmentEntity(courseDTO.getDepartmentId()));
+        }
+
         courseRepository.save(courseEntity);
         return getCourse(courseEntity.getId());
     }
@@ -98,6 +105,11 @@ public class CourseService {
             course.getCourseAssignments().clear();
             course.getCourseAssignments().addAll(newAssignments);
         }
+        
+        if(courseToModify.getDepartmentId() != null){
+            course.setDepartment(departmentQueryService.getDepartmentEntity(courseToModify.getDepartmentId()));
+        }
+
         courseMapper.updateEntityFromDTO(courseToModify, course);
         courseRepository.save(course);
         return getCourse(id);

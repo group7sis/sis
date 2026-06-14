@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+
 @RestController
 @RequiredArgsConstructor
 
@@ -223,4 +224,31 @@ public class AdminController {
     public SectionDTO createSection(@Valid @RequestBody SectionDTO sectionDTO) {
         return sectionService.addSection(sectionDTO);
     }
+
+    //-----------------------------------SETTINGS-----------------------------------
+    
+    //DEPARTMENTS
+    private final DepartmentService departmentService;
+
+    @GetMapping("/settings/departments")
+    public List<DepartmentEntity> getAllDepartments() {
+        return departmentService.getAllDepartment();
+    }
+
+    @GetMapping("/settings/departments/{id}")
+    public DepartmentDTO getDepartment(@PathVariable Long id) {
+        return departmentService.getDepartment(id);
+    }
+
+    @PutMapping("/settings/departments/{id}")
+    public DepartmentEntity updateDepartment(@PathVariable Long id, @Valid @RequestBody DepartmentDTO departmentDTO) {
+        return departmentService.updateDepartment(id, departmentDTO);
+    }
+
+    @PostMapping("/settings/departments/add")
+    public DepartmentEntity createDepartment(@Valid @RequestBody DepartmentDTO departmentDTO) {
+        return departmentService.addDepartment(departmentDTO);
+    }
+    
+    
 }

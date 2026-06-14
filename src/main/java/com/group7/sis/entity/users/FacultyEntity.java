@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.DepartmentEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 
 @Getter
@@ -43,8 +44,9 @@ public class FacultyEntity {
     @JoinColumn(name = "profile_id", nullable = false)
     private ProfileEntity profile;
 
-    @Column
-    private String department;
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private DepartmentEntity department;
 
     @Enumerated(EnumType.STRING)
     private EmploymentType employmentType;

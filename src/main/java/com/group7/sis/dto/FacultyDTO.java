@@ -26,8 +26,7 @@ public class FacultyDTO {
     @NotNull(message = "Profile details are required")
     private ProfileDTO profile;
 
-    @NotEmpty(message = "Please specify the department")
-    private String department;
+    private Long departmentId;
 
     @NotNull(message = "Please specify employment type of faculty")
     private EmploymentType employmentType;

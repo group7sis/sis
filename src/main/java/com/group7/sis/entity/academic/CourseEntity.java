@@ -26,6 +26,10 @@ public class CourseEntity {
 
     @Column
     private String title;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private DepartmentEntity department;
     
     @Column
     private int units;
