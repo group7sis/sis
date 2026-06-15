@@ -16,12 +16,6 @@ Use this page to understand:
 What it is:
 - admin user accounts
 
-What to show:
-- username
-- email
-- role
-- status
-
 Filters:
 - none documented for design
 
@@ -33,11 +27,6 @@ Summary stats:
 ### Terms
 What it is:
 - academic terms
-
-What to show:
-- academic year
-- semester
-- status
 
 Filters:
 - none documented for design
@@ -51,13 +40,6 @@ Summary stats:
 What it is:
 - academic programs and current curriculum
 
-What to show:
-- program title
-- program code
-- active curriculum
-- curriculum years
-- status
-
 Filters:
 - title
 - status
@@ -70,17 +52,6 @@ Summary stats:
 ### Courses
 What it is:
 - course details and where the course belongs
-
-What to show:
-- course title
-- department
-- curriculum
-- year level
-- semester
-- units
-- lecture hours
-- lab hours
-- status
 
 Filters:
 - title
@@ -101,17 +72,6 @@ Summary stats:
 ### Students
 What it is:
 - student profiles and academic status
-
-What to show:
-- student name
-- student number
-- student status
-- scholastic status
-- program
-- curriculum
-- year level
-- section
-- academic year
 
 Filters:
 - name
@@ -135,16 +95,6 @@ Summary stats:
 What it is:
 - faculty members and their assignments
 
-What to show:
-- faculty name
-- faculty number
-- department
-- position
-- employment type
-- qualified courses
-- assigned schedules
-- status
-
 Filters:
 - name
 - status
@@ -164,19 +114,6 @@ Summary stats:
 ### Schedules
 What it is:
 - course schedules and assigned faculty
-
-What to show:
-- schedule code
-- program
-- curriculum
-- section
-- academic year
-- year level
-- semester
-- assigned faculty
-- room
-- status
-- days and times
 
 Filters:
 - academic year
@@ -201,15 +138,6 @@ Summary stats:
 What it is:
 - student groups by program and year level
 
-What to show:
-- section name
-- section code
-- max capacity
-- program
-- year level
-- status
-- enrolled student count
-
 Filters:
 - name
 - program
@@ -227,10 +155,6 @@ Summary stats:
 ### Departments
 What it is:
 - department labels
-
-What to show:
-- department name
-- department code
 
 Filters:
 - name
