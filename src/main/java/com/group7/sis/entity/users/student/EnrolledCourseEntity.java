@@ -2,6 +2,8 @@ package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +15,10 @@ public class EnrolledCourseEntity {
         PASSED, FAILED, INCOMPLETE, ONGOING, DROPPED
     }
 
+    @ManyToOne
+    @JoinColumn(name = "acad_info_id")
+    private AcademicInfoEntity academicInfo;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +28,8 @@ public class EnrolledCourseEntity {
     private ScheduledCourseEntity schedule;
 
     @Column
+    @DecimalMax("5.00")
+    @DecimalMin("1.00")
     private double grade;
 
     @Enumerated(EnumType.STRING)

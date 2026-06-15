@@ -50,6 +50,7 @@ public class StudentDTO {
     @Setter
     public static class AcademicInfoDTO {
         private Long id;
+        private Long studentId;
 
         @NotNull(message = "Program must be assigned")
         private Long enrolledProgramId;
@@ -95,6 +96,7 @@ public class StudentDTO {
         @Setter
         public static class EnrolledCourseDTO {
             private Long id;
+            private Long academicInfoId;
 
             @NotNull(message = "Must assign a schedule")
             private Long scheduleId;

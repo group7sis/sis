@@ -1,6 +1,7 @@
 package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.SectionEntity;
+import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
@@ -22,6 +23,10 @@ public class AcademicInfoEntity {
         COMPLETED,
         DROPPED
     }
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private StudentEntity student;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +62,6 @@ public class AcademicInfoEntity {
     @Enumerated(EnumType.STRING)
     private EnrollmentStatus enrollmentStatus;
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "acad_info_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "academicInfo")
     private List<EnrolledCourseEntity> enrolledCourses = new ArrayList<>();
 }

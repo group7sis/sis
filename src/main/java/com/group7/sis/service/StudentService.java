@@ -13,6 +13,8 @@ import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
+import com.group7.sis.facultyModule.entity.StudentGradeRecordEntity;
+import com.group7.sis.facultyModule.repository.StudentGradeRecordRepository;
 import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
@@ -36,6 +38,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
+    private final StudentGradeRecordRepository studentGradeRecordRepository;
+
     private final ProgramQueryService programQueryService;
     private final SectionQueryService sectionQueryService;
     private final ScheduleQueryService scheduleQueryService;
@@ -52,7 +56,8 @@ public class StudentService {
 
             for (AcademicInfoDTO academicInfoDTO : studentDTO.getAcademicInfo()) {
                 AcademicInfoEntity academicInfoEntity = studentMapper.toAcademicInfoEntity(academicInfoDTO);
-
+                academicInfoEntity.setStudent(student);
+                
                 if (academicInfoDTO.getEnrolledProgramId() != null) {
                     academicInfoEntity.setEnrolledProgram(
                             programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
@@ -74,8 +79,9 @@ public class StudentService {
                     checkForEnrolledCoursesDuplicates(academicInfoDTO);
 
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
-                        EnrolledCourseEntity enrolledCourseEntity = studentMapper
-                                .toEnrolledCourseEntity(enrolledCourseDTO);
+                        EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
+                        enrolledCourseEntity.setAcademicInfo(academicInfoEntity);
+
                         if (enrolledCourseDTO.getScheduleId() != null) {
                             validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService
                                     .getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
@@ -83,12 +89,20 @@ public class StudentService {
                                     scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
+                        createStudentGradeRecord(enrolledCourseEntity);
                     }
                 }
                 student.getAcademicInfo().add(academicInfoEntity);
             }
         }
         return studentRepository.save(student);
+    }
+
+    private void createStudentGradeRecord(EnrolledCourseEntity enrolledCourseEntity){
+        StudentGradeRecordEntity studentGradeRecord = new StudentGradeRecordEntity();
+        studentGradeRecord.setEnrolledCourse(enrolledCourseEntity);
+        studentGradeRecord.setFinalized(false);
+        studentGradeRecordRepository.save(studentGradeRecord);
     }
 
     public StudentDTO getStudent(Long id) {
@@ -119,6 +133,7 @@ public class StudentService {
                 }
 
                 studentMapper.updateAcademicInfoEntityFromDTO(academicInfoDTO, academicInfoEntity);
+                academicInfoEntity.setStudent(student);
 
                 if (academicInfoDTO.getEnrolledProgramId() != null) {
                     academicInfoEntity.setEnrolledProgram(
@@ -155,6 +170,8 @@ public class StudentService {
                         }
 
                         studentMapper.updateEnrolledCourseEntityFromDTO(enrolledCourseDTO, enrolledCourseEntity);
+                        enrolledCourseEntity.setAcademicInfo(academicInfoEntity);
+                        
                         if (enrolledCourseDTO.getScheduleId() != null) {
                             validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService
                                     .getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());

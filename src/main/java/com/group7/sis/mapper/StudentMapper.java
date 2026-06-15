@@ -27,12 +27,14 @@ public interface StudentMapper {
     void updateEntityFromDTO(StudentDTO dto, @MappingTarget StudentEntity entity);
 
 
+    @Mapping(target = "studentId", source = "student.id")
     @Mapping(target = "enrolledProgramId", source = "enrolledProgram.id")
     @Mapping(target = "programCurriculumId", source = "enrolledProgram.activeCurriculum.id")
     @Mapping(target = "sectionId", source = "section.id")
     AcademicInfoDTO toAcademicInfoDto(AcademicInfoEntity academicInfoEntity);
     
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "student", ignore = true)
     @Mapping(target = "enrolledProgram", ignore = true)
     @Mapping(target = "programCurriculum", ignore = true)
     @Mapping(target = "section", ignore = true)
@@ -40,22 +42,26 @@ public interface StudentMapper {
     AcademicInfoEntity toAcademicInfoEntity(AcademicInfoDTO academicInfoDTO);
     
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "student", ignore = true)
     @Mapping(target = "enrolledProgram", ignore = true)
     @Mapping(target = "programCurriculum", ignore = true)
     @Mapping(target = "section", ignore = true)
     @Mapping(target = "enrolledCourses", ignore = true)
     void updateAcademicInfoEntityFromDTO(AcademicInfoDTO dto, @MappingTarget AcademicInfoEntity entity);
 
+    @Mapping(target = "academicInfoId", source = "academicInfo.id")
     @Mapping(target = "scheduleId", source = "schedule.id")
     @Mapping(target = "courseId", source = "schedule.courseAssignment.course.id")
     @Mapping(target = "programId", source = "schedule.section.program.id")
     EnrolledCourseDTO toEnrolledCourseDto(EnrolledCourseEntity enrolledCourseEntity);
     
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "academicInfo", ignore = true)
     @Mapping(target = "schedule", ignore = true)
     EnrolledCourseEntity toEnrolledCourseEntity(EnrolledCourseDTO enrolledCourseDTO);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "academicInfo", ignore = true)
     @Mapping(target = "schedule", ignore = true)
     void updateEnrolledCourseEntityFromDTO(EnrolledCourseDTO dto, @MappingTarget EnrolledCourseEntity entity);
 }

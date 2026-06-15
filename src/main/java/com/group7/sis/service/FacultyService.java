@@ -12,6 +12,8 @@ import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.entity.users.FacultyEntity.Status;
+import com.group7.sis.facultyModule.entity.GradeConfigurationEntity;
+import com.group7.sis.facultyModule.repository.GradeConfigurationRepository;
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.dto.pagedResponse.FacultyPageDTO;
 import com.group7.sis.dto.statsDtos.FacultyStatsDTO;
@@ -35,6 +37,8 @@ public class FacultyService {
     private final CourseQueryService courseQueryService;
     private final DepartmentQueryService departmentQueryService;
     private final ScheduleQueryService scheduleQueryService;
+
+    private final GradeConfigurationRepository gradeConfigurationRepository;
 
     public FacultyEntity addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
@@ -61,8 +65,15 @@ public class FacultyService {
         //         faculty.getScheduledCourses().add(schedule);
         //     }
         // }
+        GradeConfigurationEntity config = new GradeConfigurationEntity();
+        config.setFaculty(faculty);
+        config.setAssignmentWeight(30);
+        config.setQuizWeight(20);
+        config.setActivityWeight(20);
+        config.setFinalExamWeight(30);
 
         facultyRepository.save(faculty);
+        gradeConfigurationRepository.save(config);
         return faculty;
     }
 

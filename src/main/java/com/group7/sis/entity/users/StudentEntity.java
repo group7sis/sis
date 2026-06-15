@@ -52,7 +52,6 @@ public class StudentEntity {
     @Column
     private String yearAdmitted; 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "student_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
     private List<AcademicInfoEntity> academicInfo = new ArrayList<>(); //enrollment history, current enrollment, etc.   
 }

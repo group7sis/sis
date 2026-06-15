@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 
 import com.group7.sis.dto.FacultyDTO;
 import com.group7.sis.entity.users.FacultyEntity;
+import com.group7.sis.facultyModule.dtos.FacultyProfileDTO;
 
 @Mapper(componentModel = "spring", uses = {ProfileMapper.class, AccountMapper.class})
 public interface FacultyMapper {
@@ -28,4 +29,11 @@ public interface FacultyMapper {
     @Mapping(target = "scheduledCourses", ignore = true)
     @Mapping(target = "department", ignore = true)
     void updateEntityFromDto(FacultyDTO facultyDTO, @MappingTarget FacultyEntity facultyEntity);
+
+    @Mapping(target = "departmentName", source = "department.name")
+    @Mapping(target = "firstName", source = "profile.firstName")
+    @Mapping(target = "middleName", source = "profile.middleName")
+    @Mapping(target = "lastName", source = "profile.lastName")
+    @Mapping(target = "mobileNumber", source = "profile.mobileNumber")
+    FacultyProfileDTO toProfileDTO(FacultyEntity facultyEntity);
 }
