@@ -3,6 +3,7 @@ package com.group7.sis.service.queryservices;
 import org.springframework.stereotype.Service;
 
 import com.group7.sis.entity.users.StudentEntity;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.repository.StudentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,9 @@ public class StudentQueryService {
 
     public long getTotalStudents(){
         return studentRepository.count();
+    }
+
+    public long getTotalStudentsOfFacultyByAcadmicYearAndSemesterAndByEnrollmentStatus(Long facultyId, String academicYear, int semester, EnrollmentStatus enrollmentStatus){
+        return studentRepository.countDistinctByAcademicInfoEnrolledCoursesScheduleAssignedFacultyIdAndAcademicInfoAcademicYearAndAcademicInfoSemesterAndAcademicInfoEnrollmentStatus(facultyId, academicYear, semester, enrollmentStatus);
     }
 }

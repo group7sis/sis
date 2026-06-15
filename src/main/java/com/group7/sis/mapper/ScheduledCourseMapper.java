@@ -20,6 +20,7 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "semester", source = "courseAssignment.semester")
     @Mapping(target = "sectionId", source = "section.id")
     @Mapping(target = "assignedFacultyId", source = "assignedFaculty.id")
+    @Mapping(target = "sectionName", source = "section.name")
     ScheduledCourseDTO toDto(ScheduledCourseEntity scheduledCourseEntity);
 
     DayDTO toDto(DayEntity dayEntity);

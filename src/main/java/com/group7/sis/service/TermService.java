@@ -20,6 +20,9 @@ public class TermService {
     private final TermMapper termMapper;
 
     public TermEntity addTerm(TermDTO termDTO){
+        if (termRepository.count() >= 1) {
+            throw new RuntimeException("Only one term can be created");
+        }
         TermEntity term = termMapper.toEntity(termDTO);
         return termRepository.save(term);
     }

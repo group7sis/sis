@@ -1,8 +1,11 @@
 package com.group7.sis.service.queryservices;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.entity.academic.DayEntity.DayName;
 import com.group7.sis.repository.ScheduledCourseRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -17,11 +20,27 @@ public class ScheduleQueryService {
         .orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
 
+    public List<ScheduledCourseEntity> findTodaysSchedulesByFaculty(Long facultyId, DayName dayName, String academicYear, int semester){
+        return scheduledCourseRepository.findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndDaysName(facultyId, academicYear, semester, dayName);
+    }
+
     public long getTotalSchedules(){
         return scheduledCourseRepository.count();
     }
 
     public long getTotalSchedulesByFaculty(Long facultyId){
         return scheduledCourseRepository.countByAssignedFacultyId(facultyId);
+    }
+
+    public long getTotalSchedulesByFacultyAndAcademicYearAndSemester(Long facultyId, String academicYear, int semester){
+        return scheduledCourseRepository.countByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemester(facultyId, academicYear, semester);
+    }
+
+    public long getTotalSectionByAcademicYearAndSemesterAndFaculty(String academicYear, int semester, Long facultyId){
+        return scheduledCourseRepository.countSectionsHandledByFaculty(academicYear, semester, facultyId);
+    }
+
+    public long getTotalCoursesHandledByAcademicYearAndSemesterAndFaculty(String academicYear, int semester, Long facultyId){
+        return scheduledCourseRepository.countCoursesHandledByFaculty(academicYear, semester, facultyId);
     }
 }

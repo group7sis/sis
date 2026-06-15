@@ -27,7 +27,27 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
 
     List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentId(Long id, String academicYear, Long courseAssignmentId);
 
+    List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndDaysName(Long facultyId, String academicYear, int semester, DayName dayName);
+
+    @Query("""
+    SELECT COUNT(DISTINCT s.section.id) FROM ScheduledCourseEntity s 
+    WHERE s.assignedFaculty.id = :facultyId 
+    AND s.academicYear = :academicYear 
+    AND s.courseAssignment.semester = :semester
+    """)
+    long countSectionsHandledByFaculty(String academicYear, int semester, Long facultyId);
+
+    long countByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemester(Long facultyId, String academicYear, int semester);
+
     long countByAssignedFacultyId(Long facultyId);
+
+    @Query("""
+    SELECT COUNT(DISTINCT s.courseAssignment.course.id) FROM ScheduledCourseEntity s 
+    WHERE s.assignedFaculty.id = :facultyId 
+    AND s.academicYear = :academicYear 
+    AND s.courseAssignment.semester = :semester
+    """)
+    long countCoursesHandledByFaculty(String academicYear, int semester, Long facultyId);
     
     @Query("""
     SELECT DISTINCT s FROM ScheduledCourseEntity s

@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
+import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 
 
@@ -20,6 +21,8 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     List<StudentEntity> findByYearAdmitted(String yearAdmitted);
 
     long countDistinctByAcademicInfoSectionId(Long sectionId);
+
+    long countDistinctByAcademicInfoEnrolledCoursesScheduleAssignedFacultyIdAndAcademicInfoAcademicYearAndAcademicInfoSemesterAndAcademicInfoEnrollmentStatus(Long facultyId, String academicYear, int semester, EnrollmentStatus enrollmentStatus);
 
     StudentEntity findTopByYearAdmittedOrderByStudentNumberDesc(String yearAdmitted);
 
