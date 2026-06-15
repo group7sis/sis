@@ -42,6 +42,55 @@ Search is controlled by optional query params specific to each resource.
 The stats counts are derived from the same query conditions as the list, so they reflect the same search result set.
 
 ----------------------------------------------
+STATS AVAILABLE PER RESOURCE
+
+Every GET /admin/{resource} response includes a `stats` object with summary values computed from the same filter set as the returned list.
+
+Available resource-level stats:
+- GET /admin/courses
+  - totalCourses
+  - totalActiveCourses
+  - totalInactiveCourses
+- GET /admin/students
+  - totalStudents
+  - totalActiveStudents
+  - totalIrregularStudents
+  - totalGraduatedStudents
+- GET /admin/faculty
+  - totalFaculty
+  - totalActiveFaculty
+  - totalInactiveFaculty
+  - totalSchedulesAssignedPerFaculty
+- GET /admin/schedules
+  - totalSchedules
+  - totalActiveSchedules
+  - totalInactiveSchedules
+  - weeklyHours
+  - dailyHours
+- GET /admin/sections
+  - totalSections
+  - totalActiveSections
+  - totalInactiveSections
+  - totalEnrolledStudentsPerSection
+
+Resources that currently do not return per-resource stats in the list endpoint:
+- accounts
+- terms
+- programs
+- departments
+
+For global dashboard totals use GET /admin/dashboard:
+- totalPrograms
+- totalCurriculums
+- totalCourses
+- totalSections
+- totalStudents
+- totalFaculty
+- totalSchedules
+- totalDepartments
+- totalAdminAccounts
+
+----------------------------------------------
 FILTERING/SEARCH CAPABILITIES:
 
 GET /admin/programs?title={title}&status={status}
