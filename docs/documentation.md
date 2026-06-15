@@ -218,7 +218,7 @@ The list response includes a `stats` object with:
 - `totalActiveSchedules`
 - `totalInactiveSchedules`
 - `weeklyHours`
-- `dailyHours`
+- `dailyHours` - hours calculated for the filtered `day` value, when `day` is provided
 
 ---
 
