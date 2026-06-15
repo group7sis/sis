@@ -164,6 +164,26 @@ Summary stats:
 
 ---
 
+### Dashboard
+What it is:
+- global admin summary stats for the system
+
+Filters:
+- none (dashboard shows global totals)
+
+Summary stats:
+- total programs
+- total curriculums
+- total courses
+- total sections
+- total students
+- total faculty
+- total schedules
+- total departments
+- total admin accounts
+
+---
+
 ### General design notes
 - The summary numbers should match whatever filters the user has selected.
 - For schedules, daily hours is based on the selected day filter.
