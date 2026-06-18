@@ -30,6 +30,9 @@ public class ProgramDTO {
 
     private Long activeCurriculumId;
 
+    @NotNull(message = "Program must be assigned to a department")
+    private Long departmentId;
+
     @Valid
     @NotEmpty(message = "Program must contain at least one curriculum")
     private List<CurriculumDTO> curriculums = new ArrayList<>();

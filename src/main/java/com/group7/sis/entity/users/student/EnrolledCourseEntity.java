@@ -1,6 +1,7 @@
 package com.group7.sis.entity.users.student;
 
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -30,7 +31,7 @@ public class EnrolledCourseEntity {
     @Column
     @DecimalMax("5.00")
     @DecimalMin("1.00")
-    private double grade;
+    private Double grade;
 
     @Enumerated(EnumType.STRING)
     private Status status;

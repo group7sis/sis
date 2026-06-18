@@ -89,4 +89,34 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
         @Param("yearLevel") Integer yearLevel,
         @Param("sectionId") Long sectionId
     );
-}
+
+    @Query("""
+    SELECT DISTINCT s FROM StudentEntity s
+    LEFT JOIN s.academicInfo ai
+    WHERE(
+        :name IS NULL OR LOWER(
+            CONCAT(
+                s.profile.firstName, ' ',
+                CASE WHEN s.profile.middleName IS NULL THEN ''
+                ELSE CONCAT(s.profile.middleName, ' ') END,
+                s.profile.lastName
+            )
+        ) LIKE LOWER(CONCAT('%', :name, '%'))
+    )
+    AND s.studentStatus = :studentStatus
+    AND ai.section.id = :sectionId
+    AND ai.enrolledCourses.schedule.courseAssignment.course.id = :courseId
+    AND ai.enrolledCourses.schedule.courseAssignment.assignedFaculty.id = :facultyId
+    AND ai.enrolledCourses.academicYear = :academicYear
+    AND ai.enrolledCourses.courseAssignment.semester = :semester
+    """)
+    List<StudentEntity> getStudentsHandledByFaculty(
+        @Param("name") String name,
+        @Param("studentStatus") StudentStatus studentStatus,
+        @Param("sectionId") Long sectionId,
+        @Param("courseId") Long courseId,
+        @Param("courseId") Long facultyId,
+        @Param("academicYear") String academicYear,
+        @Param("semester") int semester
+    );
+}   

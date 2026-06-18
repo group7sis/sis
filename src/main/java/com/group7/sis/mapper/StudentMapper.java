@@ -58,10 +58,12 @@ public interface StudentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "academicInfo", ignore = true)
     @Mapping(target = "schedule", ignore = true)
+    @Mapping(target = "status", ignore = true)
     EnrolledCourseEntity toEnrolledCourseEntity(EnrolledCourseDTO enrolledCourseDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "academicInfo", ignore = true)
     @Mapping(target = "schedule", ignore = true)
+    //TODO: ignore status at updates too?
     void updateEnrolledCourseEntityFromDTO(EnrolledCourseDTO dto, @MappingTarget EnrolledCourseEntity entity);
 }

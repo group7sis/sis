@@ -184,7 +184,6 @@ public class AdminController {
     public StudentEntity createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         return studentService.addStudent(studentDTO);
     }
-    
 
     // -----------------------------------FACULTY-----------------------------------
     private final FacultyService facultyService;

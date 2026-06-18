@@ -4,7 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.group7.sis.entity.academic.CourseEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.academic.DayEntity.DayName;
 import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 
@@ -47,7 +49,11 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
     AND s.academicYear = :academicYear 
     AND s.courseAssignment.semester = :semester
     """)
-    long countCoursesHandledByFaculty(String academicYear, int semester, Long facultyId);
+    long countCoursesHandledByFaculty(
+        @Param("academicYear") String academicYear, 
+        @Param("semester") int semester, 
+        @Param("facultyId") Long facultyId
+    );
     
     @Query("""
     SELECT DISTINCT s FROM ScheduledCourseEntity s
@@ -93,5 +99,32 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
         @Param("sectionId") Long sectionId,
         @Param("status") ScheduleStatus status,
         @Param("dayName") DayName dayName
+    );
+
+
+    @Query("""
+    SELECT DISTINCT s.courseAssignment.course FROM ScheduledCourseEntity s 
+    WHERE s.assignedFaculty.id = :facultyId 
+    AND s.academicYear = :academicYear 
+    AND s.courseAssignment.semester = :semester
+    """)
+    List<CourseEntity> getCoursesHandledOfFacultyByTerm(
+        @Param("academicYear") String academicYear, 
+        @Param("semester") int semester, 
+        @Param("facultyId") Long facultyId
+    );
+
+    @Query("""
+    SELECT DISTINCT s.section FROM ScheduledCourseEntity s 
+    WHERE s.assignedFaculty.id = :facultyId 
+    AND s.academicYear = :academicYear 
+    AND s.courseAssignment.semester = :semester
+    AND s.courseAssignment.course.id = :courseId
+    """)
+    List<SectionEntity> getSectionsFromCourses(
+        @Param("academicYear") String academicYear, 
+        @Param("semester") int semester, 
+        @Param("facultyId") Long facultyId,
+        @Param("courseId") Long courseId
     );
 }

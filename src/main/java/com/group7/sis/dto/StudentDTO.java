@@ -105,7 +105,7 @@ public class StudentDTO {
 
             private Long courseId;
 
-            private double grade;
+            private Double grade;
 
             @NotNull(message = "Course enrollment status must be defined")
             private Status status;

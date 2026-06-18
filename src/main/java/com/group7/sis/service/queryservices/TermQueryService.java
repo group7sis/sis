@@ -16,4 +16,14 @@ public class TermQueryService {
         return termRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Term not found."));
     }
+
+    public String getCurrentYear(){
+        long id = 1;
+        return getTermEntity(id).getAcademicYear();
+    }
+
+    public int getCurrentSemester(){
+        long id = 1;
+        return getTermEntity(id).getSemester();
+    }
 }

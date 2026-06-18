@@ -7,6 +7,7 @@ import com.group7.sis.dto.ProgramDTO.YearDTO;
 import com.group7.sis.dto.GetProgramDTO;
 import com.group7.sis.repository.ProgramRepository;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
+import com.group7.sis.service.queryservices.DepartmentQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
@@ -29,9 +30,12 @@ public class ProgramService {
     private final ProgramMapper programMapper;
 
     private final CurriculumQueryService curriculumQueryService;
+    private final DepartmentQueryService departmentQueryService;
 
     public ProgramEntity addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
+        
+        program.setDepartment(departmentQueryService.getDepartmentEntity(request.getDepartmentId()));
         
         validateCurriculums(request.getCurriculums());
 
@@ -60,6 +64,8 @@ public class ProgramService {
 
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){
         ProgramEntity program = programQueryService.getProgramEntity(id);
+
+        program.setDepartment(departmentQueryService.getDepartmentEntity(programDTO.getDepartmentId()));
 
         if(programDTO.getActiveCurriculumId() == null){
 

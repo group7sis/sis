@@ -13,6 +13,7 @@ import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.EnrolledCourseEntity;
+import com.group7.sis.entity.users.student.EnrolledCourseEntity.Status;
 import com.group7.sis.facultyModule.entity.StudentGradeRecordEntity;
 import com.group7.sis.facultyModule.repository.StudentGradeRecordRepository;
 import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
@@ -23,6 +24,7 @@ import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.ScheduleQueryService;
 import com.group7.sis.service.queryservices.SectionQueryService;
 import com.group7.sis.service.queryservices.StudentQueryService;
+import com.group7.sis.service.queryservices.TermQueryService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +46,13 @@ public class StudentService {
     private final SectionQueryService sectionQueryService;
     private final ScheduleQueryService scheduleQueryService;
     private final CurriculumQueryService curriculumQueryService;
+    private final TermQueryService termQueryService;
 
     public StudentEntity addStudent(StudentDTO studentDTO) {
         StudentEntity student = studentMapper.toEntity(studentDTO);
 
         student.setStudentNumber(studentNumberGenerator(student.getYearAdmitted()));
+        student.setYearAdmitted(termQueryService.getCurrentYear());
 
         if (studentDTO.getAcademicInfo() != null && !studentDTO.getAcademicInfo().isEmpty()) {
 
@@ -81,21 +85,35 @@ public class StudentService {
                     for (EnrolledCourseDTO enrolledCourseDTO : academicInfoDTO.getEnrolledCourses()) {
                         EnrolledCourseEntity enrolledCourseEntity = studentMapper.toEnrolledCourseEntity(enrolledCourseDTO);
                         enrolledCourseEntity.setAcademicInfo(academicInfoEntity);
-
+                        enrolledCourseEntity.setStatus(Status.ONGOING);
+                        
                         if (enrolledCourseDTO.getScheduleId() != null) {
-                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService
-                                    .getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
-                            enrolledCourseEntity.setSchedule(
-                                    scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
+                            enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
-                        createStudentGradeRecord(enrolledCourseEntity);
                     }
                 }
                 student.getAcademicInfo().add(academicInfoEntity);
             }
         }
-        return studentRepository.save(student);
+        studentRepository.save(student);
+        createStudentGradeRecordPerEnrollment(student);
+        return student;
+    }
+
+    private void createStudentGradeRecordPerEnrollment(StudentEntity student){
+        if(student.getAcademicInfo() != null){
+            
+            for (AcademicInfoEntity academicInfo : student.getAcademicInfo()){
+
+                if(academicInfo.getEnrolledCourses() != null){
+                    for (EnrolledCourseEntity enrolledCourse : academicInfo.getEnrolledCourses()){
+                        createStudentGradeRecord(enrolledCourse);
+                    }
+                }
+            }
+        }
     }
 
     private void createStudentGradeRecord(EnrolledCourseEntity enrolledCourseEntity){
