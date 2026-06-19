@@ -93,6 +93,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
     @Query("""
     SELECT DISTINCT s FROM StudentEntity s
     LEFT JOIN s.academicInfo ai
+    LEFT JOIN ai.enrolledCourses ec
     WHERE(
         :name IS NULL OR LOWER(
             CONCAT(
@@ -104,18 +105,18 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
         ) LIKE LOWER(CONCAT('%', :name, '%'))
     )
     AND s.studentStatus = :studentStatus
-    AND ai.section.id = :sectionId
-    AND ai.enrolledCourses.schedule.courseAssignment.course.id = :courseId
-    AND ai.enrolledCourses.schedule.courseAssignment.assignedFaculty.id = :facultyId
-    AND ai.enrolledCourses.academicYear = :academicYear
-    AND ai.enrolledCourses.courseAssignment.semester = :semester
+    AND ec.schedule.section.id = :sectionId
+    AND ec.schedule.courseAssignment.course.id = :courseId
+    AND ec.schedule.assignedFaculty.id = :facultyId
+    AND ec.schedule.academicYear = :academicYear
+    AND ec.schedule.courseAssignment.semester = :semester
     """)
     List<StudentEntity> getStudentsHandledByFaculty(
         @Param("name") String name,
         @Param("studentStatus") StudentStatus studentStatus,
         @Param("sectionId") Long sectionId,
         @Param("courseId") Long courseId,
-        @Param("courseId") Long facultyId,
+        @Param("facultyId") Long facultyId,
         @Param("academicYear") String academicYear,
         @Param("semester") int semester
     );

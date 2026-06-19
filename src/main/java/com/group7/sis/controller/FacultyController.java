@@ -67,9 +67,9 @@ public class FacultyController {
 
     //------------------------------------------CLASS LIST----------------------------------------------------
     //reuse getCoursesHandled and getSectionAndStat
-    @GetMapping("/{id}/classes/courses/{courseId}/sections/{students}")
+    @GetMapping("/{id}/classes/courses/{courseId}/sections/{sectionId}/students")
     public List<StudentDTO> getStudentsHandled(@PathVariable Long id, @PathVariable Long courseId, @PathVariable Long sectionId, @RequestParam (required = false) String name) {
-        return facultyModuleService.getStudentsHandledByNameAndFacultyAndSectionAndCourse(name, sectionId, courseId, facultyId);
+        return facultyModuleService.getStudentsHandledByNameAndFacultyAndSectionAndCourse(name, sectionId, courseId, id);
     }
     
 
