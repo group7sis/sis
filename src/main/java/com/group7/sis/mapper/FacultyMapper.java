@@ -34,6 +34,7 @@ public interface FacultyMapper {
     @Mapping(target = "firstName", source = "profile.firstName")
     @Mapping(target = "middleName", source = "profile.middleName")
     @Mapping(target = "lastName", source = "profile.lastName")
+    @Mapping(target = "suffix", source = "profile.suffix")
     @Mapping(target = "mobileNumber", source = "profile.mobileNumber")
     FacultyProfileDTO toProfileDTO(FacultyEntity facultyEntity);
 }

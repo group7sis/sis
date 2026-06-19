@@ -78,6 +78,8 @@ public class StudentDTO {
         @Positive(message = "Year level must be positive")
         private int yearLevel;
 
+        private int units;
+
         @PastOrPresent(message = "Enrollment date can't be from the future")
         @NotNull(message = "Enrollment date is required")
         private LocalDate enrollmentDate;
@@ -102,8 +104,12 @@ public class StudentDTO {
             private Long scheduleId;
 
             private Long programId;
-
             private Long courseId;
+            private String courseCode;
+            private String courseTitle;
+            private String facultyName;
+            private int units;
+            private String sectionName;
 
             private Double grade;
 

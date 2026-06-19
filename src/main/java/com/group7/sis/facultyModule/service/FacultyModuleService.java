@@ -6,6 +6,7 @@ import com.group7.sis.service.queryservices.StudentQueryService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -274,6 +275,7 @@ public class FacultyModuleService {
         facultyEntity.getProfile().setFirstName(facultyProfileDTO.getFirstName());
         facultyEntity.getProfile().setMiddleName(facultyProfileDTO.getMiddleName());
         facultyEntity.getProfile().setLastName(facultyProfileDTO.getLastName());
+        facultyEntity.getProfile().setSuffix(facultyProfileDTO.getSuffix());
         facultyEntity.getProfile().setMobileNumber(facultyProfileDTO.getMobileNumber());
 
         facultyRepository.save(facultyEntity);
@@ -337,6 +339,7 @@ public class FacultyModuleService {
         
         DayOfWeek currentDay = LocalDate.now().getDayOfWeek();
         DayName currentDayName = DayName.valueOf(currentDay.name());
+        Month month = LocalDate.now().getMonth();
 
         for (ScheduledCourseEntity schedule : scheduleQueryService.findTodaysSchedulesByFaculty(facultyId, currentDayName, currentTerm.getAcademicYear(), currentTerm.getSemester())){
             schedules.add(scheduledCourseMapper.toDto(schedule));
@@ -346,13 +349,15 @@ public class FacultyModuleService {
         FacultyEntity faculty = facultyQueryService.getFacultyEntity(facultyId);
 
         String dayOfTheWeekFormatted = currentDay.name().charAt(0) + currentDay.name().substring(1).toLowerCase();
+        String monthFormatted = month.name().charAt(0) + month.name().substring(1).toLowerCase();
+
 
         String prefix = faculty.getProfile().getSex() == Sex.MALE ? "Mr. " : "Ms. ";
-        String facultyName = prefix + faculty.getProfile().getFirstName() + (faculty.getProfile().getMiddleName() == null ? "" : (" " + faculty.getProfile().getMiddleName())) + (" " + faculty.getProfile().getLastName());
+        String facultyName = prefix + faculty.getProfile().getFirstName() + (faculty.getProfile().getMiddleName() == null ? "" : (" " + faculty.getProfile().getMiddleName())) + (" " + faculty.getProfile().getLastName()) + (faculty.getProfile().getSuffix() == null ? "" : (" " + faculty.getProfile().getSuffix()));
 
         page.setSchedules(schedules);
         page.setStats(stats);
-        page.setCurrentMonth(LocalDate.now().getMonth().toString());
+        page.setCurrentMonth(monthFormatted);
         page.setCurrentDay(String.valueOf(LocalDate.now().getDayOfMonth()));
         page.setCurrentYear(String.valueOf(LocalDate.now().getYear()));
         page.setCurrentDayOfTheWeek(dayOfTheWeekFormatted);

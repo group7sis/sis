@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
+import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.repository.StudentRepository;
 
@@ -35,5 +36,9 @@ public class StudentQueryService {
 
     public List<StudentEntity> getStudentsHandedByFacultyByNameAndSectionAndCourseAndTerm(String name, StudentStatus studentStatus, Long sectionId, Long courseId, Long facultyId, String academicYear, int semester){   
         return studentRepository.getStudentsHandledByFaculty(name, studentStatus, sectionId, courseId, facultyId, academicYear, semester);
+    }
+
+    public AcademicInfoEntity getEnrollmentOfStudentByYearAndSem(Long studentId, String academicYear, int sem){
+        return studentRepository.getEnrollmentByYearAndSemester(studentId, academicYear, sem);
     }
 }

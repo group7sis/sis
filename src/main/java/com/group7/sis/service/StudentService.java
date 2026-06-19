@@ -9,6 +9,9 @@ import com.group7.sis.dto.pagedResponse.StudentsPageDTO;
 import com.group7.sis.dto.statsDtos.StudentsStatsDTO;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.ProgramEntity;
+import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.entity.academic.SectionEntity;
+import com.group7.sis.entity.academic.YearEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
@@ -63,8 +66,27 @@ public class StudentService {
                 academicInfoEntity.setStudent(student);
                 
                 if (academicInfoDTO.getEnrolledProgramId() != null) {
-                    academicInfoEntity.setEnrolledProgram(
-                            programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                    ProgramEntity program = programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId());
+                    CurriculumEntity activeCurriculum = program.getActiveCurriculum();
+
+                    if(activeCurriculum == null){
+                        throw new RuntimeException("Program has no active curriculum set");
+                    }
+                    else{
+                        if (academicInfoDTO.getYearLevel() > activeCurriculum.getDurationYear()){
+                            throw new RuntimeException("Year exceeds curriculum duration of years");
+                        }
+
+                        for (YearEntity year : activeCurriculum.getYears()){
+                            if (academicInfoDTO.getYearLevel() == year.getLevel() &&
+                                academicInfoDTO.getSemester() > year.getTotalSemester()
+                            ){
+                                throw new RuntimeException("Semester exceeds the curriculum's year total semester");
+                            }
+                        }
+                    }
+                    
+                    academicInfoEntity.setEnrolledProgram(program);
                 }
 
                 if (academicInfoDTO.getProgramCurriculumId() != null) {
@@ -75,8 +97,12 @@ public class StudentService {
                 }
 
                 if (academicInfoDTO.getSectionId() != null) {
+                    SectionEntity section = sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId());
                     validateSectionYearLevel(academicInfoDTO);
-                    academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                    if (section.getProgram().getId() != academicInfoDTO.getEnrolledProgramId()){
+                        throw new RuntimeException("Section must belong to enrolled program");
+                    }
+                    academicInfoEntity.setSection(section);
                 }
 
                 if (academicInfoDTO.getEnrolledCourses() != null && !academicInfoDTO.getEnrolledCourses().isEmpty()) {
@@ -88,7 +114,16 @@ public class StudentService {
                         enrolledCourseEntity.setStatus(Status.ONGOING);
                         
                         if (enrolledCourseDTO.getScheduleId() != null) {
-                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
+                            ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId());
+                            validateAcademicYear(academicInfoDTO.getAcademicYear(), schedule.getAcademicYear());
+
+                            //not working
+                            if (schedule.getCourseAssignment().getProgram().getId() != academicInfoDTO.getEnrolledProgramId() ||
+                                schedule.getCourseAssignment().getSemester() != academicInfoDTO.getSemester() ||
+                                schedule.getCourseAssignment().getYearLevel() != academicInfoDTO.getYearLevel()
+                            ){
+                                throw new RuntimeException("An enrolled course is not available to enrollment profile");
+                            }
                             enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
@@ -154,20 +189,40 @@ public class StudentService {
                 academicInfoEntity.setStudent(student);
 
                 if (academicInfoDTO.getEnrolledProgramId() != null) {
-                    academicInfoEntity.setEnrolledProgram(
-                            programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId()));
+                    ProgramEntity program = programQueryService.getProgramEntity(academicInfoDTO.getEnrolledProgramId());
+                    CurriculumEntity activeCurriculum = program.getActiveCurriculum();
+
+                    if(activeCurriculum == null){
+                        throw new RuntimeException("Program has no active curriculum set");
+                    }
+                    else{
+                        if (academicInfoDTO.getYearLevel() > activeCurriculum.getDurationYear()){
+                            throw new RuntimeException("Year exceeds curriculum duration of years");
+                        }
+
+                        for (YearEntity year : activeCurriculum.getYears()){
+                            if (academicInfoDTO.getYearLevel() == year.getLevel() &&
+                                academicInfoDTO.getSemester() > year.getTotalSemester()
+                            ){
+                                throw new RuntimeException("Semester exceeds the curriculum's year total semester");
+                            }
+                        }
+                    }
+                    academicInfoEntity.setEnrolledProgram(program);
                 }
 
                 if (academicInfoDTO.getProgramCurriculumId() != null) {
-                    validateCurriculum(academicInfoDTO.getEnrolledProgramId(),
-                            academicInfoDTO.getProgramCurriculumId());
-                    academicInfoEntity.setProgramCurriculum(
-                            curriculumQueryService.getCurriculumEntity(academicInfoDTO.getProgramCurriculumId()));
+                    validateCurriculum(academicInfoDTO.getEnrolledProgramId(), academicInfoDTO.getProgramCurriculumId());
+                    academicInfoEntity.setProgramCurriculum(curriculumQueryService.getCurriculumEntity(academicInfoDTO.getProgramCurriculumId()));
                 }
 
                 if (academicInfoDTO.getSectionId() != null) {
+                    SectionEntity section = sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId());
                     validateSectionYearLevel(academicInfoDTO);
-                    academicInfoEntity.setSection(sectionQueryService.getSectionEntity(academicInfoDTO.getSectionId()));
+                    if (section.getProgram().getId() != academicInfoDTO.getEnrolledProgramId()){
+                        throw new RuntimeException("Section must belong to enrolled program");
+                    }
+                    academicInfoEntity.setSection(section);
                 }
 
                 if (academicInfoDTO.getEnrolledCourses() != null) {
@@ -191,10 +246,17 @@ public class StudentService {
                         enrolledCourseEntity.setAcademicInfo(academicInfoEntity);
                         
                         if (enrolledCourseDTO.getScheduleId() != null) {
-                            validateAcademicYear(academicInfoDTO.getAcademicYear(), scheduleQueryService
-                                    .getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()).getAcademicYear());
-                            enrolledCourseEntity.setSchedule(
-                                    scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
+                            ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId());
+                            validateAcademicYear(academicInfoDTO.getAcademicYear(), schedule.getAcademicYear());
+
+                            if (schedule.getCourseAssignment().getProgram().getId() != academicInfoDTO.getEnrolledProgramId() ||
+                                schedule.getCourseAssignment().getSemester() != academicInfoDTO.getSemester() ||
+                                schedule.getCourseAssignment().getYearLevel() != academicInfoDTO.getYearLevel()
+                            ){
+                                throw new RuntimeException("An enrolled course is not available to enrollment profile");
+                            }
+                            
+                            enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         updatedEnrolledCourseEntities.add(enrolledCourseEntity);
                     }

@@ -18,6 +18,7 @@ public class FacultyProfileDTO {
     @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
 
+    private String suffix;
     private String mobileNumber;
     
     private String departmentName;

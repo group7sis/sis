@@ -23,7 +23,7 @@ public interface CourseMapper{
 
     @Mapping(target="prerequisiteIds", ignore = true)
     @Mapping(target="courseAssignments", ignore = true)
-    @Mapping(target = "departmentId", ignore = true)
+    @Mapping(target = "departmentId", source = "department.id")
     CourseDTO toDto(CourseEntity courseEntity);
 
     @Mapping(target = "curriculumId", source = "curriculum.id")

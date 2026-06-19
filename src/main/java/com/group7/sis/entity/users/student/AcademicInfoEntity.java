@@ -52,6 +52,9 @@ public class AcademicInfoEntity {
     
     @Column
     private int yearLevel;
+
+    @Column
+    private int units;
     
     @Column
     private LocalDate enrollmentDate;

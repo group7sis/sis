@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
+import com.group7.sis.entity.users.student.AcademicInfoEntity;
 import com.group7.sis.entity.users.student.AcademicInfoEntity.EnrollmentStatus;
 import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 
@@ -119,5 +120,18 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
         @Param("facultyId") Long facultyId,
         @Param("academicYear") String academicYear,
         @Param("semester") int semester
+    );
+
+    @Query("""
+        SELECT DISTINCT ai FROM StudentEntity s
+        LEFT JOIN s.academicInfo ai
+        WHERE s.id = :studentId 
+        AND ai.academicYear = :academicYear
+        AND ai.semester = :semester
+    """)
+    AcademicInfoEntity getEnrollmentByYearAndSemester(
+        @Param("studentId") Long studentId, 
+        @Param("academicYear") String academicYear, 
+        @Param("semester") Integer semester
     );
 }   

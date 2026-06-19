@@ -8,11 +8,13 @@ import com.group7.sis.dto.ScheduledCourseDTO;
 import com.group7.sis.dto.ScheduledCourseDTO.DayDTO;
 import com.group7.sis.entity.academic.DayEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
+import com.group7.sis.studentModule.dto.StudentScheduleDTO;
 
 @Mapper(componentModel = "spring")
 public interface ScheduledCourseMapper {
 
     @Mapping(target = "courseAssignmentId", source = "courseAssignment.id")
+    @Mapping(target = "courseTitle", source = "courseAssignment.course.title")
     @Mapping(target = "courseId", source = "courseAssignment.course.id")
     @Mapping(target = "programId", source = "courseAssignment.curriculum.program.id")
     @Mapping(target = "curriculumId", source = "courseAssignment.curriculum.id")
@@ -47,4 +49,15 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "assignedFaculty", ignore = true)
     @Mapping(target = "days", ignore = true)
     void updateEntityFromDto(ScheduledCourseDTO scheduledCourseDTO, @MappingTarget ScheduledCourseEntity scheduledCourseEntity);
+
+    @Mapping(target = "courseCode", source = "courseAssignment.course.code")
+    @Mapping(target = "courseTitle", source = "courseAssignment.course.title")
+    @Mapping(target = "facultyName", ignore = true)
+    @Mapping(target = "sectionName", source = "section.name")
+    @Mapping(target = "lectureHours", source = "courseAssignment.course.lectureHours")
+    @Mapping(target = "labHours", source = "courseAssignment.course.labHours")
+    @Mapping(target = "units", source = "courseAssignment.course.units")
+    @Mapping(target = "days", ignore = true)
+    StudentScheduleDTO toStudentScheduleDTO(ScheduledCourseEntity scheduledCourseEntity);
+
 }

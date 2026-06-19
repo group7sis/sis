@@ -22,6 +22,7 @@ public class ScheduledCourseDTO {
     @NotNull(message = "Schedule must be assigned to a course")
     private Long courseAssignmentId;
 
+    private String courseTitle;
     private Long courseId;
     private Long programId;
     private Long curriculumId;
