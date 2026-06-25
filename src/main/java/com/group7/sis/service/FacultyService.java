@@ -40,7 +40,7 @@ public class FacultyService {
 
     private final GradeConfigurationRepository gradeConfigurationRepository;
 
-    public FacultyEntity addFaculty(FacultyDTO facultyDTO){
+    public FacultyDTO addFaculty(FacultyDTO facultyDTO){
         FacultyEntity faculty = facultyMapper.toEntity(facultyDTO);
         departmentValidation(facultyDTO);
 
@@ -74,7 +74,7 @@ public class FacultyService {
 
         facultyRepository.save(faculty);
         gradeConfigurationRepository.save(config);
-        return faculty;
+        return getFaculty(faculty.getId());
     }
 
     public FacultyDTO updateFaculty(Long id, FacultyDTO facultyDTO){

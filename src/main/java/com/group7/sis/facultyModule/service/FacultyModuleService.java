@@ -22,6 +22,7 @@ import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.academic.TermEntity;
 import com.group7.sis.entity.academic.DayEntity.DayName;
+import com.group7.sis.entity.academic.ScheduledCourseEntity.ScheduleStatus;
 import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.ProfileEntity.Sex;
@@ -151,9 +152,19 @@ public class FacultyModuleService {
     public EncodeGradePageDTO getEncodeInfo(Long id, Long facultyId){
         EncodeGradePageDTO page = new EncodeGradePageDTO();
 
-        page.setStudentGradeRecord(getStudentRecord(id));
-        page.setGradeConfigurationDTO(getGradeConfig(facultyId));
+        TermEntity term = getTerm();
+        StudentGradeRecordEntity sgr = studentGradeRecordRepository.findById(id).orElseThrow(() -> new RuntimeException("Grade record not found"));
+        String sgrAcadYear = sgr.getEnrolledCourse().getSchedule().getAcademicYear();
+        int sgrSem = sgr.getEnrolledCourse().getSchedule().getCourseAssignment().getSemester();
 
+        if (sgrAcadYear.equals(term.getAcademicYear()) && sgrSem == term.getSemester()){
+            page.setStudentGradeRecord(getStudentRecord(id));
+            page.setGradeConfigurationDTO(getGradeConfig(facultyId));
+        }
+        else{
+            throw new RuntimeException("Grade record not available anymore");
+        }
+        
         return page;
     }
     
@@ -322,7 +333,7 @@ public class FacultyModuleService {
         List<ScheduledCourseDTO> schedules = new ArrayList<>();
         TermEntity term = getTerm();
 
-        for(ScheduledCourseEntity schedule : scheduleQueryService.findTodaysSchedulesByFaculty(facultyId, dayName, term.getAcademicYear(), term.getSemester())){
+        for(ScheduledCourseEntity schedule : scheduleQueryService.findTodaysSchedulesByFaculty(facultyId, dayName, term.getAcademicYear(), term.getSemester(), ScheduleStatus.ACTIVE)){
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
         return schedules;
@@ -341,7 +352,7 @@ public class FacultyModuleService {
         DayName currentDayName = DayName.valueOf(currentDay.name());
         Month month = LocalDate.now().getMonth();
 
-        for (ScheduledCourseEntity schedule : scheduleQueryService.findTodaysSchedulesByFaculty(facultyId, currentDayName, currentTerm.getAcademicYear(), currentTerm.getSemester())){
+        for (ScheduledCourseEntity schedule : scheduleQueryService.findTodaysSchedulesByFaculty(facultyId, currentDayName, currentTerm.getAcademicYear(), currentTerm.getSemester(), ScheduleStatus.ACTIVE)){
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
 
@@ -373,15 +384,15 @@ public class FacultyModuleService {
 
         stats.setTotalSchedules(computeTotalSchedules(faculty, currentTerm.getAcademicYear(), currentTerm.getSemester()));
         stats.setTotalStudents(studentQueryService.getTotalStudentsOfFacultyByAcadmicYearAndSemesterAndByEnrollmentStatus(facultyId, currentTerm.getAcademicYear(), currentTerm.getSemester(), EnrollmentStatus.ACTIVE));
-        stats.setTotalSections(scheduleQueryService.getTotalSectionByAcademicYearAndSemesterAndFaculty(currentTerm.getAcademicYear(), currentTerm.getSemester(), facultyId));
-        stats.setTotalCoursesHandled(scheduleQueryService.getTotalCoursesHandledByAcademicYearAndSemesterAndFaculty(currentTerm.getAcademicYear(), currentTerm.getSemester(), facultyId));
+        stats.setTotalSections(scheduleQueryService.getTotalSectionByAcademicYearAndSemesterAndFaculty(currentTerm.getAcademicYear(), currentTerm.getSemester(), facultyId, ScheduleStatus.ACTIVE));
+        stats.setTotalCoursesHandled(scheduleQueryService.getTotalCoursesHandledByAcademicYearAndSemesterAndFaculty(currentTerm.getAcademicYear(), currentTerm.getSemester(), facultyId, ScheduleStatus.ACTIVE));
         
         return stats;
     }
 
     private long computeTotalSchedules(FacultyEntity faculty, String academicYear, int semester){
         long total = 0;
-        total += scheduleQueryService.getTotalSchedulesByFacultyAndAcademicYearAndSemester(faculty.getId(), academicYear, semester);
+        total += scheduleQueryService.getTotalSchedulesByFacultyAndAcademicYearAndSemester(faculty.getId(), academicYear, semester, ScheduleStatus.ACTIVE);
         return total;
     }
 

@@ -51,7 +51,7 @@ public class StudentService {
     private final CurriculumQueryService curriculumQueryService;
     private final TermQueryService termQueryService;
 
-    public StudentEntity addStudent(StudentDTO studentDTO) {
+    public StudentDTO addStudent(StudentDTO studentDTO) {
         StudentEntity student = studentMapper.toEntity(studentDTO);
 
         student.setStudentNumber(studentNumberGenerator(student.getYearAdmitted()));
@@ -117,7 +117,6 @@ public class StudentService {
                             ScheduledCourseEntity schedule = scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId());
                             validateAcademicYear(academicInfoDTO.getAcademicYear(), schedule.getAcademicYear());
 
-                            //not working
                             if (schedule.getCourseAssignment().getProgram().getId() != academicInfoDTO.getEnrolledProgramId() ||
                                 schedule.getCourseAssignment().getSemester() != academicInfoDTO.getSemester() ||
                                 schedule.getCourseAssignment().getYearLevel() != academicInfoDTO.getYearLevel()
@@ -134,7 +133,7 @@ public class StudentService {
         }
         studentRepository.save(student);
         createStudentGradeRecordPerEnrollment(student);
-        return student;
+        return getStudent(student.getId());
     }
 
     private void createStudentGradeRecordPerEnrollment(StudentEntity student){

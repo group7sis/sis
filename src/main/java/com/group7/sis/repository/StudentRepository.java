@@ -134,4 +134,14 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
         @Param("academicYear") String academicYear, 
         @Param("semester") Integer semester
     );
+
+    @Query("""
+        SELECT ai FROM StudentEntity s
+        LEFT JOIN s.academicInfo ai
+        WHERE s.id = :studentId
+        AND ai.enrollmentStatus = :enrollmentStatus
+        ORDER BY ai.enrollmentDate DESC
+        LIMIT 1
+    """)
+    AcademicInfoEntity getLatestEnrollment(@Param("studentId") Long studentId, @Param("enrollmentStatus") EnrollmentStatus enrollmentStatus);
 }   

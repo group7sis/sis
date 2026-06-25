@@ -4,20 +4,28 @@ import org.springframework.stereotype.Service;
 import com.group7.sis.dto.ProgramDTO;
 import com.group7.sis.dto.ProgramDTO.CurriculumDTO;
 import com.group7.sis.dto.ProgramDTO.YearDTO;
+import com.group7.sis.dto.CourseDTO;
+import com.group7.sis.dto.CourseDTO.CourseAssignmentDTO;
 import com.group7.sis.dto.GetProgramDTO;
 import com.group7.sis.repository.ProgramRepository;
+import com.group7.sis.service.queryservices.CourseQueryService;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
 import com.group7.sis.service.queryservices.DepartmentQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.CurriculumEntity;
 import com.group7.sis.entity.academic.YearEntity;
+import com.group7.sis.entity.academic.CourseAssignmentEntity;
+import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.CourseEntity.Status;
 import com.group7.sis.entity.academic.CurriculumEntity.CurriculumStatus;
 import com.group7.sis.entity.academic.ProgramEntity.ProgramStatus;
+import com.group7.sis.mapper.CourseMapper;
 import com.group7.sis.mapper.ProgramMapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import lombok.RequiredArgsConstructor;
@@ -31,8 +39,36 @@ public class ProgramService {
 
     private final CurriculumQueryService curriculumQueryService;
     private final DepartmentQueryService departmentQueryService;
+    private final CourseQueryService courseQueryService;
+    private final CourseMapper courseMapper;
 
-    public ProgramEntity addProgram (ProgramDTO request){
+    public List<CourseDTO> getCoursesFromProgramCurriculum(Long programId, Long curriculumId, Integer yearLevel, Integer semester){
+        List<CourseDTO> courses = new ArrayList<>();
+        
+        for (CourseEntity course : courseQueryService.getCoursesAssignedFromProgramCurriculum(programId, curriculumId, yearLevel, semester, Status.ACTIVE)){
+            List <Long> prereqIds = new ArrayList<>();
+            if (course.getPrerequisites() != null){
+                for (CourseEntity prereq : course.getPrerequisites()){
+                    prereqIds.add(prereq.getId());
+                }
+            }
+
+            List<CourseAssignmentDTO> courseAssignmentDTOs = new ArrayList<>();
+            if(course.getCourseAssignments() != null){
+                for(CourseAssignmentEntity courseAssignmentEntity : course.getCourseAssignments()){
+                    courseAssignmentDTOs.add(courseMapper.toDto(courseAssignmentEntity));
+                }
+            }
+            CourseDTO courseDto = courseMapper.toDto(course);
+            courseDto.setPrerequisiteIds(prereqIds);
+            courseDto.setCourseAssignments(courseAssignmentDTOs);
+            courses.add(courseDto);
+        }
+
+        return courses;
+    }
+
+    public ProgramDTO addProgram (ProgramDTO request){
         ProgramEntity program = programMapper.toEntity(request);
         
         program.setDepartment(departmentQueryService.getDepartmentEntity(request.getDepartmentId()));
@@ -59,7 +95,9 @@ public class ProgramService {
             curriculumQueryService.checkExistenceByCode(curCode, curriculum, program.getCode());
             curriculum.setCode(curCode);
         }
-        return programRepository.save(program);
+
+        programRepository.save(program);
+        return getProgram(program.getId());
     }
 
     public ProgramDTO updateProgram(Long id, ProgramDTO programDTO){

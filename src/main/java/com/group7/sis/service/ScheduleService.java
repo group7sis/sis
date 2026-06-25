@@ -37,7 +37,7 @@ public class ScheduleService {
     private final FacultyQueryService facultyQueryService;
     private final SectionQueryService sectionQueryService;
 
-    public ScheduledCourseEntity addSchedule(ScheduledCourseDTO scheduledCourseDTO){
+    public ScheduledCourseDTO addSchedule(ScheduledCourseDTO scheduledCourseDTO){
         ScheduledCourseEntity schedule = scheduledCourseMapper.toEntity(scheduledCourseDTO);
 
         if(scheduledCourseDTO.getCourseAssignmentId() != null){
@@ -68,8 +68,8 @@ public class ScheduleService {
                 schedule.getDays().add(dayEntity);
             }
         }
-        
-        return scheduledCourseRepository.save(schedule);
+        scheduledCourseRepository.save(schedule);
+        return getSchedule(schedule.getId());
     }
 
     //im tired boss

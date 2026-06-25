@@ -19,6 +19,7 @@ import java.time.LocalDate;
 public class AcademicInfoEntity {
 
     public enum EnrollmentStatus{
+        INACTIVE,
         ACTIVE,
         COMPLETED,
         DROPPED

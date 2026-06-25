@@ -39,8 +39,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RequestMapping("/admin")
 public class AdminController {
-    // TODO: Delete API for all entities (tho kahit ihuli na. not really prioritized
-    // atm)
 
     // -----------------------------DASHBOARD-----------------------------------
     private final DashboardService dashboardService;
@@ -112,6 +110,14 @@ public class AdminController {
     public ProgramDTO getProgram(@PathVariable Long id) {
         return programService.getProgram(id);
     }
+
+    @GetMapping("/programs/{id}/curriculum/{curriculumId}/courses")
+    public List<CourseDTO> getProgramCurriculumCourses(
+        @PathVariable Long id, @PathVariable Long curriculumId, 
+        @RequestParam Integer yearLevel, @RequestParam Integer semester) {
+        return programService.getCoursesFromProgramCurriculum(id, curriculumId, yearLevel, semester);
+    }
+    
 
     @PutMapping("/programs/{id}")
     public ProgramDTO updateProgram(@PathVariable Long id, @Valid @RequestBody ProgramDTO programDTO) {

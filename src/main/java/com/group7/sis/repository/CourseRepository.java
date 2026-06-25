@@ -56,4 +56,21 @@ public interface CourseRepository extends JpaRepository<CourseEntity, Long> {
         @Param("semester") Integer semester,
         @Param("status") Status status
     );
+
+    @Query("""
+    SELECT  c from CourseEntity c
+    JOIN c.courseAssignments ca
+    WHERE ca.program.id = :programId
+    AND ca.curriculum.id = :curriculumId
+    AND ca.yearLevel = :yearLevel
+    AND ca.semester = :semester
+    AND c.status = :status
+    """)
+    List<CourseEntity> getCoursesForProgramCurriculum(
+        @Param("programId") Long programId,
+        @Param("curriculumId") Long curriculumId,
+        @Param("yearLevel") Integer yearLevel,
+        @Param("semester") Integer semester,
+        @Param("status") Status status
+    );
 }

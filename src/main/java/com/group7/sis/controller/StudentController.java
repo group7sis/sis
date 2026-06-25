@@ -3,8 +3,10 @@ package com.group7.sis.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group7.sis.studentModule.dto.SchedulesSubmissionDTO;
 import com.group7.sis.studentModule.dto.StudentDashboardDataDTO;
 import com.group7.sis.studentModule.dto.StudentProfileDTO;
+import com.group7.sis.studentModule.dto.paged.SchedulesCategorizedDTO;
 import com.group7.sis.studentModule.dto.paged.StudentGradesPageDTO;
 import com.group7.sis.studentModule.service.StudentModuleService;
 import com.group7.sis.studentModule.dto.StudentScheduleDTO;
@@ -25,8 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RequestMapping("/student")
 public class StudentController {
-    
+
     private final StudentModuleService studentModuleService;
+
 
     @GetMapping("/{id}/dashboard")
     public StudentDashboardDataDTO getDashboardData(@PathVariable Long id) {
@@ -56,5 +59,14 @@ public class StudentController {
         return studentModuleService.getSchedule(id);
     }
 
-    //------------------------------------ENROLLMENT---------------------------------------
+    //-----------------------------------ENROLLMENT---------------------------------------
+    @GetMapping("/{id}/enrollment")
+    public SchedulesCategorizedDTO getAvailableSchedules(@PathVariable Long id){
+        return studentModuleService.getAvailableSchedules(id);
+    }
+
+    @PutMapping("/{id}/enrollment")
+    public SchedulesCategorizedDTO putMethodName(@PathVariable Long id, @RequestBody SchedulesSubmissionDTO schedulesSubmissionDTO){
+        return studentModuleService.enrollInTerm(id, schedulesSubmissionDTO);
+    }
 }

@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class StudentScheduleDTO {
+    private Long id;
     private String courseCode;
     private String courseTitle;
     private String facultyName;

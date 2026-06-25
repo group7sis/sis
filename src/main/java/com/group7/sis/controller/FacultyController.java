@@ -102,7 +102,7 @@ public class FacultyController {
 
     @GetMapping("/{id}/records/encode/{recordId}/compute")
     public StudentGradeRecordDTO computeGradeRecord(@PathVariable Long id, @PathVariable Long recordId){
-        return facultyModuleService.computeGrade(id, recordId);
+        return facultyModuleService.computeGrade(recordId, id);
     }
 
 

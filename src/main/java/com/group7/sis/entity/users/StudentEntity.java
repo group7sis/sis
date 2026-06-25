@@ -25,7 +25,7 @@ public class StudentEntity {
     }
 
     public enum ScholasticStatus{
-        REGULAR, IRREGULAR
+        REGULAR, IRREGULAR, REGULAR_WARNING
     }
 
     @Id

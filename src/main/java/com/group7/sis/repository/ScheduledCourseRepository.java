@@ -29,17 +29,18 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
 
     List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentId(Long id, String academicYear, Long courseAssignmentId);
 
-    List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndDaysName(Long facultyId, String academicYear, int semester, DayName dayName);
+    List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndDaysNameAndStatus(Long facultyId, String academicYear, int semester, DayName dayName, ScheduleStatus status);
 
     @Query("""
     SELECT COUNT(DISTINCT s.section.id) FROM ScheduledCourseEntity s 
     WHERE s.assignedFaculty.id = :facultyId 
     AND s.academicYear = :academicYear 
     AND s.courseAssignment.semester = :semester
+    AND s.status = :status
     """)
-    long countSectionsHandledByFaculty(String academicYear, int semester, Long facultyId);
+    long countSectionsHandledByFaculty(String academicYear, int semester, Long facultyId, ScheduleStatus status);
 
-    long countByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemester(Long facultyId, String academicYear, int semester);
+    long countByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndStatus(Long facultyId, String academicYear, int semester, ScheduleStatus status);
 
     long countByAssignedFacultyId(Long facultyId);
 
@@ -48,11 +49,13 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
     WHERE s.assignedFaculty.id = :facultyId 
     AND s.academicYear = :academicYear 
     AND s.courseAssignment.semester = :semester
+    AND s.status = :status
     """)
     long countCoursesHandledByFaculty(
         @Param("academicYear") String academicYear, 
         @Param("semester") int semester, 
-        @Param("facultyId") Long facultyId
+        @Param("facultyId") Long facultyId,
+        @Param("status") ScheduleStatus status
     );
     
     @Query("""
@@ -127,4 +130,24 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
         @Param("facultyId") Long facultyId,
         @Param("courseId") Long courseId
     );
+
+
+    @Query("""
+    SELECT s from ScheduledCourseEntity s
+    JOIN s.courseAssignment ca
+    WHERE ca.program.id = :programId
+    AND ca.curriculum.id = :curriculumId
+    AND ca.yearLevel = :yearLevel
+    AND ca.semester = :semester
+    AND s.status = :status
+    AND s.academicYear = :academicYear
+    """)
+    List<ScheduledCourseEntity> getSchedulesForProgramCurriculum(
+        @Param("programId") Long programId,
+        @Param("curriculumId") Long curriculumId,
+        @Param("yearLevel") Integer yearLevel,
+        @Param("semester") Integer semester,
+        @Param("status") ScheduleStatus status,
+        @Param("academicYear") String academicYear
+    );   
 }

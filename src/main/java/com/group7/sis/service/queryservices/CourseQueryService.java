@@ -1,9 +1,12 @@
 package com.group7.sis.service.queryservices;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.group7.sis.entity.academic.CourseAssignmentEntity;
 import com.group7.sis.entity.academic.CourseEntity;
+import com.group7.sis.entity.academic.CourseEntity.Status;
 import com.group7.sis.repository.CourseAssignmentRepository;
 import com.group7.sis.repository.CourseRepository;
 
@@ -27,5 +30,9 @@ public class CourseQueryService {
 
     public long getTotalCourses(){
         return courseAssignmentRepository.count();
+    }
+
+    public List<CourseEntity> getCoursesAssignedFromProgramCurriculum(Long programId, Long curriculumId, Integer yearLevel, Integer semester, Status status){
+        return courseRepository.getCoursesForProgramCurriculum(programId, curriculumId, yearLevel, semester, status);
     }
 }
