@@ -125,7 +125,7 @@ public class AdminController {
     }
 
     @PostMapping("/programs/add")
-    public ProgramEntity createProgram(@Valid @RequestBody ProgramDTO addProgram) {
+    public ProgramDTO createProgram(@Valid @RequestBody ProgramDTO addProgram) {
         return programService.addProgram(addProgram);
     }
 
@@ -187,7 +187,7 @@ public class AdminController {
     }
 
     @PostMapping("/students/add")
-    public StudentEntity createStudent(@Valid @RequestBody StudentDTO studentDTO) {
+    public StudentDTO createStudent(@Valid @RequestBody StudentDTO studentDTO) {
         return studentService.addStudent(studentDTO);
     }
 
@@ -223,7 +223,7 @@ public class AdminController {
     }
 
     @PostMapping("/faculty/add")
-    public FacultyEntity createFaculty(@Valid @RequestBody FacultyDTO facultyDTO) {
+    public FacultyDTO createFaculty(@Valid @RequestBody FacultyDTO facultyDTO) {
         return facultyService.addFaculty(facultyDTO);
     }
 
@@ -256,7 +256,7 @@ public class AdminController {
     }
 
     @PostMapping("/schedules/add")
-    public ScheduledCourseEntity createSchedule(@Valid @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
+    public ScheduledCourseDTO createSchedule(@Valid @RequestBody ScheduledCourseDTO scheduledCourseDTO) {
         return scheduleService.addSchedule(scheduledCourseDTO);
     }
 
