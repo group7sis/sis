@@ -4,6 +4,7 @@ if (!user) throw new Error('no session');
 const TERM_ID = 1;
 let currentTerm = null;
 let managedProgram = null;
+let managedCourse = null;
 
 document.getElementById('userLabel').textContent = user.name;
 bindLogout();
@@ -90,8 +91,11 @@ async function loadCourses() {
     statBox('Total', s.totalCourses) + statBox('Active', s.totalActiveCourses) +
     statBox('Inactive', s.totalInactiveCourses);
   document.getElementById('courseTable').innerHTML = tableHtml(
-    ['Code', 'Title', 'Units', 'Status'],
-    (data.courses || []).map(c => [c.code, c.title, c.units, c.status]));
+    ['Code', 'Title', 'Units', 'Assignments', 'Status', ''],
+    (data.courses || []).map(c => [
+      c.code, c.title, c.units, (c.courseAssignments || []).length, c.status,
+      `<button class="btn btn-sm" data-course="${c.id}">Manage</button>`
+    ]));
 }
 
 async function loadSchedules() {
@@ -102,9 +106,9 @@ async function loadSchedules() {
     statBox('Total', s.totalSchedules) + statBox('Active', s.totalActiveSchedules) +
     statBox('Weekly Hrs', s.weeklyHours);
   document.getElementById('scheduleTable').innerHTML = tableHtml(
-    ['Code', 'Course', 'Section', 'Year', 'Sem', 'Room', 'Status'],
+    ['Code', 'Course', 'Section', 'Year', 'Room', 'Days', 'Status'],
     (data.schedules || []).map(sc => [
-      sc.code, sc.courseTitle, sc.sectionName, sc.academicYear, sc.semester ?? '-', sc.room, sc.status
+      sc.code, sc.courseTitle, sc.sectionName, sc.academicYear, sc.room, fmtDays(sc.days), sc.status
     ]));
 }
 
@@ -222,6 +226,24 @@ async function loadCurriculumCourses() {
     }));
 }
 
+async function openCourseManage(courseId) {
+  managedCourse = await api('/admin/courses/' + courseId);
+  document.getElementById('courseManageTitle').textContent =
+    (managedCourse.code || 'Course') + ' — ' + (managedCourse.title || '');
+  document.getElementById('courseManageMeta').textContent =
+    `Department ${managedCourse.departmentId} · ${managedCourse.units} units · ${managedCourse.status}`;
+  const container = document.getElementById('courseManageAssignmentRows');
+  container.innerHTML = '';
+  const assignments = managedCourse.courseAssignments || [];
+  if (assignments.length) {
+    assignments.forEach(a => container.insertAdjacentHTML('beforeend', assignmentRowHtml(a)));
+  } else {
+    container.insertAdjacentHTML('beforeend', assignmentRowHtml());
+  }
+  document.getElementById('courseManagePrereqs').value = (managedCourse.prerequisiteIds || []).join(', ');
+  document.getElementById('courseManage').classList.remove('hidden');
+}
+
 function formToObj(form) {
   const obj = {};
   new FormData(form).forEach((v, k) => {
@@ -289,16 +311,15 @@ document.getElementById('facultyForm').onsubmit = async e => {
   try {
     hideMsg(msg);
     const f = e.target;
-    const ids = f.qualifiedCoursesIds.value.split(',').map(s => s.trim()).filter(Boolean).map(Number);
     const body = {
-      account: { username: f.username.value, password: f.password.value, email: f.email.value, role: 'FACULTY', status: 'ACTIVE' },
-      profile: { firstName: f.firstName.value, lastName: f.lastName.value, civilStatus: 'SINGLE', nationality: 'Filipino', sex: 'MALE' },
+      account: buildAccountFromForm(f, 'FACULTY'),
+      profile: buildProfileFromForm(f),
       departmentId: f.departmentId.value ? Number(f.departmentId.value) : null,
       employmentType: f.employmentType.value,
       position: f.position.value,
       dateHired: f.dateHired.value,
-      qualifiedCoursesIds: ids,
-      status: 'ACTIVE'
+      qualifiedCoursesIds: parseIdList(f.qualifiedCoursesIds.value),
+      status: f.status.value
     };
     await api('/admin/faculty/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Faculty added', 'ok');
@@ -311,20 +332,24 @@ document.getElementById('courseForm').onsubmit = async e => {
   e.preventDefault();
   try {
     hideMsg(msg);
-    const f = formToObj(e.target);
+    const f = e.target;
+    const assignments = collectAssignments('courseAssignmentRows');
+    if (!assignments.length) throw new Error('Add at least one program/curriculum assignment');
     const body = {
-      title: f.title,
-      departmentId: f.departmentId,
-      units: f.units,
-      lectureHours: f.lectureHours,
-      labHours: f.labHours,
-      status: f.status,
-      notes: f.notes || null,
-      courseAssignments: [{ programId: f.programId, curriculumId: f.curriculumId, yearLevel: f.yearLevel, semester: f.semester }]
+      title: f.title.value,
+      departmentId: Number(f.departmentId.value),
+      units: Number(f.units.value),
+      lectureHours: Number(f.lectureHours.value),
+      labHours: Number(f.labHours.value),
+      status: f.status.value,
+      notes: f.notes.value || null,
+      prerequisiteIds: parseIdList(f.prerequisiteIds.value),
+      courseAssignments: assignments
     };
     await api('/admin/courses/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Course added', 'ok');
-    e.target.reset();
+    f.reset();
+    initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
     loadCourses();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
@@ -335,6 +360,8 @@ document.getElementById('scheduleForm').onsubmit = async e => {
     hideMsg(msg);
     await loadCurrentTerm();
     const f = e.target;
+    const days = collectDays('scheduleDayRows');
+    if (!days.length) throw new Error('Add at least one schedule day');
     const body = {
       courseAssignmentId: Number(f.courseAssignmentId.value),
       sectionId: Number(f.sectionId.value),
@@ -344,12 +371,13 @@ document.getElementById('scheduleForm').onsubmit = async e => {
       academicYear: currentTerm.academicYear,
       status: f.status.value,
       notes: f.notes.value || null,
-      days: [{ name: f.dayName.value, startTime: f.startTime.value.slice(0, 5), endTime: f.endTime.value.slice(0, 5) }]
+      days
     };
     await api('/admin/schedules/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Schedule added', 'ok');
     f.reset();
     applyTermToForms();
+    initRepeater('scheduleDayRows', dayRowHtml, 1);
     loadSchedules();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
@@ -399,14 +427,66 @@ document.getElementById('accountForm').onsubmit = async e => {
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
-document.getElementById('programAddBtn').onclick = async () => {
+document.getElementById('programForm').onsubmit = async e => {
+  e.preventDefault();
   try {
     hideMsg(msg);
-    const body = JSON.parse(document.getElementById('programJson').value);
+    const f = formToObj(e.target);
+    const years = [];
+    for (let i = 1; i <= f.yearCount; i++) {
+      years.push({ level: i, totalSemester: f.semestersPerYear });
+    }
+    const body = {
+      title: f.title,
+      code: f.code,
+      status: f.status,
+      departmentId: f.departmentId,
+      curriculums: [{ effectiveYear: f.effectiveYear, years }]
+    };
     await api('/admin/programs/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Program added', 'ok');
+    e.target.reset();
     loadPrograms();
   } catch (err) { showMsg(msg, err.message, 'err'); }
+};
+
+document.getElementById('courseManageSave').onclick = async () => {
+  if (!managedCourse) return;
+  try {
+    hideMsg(msg);
+    const assignments = collectRepeater('courseManageAssignmentRows').map(a => {
+      const row = {
+        curriculumId: a.curriculumId,
+        yearLevel: a.yearLevel,
+        semester: a.semester
+      };
+      if (a.programId) row.programId = a.programId;
+      if (a.id) row.id = a.id;
+      return row;
+    });
+    if (!assignments.length) throw new Error('Add at least one assignment');
+    const body = {
+      id: managedCourse.id,
+      code: managedCourse.code,
+      title: managedCourse.title,
+      departmentId: managedCourse.departmentId,
+      units: managedCourse.units,
+      lectureHours: managedCourse.lectureHours,
+      labHours: managedCourse.labHours,
+      status: managedCourse.status,
+      notes: managedCourse.notes,
+      prerequisiteIds: parseIdList(document.getElementById('courseManagePrereqs').value),
+      courseAssignments: assignments
+    };
+    managedCourse = await api('/admin/courses/' + managedCourse.id, { method: 'PUT', body: JSON.stringify(body) });
+    showMsg(msg, 'Course assignments updated', 'ok');
+    loadCourses();
+  } catch (err) { showMsg(msg, err.message, 'err'); }
+};
+
+document.getElementById('courseManageClose').onclick = () => {
+  document.getElementById('courseManage').classList.add('hidden');
+  managedCourse = null;
 };
 
 document.getElementById('curriculumForm').onsubmit = async e => {
@@ -469,6 +549,8 @@ document.body.addEventListener('click', async e => {
   }
   const progBtn = e.target.closest('[data-program]');
   if (progBtn) openProgramManage(progBtn.dataset.program, progBtn.dataset.title);
+  const courseBtn = e.target.closest('[data-course]');
+  if (courseBtn) openCourseManage(courseBtn.dataset.course);
   const activeBtn = e.target.closest('[data-set-active]');
   if (activeBtn && managedProgram) {
     try {
@@ -505,8 +587,8 @@ bindNav({
   dashboard: loadDashboard,
   students: () => { loadCurrentTerm().then(loadStudents); },
   faculty: loadFaculty,
-  courses: loadCourses,
-  schedules: () => { loadCurrentTerm().then(loadSchedules); },
+  courses: () => { initRepeater('courseAssignmentRows', assignmentRowHtml, 1); loadCourses(); },
+  schedules: () => { loadCurrentTerm().then(() => { initRepeater('scheduleDayRows', dayRowHtml, 1); loadSchedules(); }); },
   sections: loadSections,
   programs: loadPrograms,
   departments: loadDepartments,
@@ -514,4 +596,6 @@ bindNav({
   accounts: loadAccounts
 });
 
+initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+initRepeater('scheduleDayRows', dayRowHtml, 1);
 loadDashboard();
