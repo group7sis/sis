@@ -76,3 +76,7 @@ tr:nth-child(even) { background: #fafafa; }
 .readonly-field { background: #eee; color: #555; }
 .term-banner { background: #eef5ff; border: 1px solid #9bf; border-radius: 4px; padding: 0.65rem 0.85rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
 .history-block { margin-top: 0.75rem; }
+.repeater-wrap { margin: 0.5rem 0 0.75rem; }
+.repeater-row { background: #fafafa; border: 1px solid #ddd; border-radius: 4px; padding: 0.5rem; margin-bottom: 0.5rem; }
+.repeater-row input, .repeater-row select { margin-bottom: 0.35rem; }
+.repeater-row .row { margin-bottom: 0; }

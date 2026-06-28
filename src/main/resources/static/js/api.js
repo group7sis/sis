@@ -114,3 +114,117 @@ function bindFilter(formId, loadFn) {
     loadFn();
   });
 }
+
+const DAY_NAMES = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+
+function dayOptions(selected) {
+  return DAY_NAMES.map(d => `<option value="${d}"${d === selected ? ' selected' : ''}>${d}</option>`).join('');
+}
+
+function assignmentRowHtml(data = {}) {
+  const idField = data.id ? `<input type="hidden" name="id" value="${data.id}">` : '';
+  return `<div class="repeater-row grid-4" data-repeater="assignment">
+    ${idField}
+    <div><label>Program ID</label><input name="programId" type="number" value="${data.programId ?? ''}" placeholder="optional"></div>
+    <div><label>Curriculum ID</label><input name="curriculumId" type="number" value="${data.curriculumId ?? ''}" required></div>
+    <div><label>Year Level</label><input name="yearLevel" type="number" value="${data.yearLevel ?? 1}" required></div>
+    <div><label>Semester</label><input name="semester" type="number" value="${data.semester ?? 1}" required></div>
+    <div style="grid-column:1/-1" class="row"><button type="button" class="btn btn-sm danger" data-remove-row>Remove</button></div>
+  </div>`;
+}
+
+function dayRowHtml(data = {}) {
+  const start = data.startTime ? String(data.startTime).slice(0, 5) : '';
+  const end = data.endTime ? String(data.endTime).slice(0, 5) : '';
+  return `<div class="repeater-row grid-4" data-repeater="day">
+    <div><label>Day</label><select name="name" required>${dayOptions(data.name)}</select></div>
+    <div><label>Start Time</label><input name="startTime" type="time" value="${start}" required></div>
+    <div><label>End Time</label><input name="endTime" type="time" value="${end}" required></div>
+    <div style="align-self:end"><button type="button" class="btn btn-sm danger" data-remove-row>Remove</button></div>
+  </div>`;
+}
+
+function initRepeater(containerId, rowHtml, count = 1) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  for (let i = 0; i < count; i++) el.insertAdjacentHTML('beforeend', rowHtml());
+}
+
+function collectRepeater(containerId) {
+  const rows = [];
+  document.querySelectorAll('#' + containerId + ' [data-repeater]').forEach(row => {
+    const item = {};
+    row.querySelectorAll('input, select').forEach(input => {
+      if (!input.name) return;
+      let v = input.value.trim();
+      if (v === '') return;
+      if (input.type === 'number' || input.name === 'id') v = Number(v);
+      item[input.name] = v;
+    });
+    if (Object.keys(item).length) rows.push(item);
+  });
+  return rows;
+}
+
+function parseIdList(value) {
+  return (value || '').split(',').map(s => s.trim()).filter(Boolean).map(Number);
+}
+
+document.body.addEventListener('click', e => {
+  const addBtn = e.target.closest('[data-add-row]');
+  if (addBtn) {
+    const container = document.getElementById(addBtn.dataset.addRow);
+    if (!container) return;
+    const kind = addBtn.dataset.rowKind;
+    container.insertAdjacentHTML('beforeend', kind === 'day' ? dayRowHtml() : assignmentRowHtml());
+    return;
+  }
+  const removeBtn = e.target.closest('[data-remove-row]');
+  if (removeBtn) {
+    const row = removeBtn.closest('[data-repeater]');
+    const wrap = row?.parentElement;
+    if (row && wrap && wrap.querySelectorAll('[data-repeater]').length > 1) row.remove();
+  }
+});
+
+function buildProfileFromForm(f) {
+  return {
+    firstName: f.firstName.value,
+    middleName: f.middleName.value || null,
+    lastName: f.lastName.value,
+    suffix: f.suffix.value || null,
+    sex: f.sex.value,
+    dateOfBirth: f.dateOfBirth.value,
+    civilStatus: f.civilStatus.value,
+    nationality: f.nationality.value,
+    mobileNumber: f.mobileNumber.value
+  };
+}
+
+function buildAccountFromForm(f, role) {
+  return {
+    username: f.username.value,
+    password: f.password.value,
+    email: f.email.value,
+    role,
+    status: f.accountStatus?.value || 'ACTIVE'
+  };
+}
+
+function collectAssignments(containerId) {
+  return collectRepeater(containerId).map(a => ({
+    programId: a.programId || undefined,
+    curriculumId: a.curriculumId,
+    yearLevel: a.yearLevel,
+    semester: a.semester
+  }));
+}
+
+function collectDays(containerId) {
+  return collectRepeater(containerId).map(d => ({
+    name: d.name,
+    startTime: String(d.startTime).slice(0, 5),
+    endTime: String(d.endTime).slice(0, 5)
+  }));
+}
