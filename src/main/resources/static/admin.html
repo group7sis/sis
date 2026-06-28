@@ -108,7 +108,9 @@
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
         <details open><summary>Add Faculty</summary>
-          <form id="facultyForm" class="grid-2" style="margin-top:0.5rem">
+          <form id="facultyForm" style="margin-top:0.5rem">
+            <div class="fieldset-title">Profile</div>
+            <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
             <div><label>Middle Name</label><input name="middleName"></div>
             <div><label>Last Name</label><input name="lastName" required></div>
@@ -118,15 +120,22 @@
             <div><label>Civil Status</label><select name="civilStatus" required><option>SINGLE</option><option>MARRIED</option><option>DIVORCED</option><option>WIDOWED</option></select></div>
             <div><label>Nationality</label><input name="nationality" value="Filipino" required></div>
             <div><label>Mobile Number</label><input name="mobileNumber" required></div>
+            </div>
+            <div class="fieldset-title">Account</div>
+            <div class="grid-2">
             <div><label>Username</label><input name="username" required></div>
             <div><label>Password</label><input name="password" required></div>
             <div><label>Email</label><input name="email" type="email" required></div>
             <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            </div>
+            <div class="fieldset-title">Employment</div>
+            <div class="grid-2">
             <div><label>Department</label><select name="departmentId" data-lookup="department"><option value="">None</option></select></div>
             <div><label>Employment Type</label><select name="employmentType"><option>FULL_TIME</option><option>PART_TIME</option></select></div>
             <div><label>Position</label><input name="position" required></div>
             <div><label>Date Hired</label><input name="dateHired" type="date" required></div>
             <div><label>Faculty Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            </div>
             <div style="grid-column:1/-1"><label>Qualified Courses</label><select name="qualifiedCoursesIds" id="facultyQualifiedCourses" multiple size="4"></select></div>
             <div style="grid-column:1/-1" class="form-actions">
               <button class="btn btn-sm" type="submit" id="facultySubmitBtn">Add Faculty</button>
@@ -247,7 +256,7 @@
           <div><label>Program</label><select name="programId" data-lookup="program" required><option value="">Select</option></select></div>
           <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
           <div><label>Max Capacity</label><input name="maxCapacity" type="number" required></div>
-          <div><label>Status</label><select name="status"><option>OPEN</option><option>CLOSED</option></select></div>
+          <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
           <div><label>Notes</label><input name="notes"></div>
           <div style="grid-column:1/-1" class="form-actions">
             <button class="btn btn-sm" type="submit" id="sectionSubmitBtn">Add Section</button>
