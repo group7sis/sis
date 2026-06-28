@@ -306,12 +306,24 @@ public class StudentModuleService {
                 schedulesMap.put(schedule.getId(), schedule);
             }
 
+            Set<Long> passedCourseIds = new HashSet<>();
+
+            for(AcademicInfoEntity enrollment : studentEntity.getAcademicInfo()){
+                for (EnrolledCourseEntity enrolledCourse : enrollment.getEnrolledCourses()){
+                    if (enrolledCourse.getStatus() == Status.PASSED){
+                        passedCourseIds.add(enrolledCourse.getSchedule().getCourseAssignment().getCourse().getId());
+                    }
+                }
+            }
+
             for(Long scheduleId : schedulesSubmissionDTO.getCurrentSchedulesIds()){
                 ScheduledCourseEntity check = schedulesMap.remove(scheduleId);
                 
                 if(check == null){
                     throw new RuntimeException("Could not enroll schedule id '" + scheduleId + "'. Either it does not exist in the current program term, or this has already been selected to be enrolled.");
                 }
+
+                checkPrerequisites(check.getCourseAssignment().getCourse(), passedCourseIds);
 
                 EnrolledCourseEntity newCourseEnrollment = new EnrolledCourseEntity();
                 newCourseEnrollment.setAcademicInfo(newEnrollment);
@@ -386,6 +398,8 @@ public class StudentModuleService {
                         throw new RuntimeException("[NOT TAKEN SCHEDULES] Could not enroll schedule id '" + scheduleId + "'. Either it does not exist in the current program term, or this has already been selected to be enrolled.");
                     }
 
+                    checkPrerequisites(check.getCourseAssignment().getCourse(), passedCourseIds);
+
                     EnrolledCourseEntity newNotTakenCourseEnrollment = new EnrolledCourseEntity();
                     newNotTakenCourseEnrollment.setAcademicInfo(newEnrollment);
                     newNotTakenCourseEnrollment.setStatus(Status.ONGOING);
@@ -430,6 +444,8 @@ public class StudentModuleService {
                     if(check == null){
                         throw new RuntimeException("[FAILED SCHEDULES] Could not enroll schedule id '" + scheduleId + "'. Either it does not exist in the current program term, or this has already been selected to be enrolled.");
                     }
+
+                    checkPrerequisites(check.getCourseAssignment().getCourse(), passedCourseIds);
 
                     EnrolledCourseEntity newFailedCourseEnrollment = new EnrolledCourseEntity();
                     newFailedCourseEnrollment.setAcademicInfo(newEnrollment);
@@ -483,6 +499,16 @@ public class StudentModuleService {
             page.setMessage("Enrollment unavailable");
         }
         return page;
+    }
+
+    private void checkPrerequisites(CourseEntity course, Set<Long> passedCourseIds){
+        if (course.getPrerequisites() != null){
+            for (CourseEntity prereq : course.getPrerequisites()){
+                if (!passedCourseIds.contains(prereq.getId())){
+                    throw new RuntimeException("Could not enroll in course '" + course.getCode() + "'. Prerequisite '" + prereq.getCode() + "' has not been passed.");
+                }
+            }
+        }
     }
 
     private List<CourseAssignmentEntity> getFailedCourses(StudentEntity student){
