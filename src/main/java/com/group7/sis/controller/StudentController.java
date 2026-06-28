@@ -3,6 +3,7 @@ package com.group7.sis.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group7.sis.dto.StudentDTO.AcademicInfoDTO;
 import com.group7.sis.studentModule.dto.SchedulesSubmissionDTO;
 import com.group7.sis.studentModule.dto.StudentDashboardDataDTO;
 import com.group7.sis.studentModule.dto.StudentProfileDTO;
@@ -69,5 +70,10 @@ public class StudentController {
     @PutMapping("/{id}/enrollment")
     public SchedulesCategorizedDTO putMethodName(@PathVariable Long id, @RequestBody SchedulesSubmissionDTO schedulesSubmissionDTO){
         return studentModuleService.enrollInTerm(id, schedulesSubmissionDTO);
+    }
+
+    @GetMapping("/{id}/enrollment-history")
+    public List<AcademicInfoDTO> getEnrollmentHistory(@PathVariable Long id){
+        return studentModuleService.getEnrollmentHistory(id);
     }
 }

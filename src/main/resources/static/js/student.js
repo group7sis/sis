@@ -7,6 +7,7 @@ bindLogout();
 
 const msg = document.getElementById('msg');
 const base = '/student/' + id;
+let enrollmentLocked = false;
 
 function scheduleRows(list) {
   return (list || []).map(s => [
@@ -14,16 +15,40 @@ function scheduleRows(list) {
   ]);
 }
 
-function renderChecks(containerId, list, prefix) {
+function renderChecks(containerId, list, prefix, disabled) {
   const el = document.getElementById(containerId);
   if (!list || !list.length) {
     el.innerHTML = '<p style="padding:0.5rem;font-size:0.85rem;color:#666">None available</p>';
     return;
   }
   el.innerHTML = list.map(s => `
-    <label><input type="checkbox" name="${prefix}" value="${s.id}">
+    <label><input type="checkbox" name="${prefix}" value="${s.id}"${disabled ? ' disabled' : ''}>
       ${s.courseCode} - ${s.courseTitle} (${s.sectionName}) ${fmtDays(s.days)}
     </label>`).join('');
+}
+
+function setEnrollmentUi(closed, message) {
+  enrollmentLocked = closed;
+  const btn = document.getElementById('enrollBtn');
+  const lists = ['currentList', 'failedList', 'missedList'];
+  btn.disabled = closed;
+  if (closed) {
+    lists.forEach(id => {
+      document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(cb => { cb.disabled = true; });
+    });
+  }
+  const em = document.getElementById('enrollMsg');
+  if (message) {
+    em.innerHTML = `<div class="msg ${closed ? 'info' : 'ok'}">${message}</div>`;
+  } else if (closed) {
+    em.innerHTML = '<div class="msg info">Enrollment is closed for this term.</div>';
+  }
+}
+
+function updateEnrollButton() {
+  if (enrollmentLocked) return;
+  const total = checkedValues('current').length + checkedValues('failed').length + checkedValues('missed').length;
+  document.getElementById('enrollBtn').disabled = total === 0;
 }
 
 async function loadDashboard() {
@@ -43,8 +68,8 @@ async function loadDashboard() {
     return `<div class="stat"><strong>${value}</strong><span>${label}</span></div>`;
   }
   document.getElementById('todayTable').innerHTML = tableHtml(
-    ['Course', 'Section', 'Room', 'Days'],
-    (d.schedulesToday || []).map(s => [s.courseTitle, s.sectionName, s.room, fmtDays(s.days)])
+    ['Course', 'Section', 'Days'],
+    (d.schedulesToday || []).map(s => [s.courseTitle, s.sectionName, fmtDays(s.days)])
   );
 }
 
@@ -64,18 +89,35 @@ async function loadGrades() {
 
 async function loadEnrollment() {
   const data = await api(base + '/enrollment');
-  const em = document.getElementById('enrollMsg');
-  em.innerHTML = data.message ? `<div class="msg info">${data.message}</div>` : '';
-  renderChecks('currentList', data.currentSchedules, 'current');
-  renderChecks('failedList', data.failedCourseSchedules, 'failed');
-  renderChecks('missedList', data.missedCourseSchedules, 'missed');
+  const closed = !!data.message && (
+    data.message.toLowerCase().includes('closed') ||
+    data.message.toLowerCase().includes('already submitted') ||
+    data.message.toLowerCase().includes('unavailable') ||
+    data.message.toLowerCase().includes('dropped') ||
+    data.message.toLowerCase().includes('graduated')
+  );
+  renderChecks('currentList', data.currentSchedules, 'current', closed);
+  renderChecks('failedList', data.failedCourseSchedules, 'failed', closed);
+  renderChecks('missedList', data.missedCourseSchedules, 'missed', closed);
+  setEnrollmentUi(closed, data.message);
+  if (!closed) updateEnrollButton();
 }
 
 function checkedValues(name) {
   return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x => Number(x.value));
 }
 
+document.getElementById('enrollmentPanel').addEventListener('change', e => {
+  if (e.target.matches('input[type="checkbox"]')) updateEnrollButton();
+});
+
 document.getElementById('enrollBtn').onclick = async () => {
+  if (enrollmentLocked) return;
+  const total = checkedValues('current').length + checkedValues('failed').length + checkedValues('missed').length;
+  if (total === 0) {
+    showMsg(msg, 'Select at least one course', 'err');
+    return;
+  }
   try {
     hideMsg(msg);
     const body = {
@@ -84,13 +126,42 @@ document.getElementById('enrollBtn').onclick = async () => {
       missedCourseSchedulesIds: checkedValues('missed')
     };
     const res = await api(base + '/enrollment', { method: 'PUT', body: JSON.stringify(body) });
-    showMsg(msg, res.message || 'Enrollment submitted', res.message && res.message.toLowerCase().includes('succ') ? 'ok' : 'info');
+    const ok = res.message && res.message.toLowerCase().includes('succ');
+    showMsg(msg, res.message || 'Enrollment submitted', ok ? 'ok' : 'info');
+    if (ok) {
+      setEnrollmentUi(true, 'Enrollment submitted. Enrollment is now closed for this term.');
+    }
     loadEnrollment();
     loadDashboard();
   } catch (err) {
     showMsg(msg, err.message, 'err');
   }
 };
+
+async function loadEnrollmentHistory() {
+  const list = await api(base + '/enrollment-history');
+  if (!list || !list.length) {
+    document.getElementById('historyContent').innerHTML = '<p>No enrollment records.</p>';
+    return;
+  }
+  let rows = [];
+  list.forEach(info => {
+    rows.push([
+      info.academicYear, info.semester, info.yearLevel,
+      info.enrollmentStatus, info.scholasticStatus, (info.enrolledCourses || []).length
+    ]);
+    (info.enrolledCourses || []).forEach(ec => {
+      rows.push([
+        `<span style="padding-left:1rem">${ec.courseCode || ec.courseTitle || 'Course'}</span>`,
+        ec.sectionName || '-', ec.facultyName || '-', ec.grade ?? '-', ec.status, ''
+      ]);
+    });
+  });
+  document.getElementById('historyContent').innerHTML = tableHtml(
+    ['Term / Course', 'Section', 'Faculty', 'Grade', 'Status', ''],
+    rows
+  );
+}
 
 async function loadProfile() {
   const p = await api(base + '/profile');
@@ -124,6 +195,7 @@ bindNav({
   schedule: loadSchedule,
   grades: loadGrades,
   enrollment: loadEnrollment,
+  history: loadEnrollmentHistory,
   profile: loadProfile
 });
 

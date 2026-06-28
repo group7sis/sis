@@ -120,28 +120,28 @@ public class ScheduleService {
         return schedule;
     }
 
-    public SchedulePageDTO getAllSchedule(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, ScheduleStatus status, DayName dayName){
+    public SchedulePageDTO getAllSchedule(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, Long facultyId, ScheduleStatus status, DayName dayName){
         SchedulePageDTO page = new SchedulePageDTO();
         List<ScheduledCourseDTO> schedules = new ArrayList<>();
 
-        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName)){
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status, dayName)){
             schedules.add(scheduledCourseMapper.toDto(schedule));
         }
 
-        SchedulesStatsDTO stats = getSchedulesStats(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName);
+        SchedulesStatsDTO stats = getSchedulesStats(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status, dayName);
         page.setSchedules(schedules);
         page.setStats(stats);
         return page;
     }
 
-    private SchedulesStatsDTO getSchedulesStats(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, ScheduleStatus status, DayName dayName){
+    private SchedulesStatsDTO getSchedulesStats(String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, Long facultyId, ScheduleStatus status, DayName dayName){
         SchedulesStatsDTO stats = new SchedulesStatsDTO();
 
-        stats.setTotalSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName));
-        stats.setTotalActiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, ScheduleStatus.ACTIVE, dayName));
-        stats.setTotalInactiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, ScheduleStatus.INACTIVE, dayName));
-        stats.setWeeklyHours(computeWeeklyHours(scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, status, dayName)));
-        stats.setDailyHours(computeHoursByDay(dayName));
+        stats.setTotalSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status, dayName));
+        stats.setTotalActiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, ScheduleStatus.ACTIVE, dayName));
+        stats.setTotalInactiveSchedules(scheduledCourseRepository.countSearch(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, ScheduleStatus.INACTIVE, dayName));
+        stats.setWeeklyHours(computeWeeklyHours(scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status, dayName)));
+        stats.setDailyHours(computeHoursByDay(dayName, academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status));
         return stats;
     }
 
@@ -264,14 +264,14 @@ public class ScheduleService {
         }
     }
 
-    private double computeHoursByDay(DayName dayName){
+    private double computeHoursByDay(DayName dayName, String academicYear, Long programId, Long curriculumId, Integer yearLevel, Integer semester, Long sectionId, Long facultyId, ScheduleStatus status){
 
         if (dayName == null){
             return 0;
         }
 
         double total = 0;
-        for (ScheduledCourseEntity schedule : scheduledCourseRepository.findAll()){
+        for (ScheduledCourseEntity schedule : scheduledCourseRepository.search(academicYear, programId, curriculumId, yearLevel, semester, sectionId, facultyId, status, dayName)){
             for (DayEntity day : schedule.getDays()){
 
                 if(day.getName().equals(dayName)){

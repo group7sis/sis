@@ -38,31 +38,55 @@
             <div><label>Name</label><input name="name"></div>
             <div><label>Student Status</label><select name="studentStatus"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
             <div><label>Scholastic</label><select name="scholasticStatus"><option value="">Any</option><option>REGULAR</option><option>IRREGULAR</option></select></div>
-            <div><label>Program ID</label><input name="program" type="number"></div>
-            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Program</label><select name="program" data-lookup="program"><option value="">Any</option></select></div>
+            <div><label>Curriculum</label><select name="curriculum" data-lookup="curriculum"><option value="">Any</option></select></div>
             <div><label>Academic Year</label><input name="academicYear" placeholder="YYYY-YYYY"></div>
             <div><label>Year Level</label><input name="yearLevel" type="number"></div>
-            <div><label>Section ID</label><input name="section" type="number"></div>
+            <div><label>Section</label><select name="section" data-lookup="section"><option value="">Any</option></select></div>
           </div>
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
         <details open><summary>Add Student</summary>
-          <form id="studentForm" class="grid-2" style="margin-top:0.5rem">
-            <div><label>First Name</label><input name="firstName" required></div>
-            <div><label>Last Name</label><input name="lastName" required></div>
-            <div><label>Username</label><input name="username" required></div>
-            <div><label>Password</label><input name="password" required></div>
-            <div><label>Email</label><input name="email" type="email" required></div>
-            <div><label>Year Admitted (from term)</label><input name="yearAdmitted" class="readonly-field" readonly></div>
-            <div><label>Program ID</label><input name="enrolledProgramId" type="number" required></div>
-            <div><label>Section ID</label><input name="sectionId" type="number" required></div>
-            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
-            <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
-            <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
-            <div><label>Schedule ID (enrolled course)</label><input name="scheduleId" type="number" required></div>
-            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Student</button></div>
+          <form id="studentForm" style="margin-top:0.5rem">
+            <div class="fieldset-title">Profile</div>
+            <div class="grid-2">
+              <div><label>First Name</label><input name="firstName" required></div>
+              <div><label>Middle Name</label><input name="middleName"></div>
+              <div><label>Last Name</label><input name="lastName" required></div>
+              <div><label>Suffix</label><input name="suffix"></div>
+              <div><label>Sex</label><select name="sex" required><option>MALE</option><option>FEMALE</option></select></div>
+              <div><label>Date of Birth</label><input name="dateOfBirth" type="date" required></div>
+              <div><label>Civil Status</label><select name="civilStatus" required><option>SINGLE</option><option>MARRIED</option><option>DIVORCED</option><option>WIDOWED</option></select></div>
+              <div><label>Nationality</label><input name="nationality" value="Filipino" required></div>
+              <div><label>Mobile Number</label><input name="mobileNumber" required></div>
+            </div>
+            <div class="fieldset-title">Account</div>
+            <div class="grid-2">
+              <div><label>Username</label><input name="username" required></div>
+              <div><label>Password</label><input name="password" required></div>
+              <div><label>Email</label><input name="email" type="email" required></div>
+              <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            </div>
+            <div class="fieldset-title">Initial Academic Info (from current term)</div>
+            <div class="grid-2">
+              <div><label>Year Admitted</label><input name="yearAdmitted" class="readonly-field" readonly></div>
+              <div><label>Academic Year</label><input name="academicYear" class="readonly-field" readonly></div>
+              <div><label>Semester</label><input name="semester" class="readonly-field" readonly></div>
+              <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+              <div><label>Program</label><select name="enrolledProgramId" data-lookup="program" required><option value="">Select program</option></select></div>
+              <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select section</option></select></div>
+              <div style="grid-column:1/-1"><label>Initial Schedule</label><select name="scheduleId" data-lookup="schedule" required><option value="">Select schedule</option></select></div>
+              <div id="studentEditFields" class="hidden grid-2" style="grid-column:1/-1">
+                <div><label>Student Status</label><select name="studentStatus"><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
+                <div><label>Scholastic Status</label><select name="scholasticStatus"><option>REGULAR</option><option>IRREGULAR</option></select></div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-sm" type="submit" id="studentSubmitBtn">Add Student</button>
+              <button class="btn btn-sm secondary hidden" type="button" id="studentCancelEdit">Cancel Edit</button>
+            </div>
           </form>
         </details>
         <div id="studentDetail" class="sub-panel hidden"></div>
@@ -74,10 +98,10 @@
           <div class="grid-4">
             <div><label>Name</label><input name="name"></div>
             <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div><label>Department ID</label><input name="department" type="number"></div>
+            <div><label>Department</label><select name="department" data-lookup="department"><option value="">Any</option></select></div>
             <div><label>Employment</label><select name="employmentType"><option value="">Any</option><option>FULL_TIME</option><option>PART_TIME</option></select></div>
-            <div><label>Qualified Course ID</label><input name="qualifiedCourse" type="number"></div>
-            <div><label>Scheduled Course ID</label><input name="scheduledCourse" type="number"></div>
+            <div><label>Qualified Course</label><select name="qualifiedCourse" data-lookup="course"><option value="">Any</option></select></div>
+            <div><label>Scheduled Course</label><select name="scheduledCourse" data-lookup="course"><option value="">Any</option></select></div>
           </div>
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
@@ -98,13 +122,16 @@
             <div><label>Password</label><input name="password" required></div>
             <div><label>Email</label><input name="email" type="email" required></div>
             <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div><label>Department ID</label><input name="departmentId" type="number"></div>
+            <div><label>Department</label><select name="departmentId" data-lookup="department"><option value="">None</option></select></div>
             <div><label>Employment Type</label><select name="employmentType"><option>FULL_TIME</option><option>PART_TIME</option></select></div>
             <div><label>Position</label><input name="position" required></div>
             <div><label>Date Hired</label><input name="dateHired" type="date" required></div>
             <div><label>Faculty Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div style="grid-column:1/-1"><label>Qualified Course IDs (comma)</label><input name="qualifiedCoursesIds" placeholder="1,2,3"></div>
-            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Faculty</button></div>
+            <div style="grid-column:1/-1"><label>Qualified Courses</label><select name="qualifiedCoursesIds" id="facultyQualifiedCourses" multiple size="4"></select></div>
+            <div style="grid-column:1/-1" class="form-actions">
+              <button class="btn btn-sm" type="submit" id="facultySubmitBtn">Add Faculty</button>
+              <button class="btn btn-sm secondary hidden" type="button" id="facultyCancelEdit">Cancel Edit</button>
+            </div>
           </form>
         </details>
         <div id="facultyDetail" class="detail-box hidden"></div>
@@ -115,9 +142,9 @@
         <form id="courseFilters" class="filters">
           <div class="grid-4">
             <div><label>Title</label><input name="title"></div>
-            <div><label>Department ID</label><input name="department" type="number"></div>
-            <div><label>Program ID</label><input name="program" type="number"></div>
-            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Department</label><select name="department" data-lookup="department"><option value="">Any</option></select></div>
+            <div><label>Program</label><select name="program" data-lookup="program"><option value="">Any</option></select></div>
+            <div><label>Curriculum</label><select name="curriculum" data-lookup="curriculum"><option value="">Any</option></select></div>
             <div><label>Year Level</label><input name="yearLevel" type="number"></div>
             <div><label>Semester</label><input name="semester" type="number"></div>
             <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
@@ -130,12 +157,12 @@
           <form id="courseForm" style="margin-top:0.5rem">
             <div class="grid-2">
               <div><label>Title</label><input name="title" required></div>
-              <div><label>Department ID</label><input name="departmentId" type="number" required></div>
+              <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
               <div><label>Units</label><input name="units" type="number" required></div>
               <div><label>Lecture Hours</label><input name="lectureHours" type="number" required></div>
               <div><label>Lab Hours</label><input name="labHours" type="number" value="0" required></div>
               <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-              <div style="grid-column:1/-1"><label>Prerequisite Course IDs (comma)</label><input name="prerequisiteIds" placeholder="optional"></div>
+              <div style="grid-column:1/-1"><label>Prerequisites</label><select name="prerequisiteIds" id="coursePrereqs" multiple size="4"></select></div>
               <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
             </div>
             <div class="section-title">Program / Curriculum Assignments</div>
@@ -154,7 +181,7 @@
           <div id="courseManageAssignmentRows" class="repeater-wrap"></div>
           <button type="button" class="btn btn-sm secondary" data-add-row="courseManageAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
           <div style="margin-top:0.75rem" class="grid-2">
-            <div><label>Prerequisite IDs (comma)</label><input id="courseManagePrereqs"></div>
+            <div style="grid-column:1/-1"><label>Prerequisites</label><select id="courseManagePrereqs" multiple size="4"></select></div>
           </div>
           <button class="btn btn-sm" id="courseManageSave" type="button" style="margin-top:0.5rem">Save Assignments</button>
         </div>
@@ -165,11 +192,12 @@
         <form id="scheduleFilters" class="filters">
           <div class="grid-4">
             <div><label>Academic Year</label><input name="academicYear" placeholder="YYYY-YYYY"></div>
-            <div><label>Program ID</label><input name="program" type="number"></div>
-            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Program</label><select name="program" data-lookup="program"><option value="">Any</option></select></div>
+            <div><label>Curriculum</label><select name="curriculum" data-lookup="curriculum"><option value="">Any</option></select></div>
             <div><label>Year Level</label><input name="yearLevel" type="number"></div>
             <div><label>Semester</label><input name="semester" type="number"></div>
-            <div><label>Section ID</label><input name="section" type="number"></div>
+            <div><label>Section</label><select name="section" data-lookup="section"><option value="">Any</option></select></div>
+            <div><label>Faculty</label><select name="faculty" data-lookup="faculty"><option value="">Any</option></select></div>
             <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
             <div><label>Day</label><select name="day"><option value="">Any</option><option>MONDAY</option><option>TUESDAY</option><option>WEDNESDAY</option><option>THURSDAY</option><option>FRIDAY</option><option>SATURDAY</option><option>SUNDAY</option></select></div>
           </div>
@@ -179,11 +207,11 @@
         <div id="scheduleTable"></div>
         <details open><summary>Add Schedule</summary>
           <form id="scheduleForm" style="margin-top:0.5rem">
+            <input type="hidden" name="room" value="TBD">
             <div class="grid-2">
-              <div><label>Course Assignment ID</label><input name="courseAssignmentId" type="number" required></div>
-              <div><label>Section ID</label><input name="sectionId" type="number" required></div>
-              <div><label>Faculty ID</label><input name="assignedFacultyId" type="number" required></div>
-              <div><label>Room</label><input name="room" required></div>
+              <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
+              <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select</option></select></div>
+              <div><label>Faculty</label><select name="assignedFacultyId" data-lookup="faculty" required><option value="">Select</option></select></div>
               <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
               <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
               <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
@@ -193,7 +221,10 @@
             <div class="section-title">Schedule Days</div>
             <div id="scheduleDayRows" class="repeater-wrap"></div>
             <button type="button" class="btn btn-sm secondary" data-add-row="scheduleDayRows" data-row-kind="day">+ Add Day</button>
-            <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Schedule</button></div>
+            <div class="form-actions">
+              <button class="btn btn-sm" type="submit" id="scheduleSubmitBtn">Add Schedule</button>
+              <button class="btn btn-sm secondary hidden" type="button" id="scheduleCancelEdit">Cancel Edit</button>
+            </div>
           </form>
         </details>
       </section>
@@ -203,7 +234,7 @@
         <form id="sectionFilters" class="filters">
           <div class="grid-4">
             <div><label>Name</label><input name="name"></div>
-            <div><label>Program ID</label><input name="program" type="number"></div>
+            <div><label>Program</label><select name="program" data-lookup="program"><option value="">Any</option></select></div>
             <div><label>Year Level</label><input name="yearLevel" type="number"></div>
             <div><label>Status</label><select name="status"><option value="">Any</option><option>OPEN</option><option>CLOSED</option></select></div>
           </div>
@@ -213,12 +244,15 @@
         <div id="sectionTable"></div>
         <form id="sectionForm" class="grid-2" style="margin-top:0.75rem">
           <div><label>Name</label><input name="name" required></div>
-          <div><label>Program ID</label><input name="programId" type="number" required></div>
+          <div><label>Program</label><select name="programId" data-lookup="program" required><option value="">Select</option></select></div>
           <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
           <div><label>Max Capacity</label><input name="maxCapacity" type="number" required></div>
-          <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          <div><label>Status</label><select name="status"><option>OPEN</option><option>CLOSED</option></select></div>
           <div><label>Notes</label><input name="notes"></div>
-          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Section</button></div>
+          <div style="grid-column:1/-1" class="form-actions">
+            <button class="btn btn-sm" type="submit" id="sectionSubmitBtn">Add Section</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="sectionCancelEdit">Cancel Edit</button>
+          </div>
         </form>
       </section>
 
@@ -237,12 +271,15 @@
             <div><label>Title</label><input name="title" required></div>
             <div><label>Code</label><input name="code" required></div>
             <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div><label>Department ID</label><input name="departmentId" type="number" required></div>
+            <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
             <div style="grid-column:1/-1" class="section-title">Initial Curriculum</div>
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Year Levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
             <div><label>Semesters per Year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
-            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Program</button></div>
+            <div style="grid-column:1/-1" class="form-actions">
+              <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
+              <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
+            </div>
           </form>
         </details>
         <div id="programManage" class="sub-panel hidden">
@@ -284,7 +321,8 @@
         <form id="deptForm" class="grid-2" style="margin-top:0.75rem">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Code</label><input name="code" required></div>
-          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Department</button></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit" id="deptSubmitBtn">Add Department</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="deptCancelEdit">Cancel Edit</button></div>
         </form>
       </section>
 
@@ -305,12 +343,15 @@
         <form id="accountForm" class="grid-2" style="margin-top:0.75rem;max-width:480px">
           <div><label>Username</label><input name="username" required></div>
           <div><label>Password</label><input name="password" required></div>
-          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Admin</button></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit" id="accountSubmitBtn">Add Admin</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="accountCancelEdit">Cancel Edit</button></div>
         </form>
       </section>
     </main>
   </div>
   <script src="js/api.js"></script>
+  <script src="js/lookups.js"></script>
+  <script src="js/admin-edit.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

@@ -67,6 +67,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
     AND (:yearLevel IS NULL OR s.courseAssignment.yearLevel = :yearLevel)
     AND (:semester IS NULL OR s.courseAssignment.semester = :semester)
     AND (:sectionId IS NULL OR s.section.id = :sectionId)
+    AND (:facultyId IS NULL OR s.assignedFaculty.id = :facultyId)
     AND (:status IS NULL OR s.status = :status)
     AND (:dayName IS NULL OR d.name = :dayName)
     """)
@@ -77,6 +78,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
         @Param("yearLevel") Integer yearLevel,
         @Param("semester") Integer semester,
         @Param("sectionId") Long sectionId,
+        @Param("facultyId") Long facultyId,
         @Param("status") ScheduleStatus status,
         @Param("dayName") DayName dayName
     );
@@ -90,6 +92,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
     AND (:yearLevel IS NULL OR s.courseAssignment.yearLevel = :yearLevel)
     AND (:semester IS NULL OR s.courseAssignment.semester = :semester)
     AND (:sectionId IS NULL OR s.section.id = :sectionId)
+    AND (:facultyId IS NULL OR s.assignedFaculty.id = :facultyId)
     AND (:status IS NULL OR s.status = :status)
     AND (:dayName IS NULL OR d.name = :dayName)
     """)
@@ -100,6 +103,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
         @Param("yearLevel") Integer yearLevel,
         @Param("semester") Integer semester,
         @Param("sectionId") Long sectionId,
+        @Param("facultyId") Long facultyId,
         @Param("status") ScheduleStatus status,
         @Param("dayName") DayName dayName
     );

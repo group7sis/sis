@@ -64,7 +64,8 @@ async function loadStudents() {
     ['Number', 'Name', 'Status', 'Scholastic', ''],
     (data.students || []).map(st => [
       st.studentNumber, fmtName(st.profile), st.studentStatus, st.scholasticStatus,
-      `<button class="btn btn-sm" data-id="${st.id}" data-kind="student">View</button>`
+      `<button class="btn btn-sm" data-id="${st.id}" data-kind="student">View</button>
+       <button class="btn btn-sm secondary" data-edit="student" data-id="${st.id}">Edit</button>`
     ]));
 }
 
@@ -79,7 +80,8 @@ async function loadFaculty() {
     ['Number', 'Name', 'Type', 'Status', ''],
     (data.faculties || []).map(f => [
       f.facultyNumber, fmtName(f.profile), f.employmentType, f.status,
-      `<button class="btn btn-sm" data-id="${f.id}" data-kind="faculty">View</button>`
+      `<button class="btn btn-sm" data-id="${f.id}" data-kind="faculty">View</button>
+       <button class="btn btn-sm secondary" data-edit="faculty" data-id="${f.id}">Edit</button>`
     ]));
 }
 
@@ -94,21 +96,25 @@ async function loadCourses() {
     ['Code', 'Title', 'Units', 'Assignments', 'Status', ''],
     (data.courses || []).map(c => [
       c.code, c.title, c.units, (c.courseAssignments || []).length, c.status,
-      `<button class="btn btn-sm" data-course="${c.id}">Manage</button>`
+      `<button class="btn btn-sm" data-course="${c.id}">Manage</button>
+       <button class="btn btn-sm secondary" data-edit="course" data-id="${c.id}">Edit</button>`
     ]));
 }
 
 async function loadSchedules() {
-  const q = buildQuery(filterValues('scheduleFilters'));
+  const filters = filterValues('scheduleFilters');
+  const q = buildQuery(filters);
   const data = await api('/admin/schedules' + q);
   const s = data.stats || {};
-  document.getElementById('scheduleStats').innerHTML =
-    statBox('Total', s.totalSchedules) + statBox('Active', s.totalActiveSchedules) +
+  let statsHtml = statBox('Total', s.totalSchedules) + statBox('Active', s.totalActiveSchedules) +
     statBox('Weekly Hrs', s.weeklyHours);
+  if (filters.day) statsHtml += statBox('Daily Hrs', s.dailyHours);
+  document.getElementById('scheduleStats').innerHTML = statsHtml;
   document.getElementById('scheduleTable').innerHTML = tableHtml(
-    ['Code', 'Course', 'Section', 'Year', 'Room', 'Days', 'Status'],
+    ['Code', 'Course', 'Section', 'Faculty', 'Year', 'Days', 'Status', ''],
     (data.schedules || []).map(sc => [
-      sc.code, sc.courseTitle, sc.sectionName, sc.academicYear, sc.room, fmtDays(sc.days), sc.status
+      sc.code, sc.courseTitle, sc.sectionName, sc.facultyName || '-', sc.academicYear, fmtDays(sc.days), sc.status,
+      `<button class="btn btn-sm secondary" data-edit="schedule" data-id="${sc.id}">Edit</button>`
     ]));
 }
 
@@ -120,7 +126,10 @@ async function loadSections() {
     statBox('Total', s.totalSections) + statBox('Active', s.totalActiveSections);
   document.getElementById('sectionTable').innerHTML = tableHtml(
     ['Code', 'Name', 'Program', 'Year', 'Capacity', 'Status'],
-    (data.sections || []).map(x => [x.code, x.name, x.programId, x.yearLevel, x.maxCapacity, x.status]));
+    (data.sections || []).map(x => [
+      x.code, x.name, LK.programs.find(p => p.id === x.programId)?.code || x.programId, x.yearLevel, x.maxCapacity, x.status,
+      `<button class="btn btn-sm secondary" data-edit="section" data-id="${x.id}">Edit</button>`
+    ]));
 }
 
 async function loadPrograms() {
@@ -130,7 +139,8 @@ async function loadPrograms() {
     ['Code', 'Title', 'Status', 'Active Curriculum', ''],
     (data || []).map(p => [
       p.code || p.id, p.title, p.status, p.activeCurriculumId ?? '-',
-      `<button class="btn btn-sm" data-program="${p.id}" data-title="${p.title || ''}">Manage</button>`
+      `<button class="btn btn-sm" data-program="${p.id}" data-title="${p.title || ''}">Manage</button>
+       <button class="btn btn-sm secondary" data-edit="program" data-id="${p.id}">Edit</button>`
     ]));
 }
 
@@ -138,7 +148,10 @@ async function loadDepartments() {
   const q = buildQuery(filterValues('deptFilters'));
   const data = await api('/admin/departments' + q);
   document.getElementById('departmentTable').innerHTML = tableHtml(
-    ['Code', 'Name'], (data || []).map(d => [d.code, d.name]));
+    ['Code', 'Name'], (data || []).map(d => [
+      d.code, d.name,
+      `<button class="btn btn-sm secondary" data-edit="department" data-id="${d.id}">Edit</button>`
+    ]));
 }
 
 async function loadTermPanel() {
@@ -152,7 +165,10 @@ async function loadTermPanel() {
 async function loadAccounts() {
   const data = await api('/admin/accounts');
   document.getElementById('accountTable').innerHTML = tableHtml(
-    ['Username'], (data || []).map(a => [a.username]));
+    ['Username', ''], (data || []).map(a => [
+      a.username,
+      `<button class="btn btn-sm secondary" data-edit="account" data-id="${a.id}">Edit</button>`
+    ]));
 }
 
 function enrollmentHistoryHtml(student) {
@@ -240,7 +256,7 @@ async function openCourseManage(courseId) {
   } else {
     container.insertAdjacentHTML('beforeend', assignmentRowHtml());
   }
-  document.getElementById('courseManagePrereqs').value = (managedCourse.prerequisiteIds || []).join(', ');
+  document.getElementById('courseManagePrereqs').innerHTML = qualifiedCourseSelectHtml(managedCourse.prerequisiteIds || []);
   document.getElementById('courseManage').classList.remove('hidden');
 }
 
@@ -259,28 +275,31 @@ document.getElementById('studentForm').onsubmit = async e => {
     hideMsg(msg);
     await loadCurrentTerm();
     const f = e.target;
+    if (editState.type === 'student' && editState.id) {
+      const body = {
+        ...editState.data,
+        studentStatus: f.studentStatus.value,
+        scholasticStatus: f.scholasticStatus.value,
+        account: { ...editState.data.account, ...buildAccountFromForm(f, 'STUDENT') },
+        profile: buildProfileFromForm(f)
+      };
+      await api('/admin/students/' + editState.id, { method: 'PUT', body: JSON.stringify(body) });
+      showMsg(msg, 'Student updated', 'ok');
+      clearEdit('student');
+      loadStudents();
+      return;
+    }
     const today = new Date().toISOString().slice(0, 10);
+    const prog = await api('/admin/programs/' + f.enrolledProgramId.value);
     const body = {
       studentStatus: 'ACTIVE',
       scholasticStatus: 'REGULAR',
       yearAdmitted: currentTerm.academicYear,
-      account: {
-        username: f.username.value,
-        password: f.password.value,
-        email: f.email.value,
-        role: 'STUDENT',
-        status: 'ACTIVE'
-      },
-      profile: {
-        firstName: f.firstName.value,
-        lastName: f.lastName.value,
-        civilStatus: 'SINGLE',
-        nationality: 'Filipino',
-        sex: 'MALE'
-      },
+      account: buildAccountFromForm(f, 'STUDENT'),
+      profile: buildProfileFromForm(f),
       academicInfo: [{
         enrolledProgramId: Number(f.enrolledProgramId.value),
-        programCurriculumId: null,
+        programCurriculumId: prog.activeCurriculumId,
         sectionId: Number(f.sectionId.value),
         academicYear: currentTerm.academicYear,
         semester: currentTerm.semester,
@@ -289,20 +308,17 @@ document.getElementById('studentForm').onsubmit = async e => {
         enrollmentDate: today,
         scholasticStatus: 'REGULAR',
         enrollmentStatus: 'ACTIVE',
-        enrolledCourses: [{
-          scheduleId: Number(f.scheduleId.value),
-          status: 'ONGOING'
-        }]
+        enrolledCourses: [{ scheduleId: Number(f.scheduleId.value), status: 'ONGOING' }]
       }]
     };
-    const prog = await api('/admin/programs/' + f.enrolledProgramId.value);
-    body.academicInfo[0].programCurriculumId = prog.activeCurriculumId;
     if (!body.academicInfo[0].programCurriculumId) throw new Error('Program has no active curriculum');
     await api('/admin/students/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Student added', 'ok');
     f.reset();
     applyTermToForms();
     loadStudents();
+    await loadLookups();
+    fillLookupSelects();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -318,13 +334,22 @@ document.getElementById('facultyForm').onsubmit = async e => {
       employmentType: f.employmentType.value,
       position: f.position.value,
       dateHired: f.dateHired.value,
-      qualifiedCoursesIds: parseIdList(f.qualifiedCoursesIds.value),
+      qualifiedCoursesIds: getMultiSelectValues(document.getElementById('facultyQualifiedCourses')),
       status: f.status.value
     };
-    await api('/admin/faculty/add', { method: 'POST', body: JSON.stringify(body) });
-    showMsg(msg, 'Faculty added', 'ok');
-    f.reset();
+    if (editState.type === 'faculty' && editState.id) {
+      await api('/admin/faculty/' + editState.id, { method: 'PUT', body: JSON.stringify({ ...editState.data, ...body }) });
+      showMsg(msg, 'Faculty updated', 'ok');
+      clearEdit('faculty');
+    } else {
+      await api('/admin/faculty/add', { method: 'POST', body: JSON.stringify(body) });
+      showMsg(msg, 'Faculty added', 'ok');
+      f.reset();
+    }
     loadFaculty();
+    await loadLookups();
+    fillLookupSelects();
+    document.getElementById('facultyQualifiedCourses').innerHTML = qualifiedCourseSelectHtml();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -343,7 +368,7 @@ document.getElementById('courseForm').onsubmit = async e => {
       labHours: Number(f.labHours.value),
       status: f.status.value,
       notes: f.notes.value || null,
-      prerequisiteIds: parseIdList(f.prerequisiteIds.value),
+      prerequisiteIds: getMultiSelectValues(document.getElementById('coursePrereqs')),
       courseAssignments: assignments
     };
     await api('/admin/courses/add', { method: 'POST', body: JSON.stringify(body) });
@@ -366,19 +391,27 @@ document.getElementById('scheduleForm').onsubmit = async e => {
       courseAssignmentId: Number(f.courseAssignmentId.value),
       sectionId: Number(f.sectionId.value),
       assignedFacultyId: Number(f.assignedFacultyId.value),
-      room: f.room.value,
+      room: f.room.value || 'TBD',
       yearLevel: Number(f.yearLevel.value),
       academicYear: currentTerm.academicYear,
       status: f.status.value,
       notes: f.notes.value || null,
       days
     };
-    await api('/admin/schedules/add', { method: 'POST', body: JSON.stringify(body) });
-    showMsg(msg, 'Schedule added', 'ok');
-    f.reset();
-    applyTermToForms();
-    initRepeater('scheduleDayRows', dayRowHtml, 1);
+    if (editState.type === 'schedule' && editState.id) {
+      await api('/admin/schedules/' + editState.id, { method: 'PUT', body: JSON.stringify({ ...editState.data, ...body }) });
+      showMsg(msg, 'Schedule updated', 'ok');
+      clearEdit('schedule');
+    } else {
+      await api('/admin/schedules/add', { method: 'POST', body: JSON.stringify(body) });
+      showMsg(msg, 'Schedule added', 'ok');
+      f.reset();
+      applyTermToForms();
+      initRepeater('scheduleDayRows', dayRowHtml, 1);
+    }
     loadSchedules();
+    await loadLookups();
+    fillLookupSelects();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -386,10 +419,19 @@ document.getElementById('sectionForm').onsubmit = async e => {
   e.preventDefault();
   try {
     hideMsg(msg);
-    await api('/admin/sections/add', { method: 'POST', body: JSON.stringify(formToObj(e.target)) });
-    showMsg(msg, 'Section added', 'ok');
-    e.target.reset();
+    const body = formToObj(e.target);
+    if (editState.type === 'section' && editState.id) {
+      await api('/admin/sections/' + editState.id, { method: 'PUT', body: JSON.stringify({ ...editState.data, ...body }) });
+      showMsg(msg, 'Section updated', 'ok');
+      clearEdit('section');
+    } else {
+      await api('/admin/sections/add', { method: 'POST', body: JSON.stringify(body) });
+      showMsg(msg, 'Section added', 'ok');
+      e.target.reset();
+    }
     loadSections();
+    await loadLookups();
+    fillLookupSelects();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -397,10 +439,19 @@ document.getElementById('deptForm').onsubmit = async e => {
   e.preventDefault();
   try {
     hideMsg(msg);
-    await api('/admin/departments/add', { method: 'POST', body: JSON.stringify(formToObj(e.target)) });
-    showMsg(msg, 'Department added', 'ok');
-    e.target.reset();
+    const body = formToObj(e.target);
+    if (editState.type === 'department' && editState.id) {
+      await api('/admin/departments/' + editState.id, { method: 'PUT', body: JSON.stringify({ ...editState.data, ...body }) });
+      showMsg(msg, 'Department updated', 'ok');
+      clearEdit('department');
+    } else {
+      await api('/admin/departments/add', { method: 'POST', body: JSON.stringify(body) });
+      showMsg(msg, 'Department added', 'ok');
+      e.target.reset();
+    }
     loadDepartments();
+    await loadLookups();
+    fillLookupSelects();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -420,9 +471,16 @@ document.getElementById('accountForm').onsubmit = async e => {
   e.preventDefault();
   try {
     hideMsg(msg);
-    await api('/admin/accounts/add', { method: 'POST', body: JSON.stringify(formToObj(e.target)) });
-    showMsg(msg, 'Admin added', 'ok');
-    e.target.reset();
+    const body = formToObj(e.target);
+    if (editState.type === 'account' && editState.id) {
+      await api('/admin/accounts/' + editState.id, { method: 'PUT', body: JSON.stringify(body) });
+      showMsg(msg, 'Admin updated', 'ok');
+      clearEdit('account');
+    } else {
+      await api('/admin/accounts/add', { method: 'POST', body: JSON.stringify(body) });
+      showMsg(msg, 'Admin added', 'ok');
+      e.target.reset();
+    }
     loadAccounts();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
@@ -432,21 +490,33 @@ document.getElementById('programForm').onsubmit = async e => {
   try {
     hideMsg(msg);
     const f = formToObj(e.target);
-    const years = [];
-    for (let i = 1; i <= f.yearCount; i++) {
-      years.push({ level: i, totalSemester: f.semestersPerYear });
+    if (editState.type === 'program' && editState.id) {
+      const body = {
+        ...editState.data,
+        title: f.title,
+        code: f.code,
+        status: f.status,
+        departmentId: f.departmentId,
+        curriculums: editState.data.curriculums
+      };
+      await api('/admin/programs/' + editState.id, { method: 'PUT', body: JSON.stringify(body) });
+      showMsg(msg, 'Program updated', 'ok');
+      clearEdit('program');
+      loadPrograms();
+      return;
     }
+    const years = [];
+    for (let i = 1; i <= f.yearCount; i++) years.push({ level: i, totalSemester: f.semestersPerYear });
     const body = {
-      title: f.title,
-      code: f.code,
-      status: f.status,
-      departmentId: f.departmentId,
+      title: f.title, code: f.code, status: f.status, departmentId: f.departmentId,
       curriculums: [{ effectiveYear: f.effectiveYear, years }]
     };
     await api('/admin/programs/add', { method: 'POST', body: JSON.stringify(body) });
     showMsg(msg, 'Program added', 'ok');
     e.target.reset();
     loadPrograms();
+    await loadLookups();
+    fillLookupSelects();
   } catch (err) { showMsg(msg, err.message, 'err'); }
 };
 
@@ -475,7 +545,7 @@ document.getElementById('courseManageSave').onclick = async () => {
       labHours: managedCourse.labHours,
       status: managedCourse.status,
       notes: managedCourse.notes,
-      prerequisiteIds: parseIdList(document.getElementById('courseManagePrereqs').value),
+      prerequisiteIds: getMultiSelectValues(document.getElementById('courseManagePrereqs')),
       courseAssignments: assignments
     };
     managedCourse = await api('/admin/courses/' + managedCourse.id, { method: 'PUT', body: JSON.stringify(body) });
@@ -551,6 +621,8 @@ document.body.addEventListener('click', async e => {
   if (progBtn) openProgramManage(progBtn.dataset.program, progBtn.dataset.title);
   const courseBtn = e.target.closest('[data-course]');
   if (courseBtn) openCourseManage(courseBtn.dataset.course);
+  const courseEditBtn = e.target.closest('[data-edit="course"]');
+  if (courseEditBtn) openCourseManage(courseEditBtn.dataset.id);
   const activeBtn = e.target.closest('[data-set-active]');
   if (activeBtn && managedProgram) {
     try {
@@ -585,17 +657,19 @@ document.body.addEventListener('click', async e => {
 
 bindNav({
   dashboard: loadDashboard,
-  students: () => { loadCurrentTerm().then(loadStudents); },
-  faculty: loadFaculty,
-  courses: () => { initRepeater('courseAssignmentRows', assignmentRowHtml, 1); loadCourses(); },
-  schedules: () => { loadCurrentTerm().then(() => { initRepeater('scheduleDayRows', dayRowHtml, 1); loadSchedules(); }); },
-  sections: loadSections,
-  programs: loadPrograms,
-  departments: loadDepartments,
+  students: async () => { await loadCurrentTerm(); await loadLookups(); fillLookupSelects(); loadStudents(); },
+  faculty: async () => { await loadLookups(); fillLookupSelects(); loadFaculty(); },
+  courses: async () => { await loadLookups(); fillLookupSelects(); initRepeater('courseAssignmentRows', assignmentRowHtml, 1); document.getElementById('coursePrereqs').innerHTML = qualifiedCourseSelectHtml(); loadCourses(); },
+  schedules: async () => { await loadCurrentTerm(); await loadLookups(); fillLookupSelects(); initRepeater('scheduleDayRows', dayRowHtml, 1); loadSchedules(); },
+  sections: async () => { await loadLookups(); fillLookupSelects(); loadSections(); },
+  programs: async () => { await loadLookups(); fillLookupSelects(); loadPrograms(); },
+  departments: async () => { await loadLookups(); fillLookupSelects(); loadDepartments(); },
   term: loadTermPanel,
   accounts: loadAccounts
 });
 
-initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
-initRepeater('scheduleDayRows', dayRowHtml, 1);
-loadDashboard();
+initAdmin().then(() => {
+  initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+  initRepeater('scheduleDayRows', dayRowHtml, 1);
+  loadDashboard();
+});

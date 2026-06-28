@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.group7.sis.dto.StudentDTO.AcademicInfoDTO;
 import com.group7.sis.dto.ScheduledCourseDTO;
 import com.group7.sis.dto.StudentDTO.AcademicInfoDTO.EnrolledCourseDTO;
 import com.group7.sis.entity.academic.DayEntity.DayName;
@@ -83,6 +84,13 @@ public class StudentModuleService {
             page.setMessage("Enrollment is closed");
             return page;
         }
+
+        AcademicInfoEntity currentEnrollment = studentQueryService.getEnrollmentOfStudentByYearAndSem(studentId, currentTerm.getAcademicYear(), currentTerm.getSemester());
+        if (currentEnrollment != null){
+            page.setMessage("Enrollment already submitted for this term");
+            return page;
+        }
+
         AcademicInfoEntity previousEnrollment = studentRepository.getLatestEnrollment(studentId, EnrollmentStatus.ACTIVE);
 
         List<ScheduledCourseEntity> availableSchedules = scheduledCourseRepository.getSchedulesForProgramCurriculum(previousEnrollment.getEnrolledProgram().getId(), previousEnrollment.getProgramCurriculum().getId(), previousEnrollment.getYearLevel(), currentTerm.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear());
@@ -621,6 +629,10 @@ public class StudentModuleService {
         page.setGwa(calculateGwa(currentEnrollment));
         page.setEnrolledCourses(grades);
         return page;
+    }
+
+    public List<AcademicInfoDTO> getEnrollmentHistory(Long studentId){
+        return studentMapper.toDto(studentQueryService.getStudentEntity(studentId)).getAcademicInfo();
     }
 
     public StudentProfileDTO getProfile(Long studentId){

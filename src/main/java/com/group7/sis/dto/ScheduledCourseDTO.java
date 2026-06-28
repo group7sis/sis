@@ -33,6 +33,8 @@ public class ScheduledCourseDTO {
     private Long sectionId;
 
     private String sectionName;
+
+    private String facultyName;
     
     @NotBlank(message = "Academic year is required")
     @Pattern(

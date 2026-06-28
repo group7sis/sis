@@ -239,10 +239,11 @@ public class AdminController {
             @RequestParam(required = false) Integer yearLevel,
             @RequestParam(required = false) Integer semester,
             @RequestParam(required = false) Long section,
+            @RequestParam(required = false) Long faculty,
             @RequestParam(required = false) ScheduleStatus status,
             @RequestParam(required = false) DayName day
         ) {
-        return scheduleService.getAllSchedule(academicYear, program, curriculum, yearLevel, semester, section, status, day);
+        return scheduleService.getAllSchedule(academicYear, program, curriculum, yearLevel, semester, section, faculty, status, day);
     }
 
     @GetMapping("/schedules/{id}")

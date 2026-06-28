@@ -11,10 +11,26 @@ async function api(path, opts = {}) {
     try { data = JSON.parse(text); } catch { data = text; }
   }
   if (!res.ok) {
-    const msg = typeof data === 'object' ? JSON.stringify(data) : (data || res.statusText);
-    throw new Error(msg);
+    throw new Error(parseApiError(data, res.statusText));
   }
   return data;
+}
+
+function parseApiError(data, fallback) {
+  if (!data) return fallback || 'Request failed';
+  if (typeof data === 'string') {
+    if (data.includes('"message"')) {
+      try { return parseApiError(JSON.parse(data)); } catch { /* fall through */ }
+    }
+    return data.length > 180 ? data.slice(0, 180) + '…' : data;
+  }
+  if (data.message) return data.message;
+  if (typeof data === 'object') {
+    const vals = Object.values(data).filter(Boolean);
+    if (vals.length === 1) return String(vals[0]);
+    if (vals.length) return vals.slice(0, 3).join(' · ');
+  }
+  return fallback || 'Request failed';
 }
 
 function saveSession(user) {

@@ -13,7 +13,7 @@ public interface FacultyMapper {
 
     @Mapping(target = "qualifiedCoursesIds", ignore = true)
     @Mapping(target = "scheduledCoursesIds", ignore = true)
-    @Mapping(target = "departmentId", ignore = true)
+    @Mapping(target = "departmentId", source = "department.id")
     FacultyDTO toDto(FacultyEntity facultyEntity);
 
     @Mapping(target = "id", ignore = true)

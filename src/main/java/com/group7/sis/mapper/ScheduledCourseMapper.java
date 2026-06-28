@@ -1,5 +1,6 @@
 package com.group7.sis.mapper;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,7 +24,21 @@ public interface ScheduledCourseMapper {
     @Mapping(target = "sectionId", source = "section.id")
     @Mapping(target = "assignedFacultyId", source = "assignedFaculty.id")
     @Mapping(target = "sectionName", source = "section.name")
+    @Mapping(target = "facultyName", ignore = true)
     ScheduledCourseDTO toDto(ScheduledCourseEntity scheduledCourseEntity);
+
+    @AfterMapping
+    default void mapFacultyName(ScheduledCourseEntity entity, @MappingTarget ScheduledCourseDTO dto) {
+        if (entity.getAssignedFaculty() == null || entity.getAssignedFaculty().getProfile() == null) {
+            return;
+        }
+        var profile = entity.getAssignedFaculty().getProfile();
+        String name = profile.getFirstName()
+            + (profile.getMiddleName() == null ? "" : (" " + profile.getMiddleName()))
+            + (" " + profile.getLastName())
+            + (profile.getSuffix() == null ? "" : (" " + profile.getSuffix()));
+        dto.setFacultyName(name.trim());
+    }
 
     DayDTO toDto(DayEntity dayEntity);
 

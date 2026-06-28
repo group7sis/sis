@@ -4,6 +4,7 @@ if (!user) throw new Error('no session');
 const id = user.id;
 const base = '/faculty/' + id;
 let activeRecordId = null;
+let termClosed = false;
 
 document.getElementById('userLabel').textContent = user.name;
 bindLogout();
@@ -11,6 +12,32 @@ bindLogout();
 const msg = document.getElementById('msg');
 
 const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+async function loadCurrentTerm() {
+  try {
+    const term = await api('/auth/term/current');
+    termClosed = term.status === 'CLOSED';
+    return term;
+  } catch {
+    termClosed = false;
+    return null;
+  }
+}
+
+function applyGradeTermLock() {
+  const notice = document.getElementById('gradeTermNotice');
+  const controls = document.getElementById('gradeControls');
+  if (termClosed) {
+    notice.classList.remove('hidden');
+    notice.innerHTML = '<div class="msg info">Grade encoding is unavailable because the term status is CLOSED.</div>';
+    controls.classList.add('hidden');
+    document.getElementById('gradeStudentTable').innerHTML = '';
+    document.getElementById('gradeFormWrap').classList.add('hidden');
+  } else {
+    notice.classList.add('hidden');
+    controls.classList.remove('hidden');
+  }
+}
 
 async function loadDashboard() {
   const d = await api(base + '/dashboard');
@@ -29,8 +56,8 @@ async function loadDashboard() {
     return `<div class="stat"><strong>${val ?? 0}</strong><span>${label}</span></div>`;
   }
   document.getElementById('dashSched').innerHTML = tableHtml(
-    ['Course', 'Section', 'Room', 'Days'],
-    (d.schedules || []).map(x => [x.courseTitle, x.sectionName, x.room, fmtDays(x.days)])
+    ['Course', 'Section', 'Days'],
+    (d.schedules || []).map(x => [x.courseTitle, x.sectionName, fmtDays(x.days)])
   );
 }
 
@@ -40,18 +67,37 @@ async function loadSchedules() {
   days.forEach(day => {
     const list = data[day] || [];
     html += `<div class="section-title">${day.charAt(0).toUpperCase() + day.slice(1)}</div>`;
-    html += tableHtml(['Course', 'Section', 'Room', 'Time'],
-      list.map(s => [s.courseTitle, s.sectionName, s.room, fmtDays(s.days)]));
+    html += tableHtml(['Course', 'Section', 'Time'],
+      list.map(s => [s.courseTitle, s.sectionName, fmtDays(s.days)]));
   });
   document.getElementById('schedContent').innerHTML = html;
 }
+
+async function loadClassCourses() {
+  const courses = await api(base + '/records/courses');
+  const sel = document.getElementById('classCourseId');
+  sel.innerHTML = '<option value="">Select course</option>' +
+    courses.map(c => `<option value="${c.id}">${c.code} - ${c.title}</option>`).join('');
+}
+
+document.getElementById('classCourseId').onchange = async () => {
+  const courseId = document.getElementById('classCourseId').value;
+  const secSel = document.getElementById('classSectionId');
+  secSel.innerHTML = '<option value="">Select section</option>';
+  if (!courseId) return;
+  const sections = await api(`${base}/records/courses/${courseId}/sections`);
+  secSel.innerHTML += sections.map(s => {
+    const sec = s.section || {};
+    return `<option value="${sec.id}">${sec.name} (${s.totalStudents} students)</option>`;
+  }).join('');
+};
 
 document.getElementById('classLoadBtn').onclick = async () => {
   const courseId = document.getElementById('classCourseId').value;
   const sectionId = document.getElementById('classSectionId').value;
   const name = document.getElementById('className').value.trim();
   if (!courseId || !sectionId) {
-    showMsg(msg, 'Enter course ID and section ID', 'err');
+    showMsg(msg, 'Select course and section', 'err');
     return;
   }
   try {
@@ -68,6 +114,9 @@ document.getElementById('classLoadBtn').onclick = async () => {
 };
 
 async function loadGradeCourses() {
+  await loadCurrentTerm();
+  applyGradeTermLock();
+  if (termClosed) return;
   const courses = await api(base + '/records/courses');
   const sel = document.getElementById('gradeCourse');
   sel.innerHTML = '<option value="">Select course</option>' +
@@ -75,6 +124,7 @@ async function loadGradeCourses() {
 }
 
 document.getElementById('gradeCourse').onchange = async () => {
+  if (termClosed) return;
   const courseId = document.getElementById('gradeCourse').value;
   const secSel = document.getElementById('gradeSection');
   secSel.innerHTML = '<option value="">Select section</option>';
@@ -89,6 +139,7 @@ document.getElementById('gradeCourse').onchange = async () => {
 };
 
 document.getElementById('gradeLoadBtn').onclick = async () => {
+  if (termClosed) return;
   const courseId = document.getElementById('gradeCourse').value;
   const sectionId = document.getElementById('gradeSection').value;
   if (!courseId || !sectionId) {
@@ -112,6 +163,7 @@ document.getElementById('gradeLoadBtn').onclick = async () => {
 };
 
 document.getElementById('gradeStudentTable').onclick = async e => {
+  if (termClosed) return;
   const btn = e.target.closest('[data-record]');
   if (!btn) return;
   activeRecordId = btn.dataset.record;
@@ -125,7 +177,7 @@ document.getElementById('gradeStudentTable').onclick = async e => {
 };
 
 document.getElementById('computeBtn').onclick = async () => {
-  if (!activeRecordId) return;
+  if (!activeRecordId || termClosed) return;
   try {
     hideMsg(msg);
     const form = document.getElementById('gradeForm');
@@ -148,7 +200,7 @@ document.getElementById('computeBtn').onclick = async () => {
 
 document.getElementById('gradeForm').onsubmit = async e => {
   e.preventDefault();
-  if (!activeRecordId) return;
+  if (!activeRecordId || termClosed) return;
   try {
     hideMsg(msg);
     const form = e.target;
@@ -226,7 +278,7 @@ document.getElementById('profileForm').onsubmit = async e => {
 bindNav({
   dashboard: loadDashboard,
   schedules: loadSchedules,
-  classes: () => {},
+  classes: loadClassCourses,
   grades: loadGradeCourses,
   formula: loadFormula,
   profile: loadProfile

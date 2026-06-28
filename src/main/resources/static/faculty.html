@@ -34,8 +34,8 @@
       <section id="panel-classes" class="panel">
         <h1>Class List</h1>
         <div class="row">
-          <div style="flex:1;min-width:140px"><label>Course ID</label><input id="classCourseId" type="number"></div>
-          <div style="flex:1;min-width:140px"><label>Section ID</label><input id="classSectionId" type="number"></div>
+          <div style="flex:1;min-width:140px"><label>Course</label><select id="classCourseId"><option value="">Select course</option></select></div>
+          <div style="flex:1;min-width:140px"><label>Section</label><select id="classSectionId"><option value="">Select section</option></select></div>
           <div style="flex:1;min-width:140px"><label>Name filter</label><input id="className"></div>
           <div style="align-self:end"><button class="btn btn-sm" id="classLoadBtn">Load</button></div>
         </div>
@@ -44,10 +44,13 @@
 
       <section id="panel-grades" class="panel">
         <h1>Encode Grades</h1>
-        <div class="row">
-          <div style="flex:1"><label>Course</label><select id="gradeCourse"></select></div>
-          <div style="flex:1"><label>Section</label><select id="gradeSection"></select></div>
-          <div style="align-self:end"><button class="btn btn-sm" id="gradeLoadBtn">Load Students</button></div>
+        <div id="gradeTermNotice" class="hidden"></div>
+        <div id="gradeControls">
+          <div class="row">
+            <div style="flex:1"><label>Course</label><select id="gradeCourse"></select></div>
+            <div style="flex:1"><label>Section</label><select id="gradeSection"></select></div>
+            <div style="align-self:end"><button class="btn btn-sm" id="gradeLoadBtn">Load Students</button></div>
+          </div>
         </div>
         <div id="gradeStudentTable"></div>
         <div id="gradeFormWrap" class="hidden" style="margin-top:0.75rem">
