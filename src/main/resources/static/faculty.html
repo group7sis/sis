@@ -3,36 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Faculty Portal</title>
+  <title>Faculty Portal - SIS</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <h2 id="userLabel">Faculty</h2>
-      <button data-panel="dashboard" class="active">Dashboard</button>
-      <button data-panel="schedules">Schedules</button>
-      <button data-panel="classes">Class List</button>
-      <button data-panel="grades">Encode Grades</button>
-      <button data-panel="formula">Grade Formula</button>
-      <button data-panel="profile">Profile</button>
-      <a href="#" class="logout">Logout</a>
+      <div class="sidebar-header">
+        <img src="assets/placeholder/Placeholder.png" alt="Profile">
+        <h3 id="userLabel">Faculty</h3>
+        <span class="role-badge">FACULTY</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button data-panel="dashboard" class="active">Dashboard</button>
+        <button data-panel="schedules">Schedules</button>
+        <button data-panel="classes">Class List</button>
+        <button data-panel="grades">Encode Grades</button>
+        <button data-panel="formula">Grade Formula</button>
+        <button data-panel="profile">Profile</button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="logout">Logout</a>
+      </div>
     </aside>
     <main class="main">
       <div id="msg" class="msg hidden"></div>
 
       <section id="panel-dashboard" class="panel active">
-        <h1>Dashboard</h1>
+        <div class="main-header">
+          <h1>Dashboard</h1>
+          <span class="breadcrumb">Home / Dashboard</span>
+        </div>
         <div id="dashContent"></div>
       </section>
 
       <section id="panel-schedules" class="panel">
-        <h1>Weekly Schedules</h1>
+        <div class="main-header">
+          <h1>Weekly Schedules</h1>
+          <span class="breadcrumb">Home / Schedules</span>
+        </div>
         <div id="schedContent"></div>
       </section>
 
       <section id="panel-classes" class="panel">
-        <h1>Class List</h1>
+        <div class="main-header">
+          <h1>Class List</h1>
+          <span class="breadcrumb">Home / Classes</span>
+        </div>
         <div class="row">
           <div style="flex:1;min-width:140px"><label>Course</label><select id="classCourseId"><option value="">Select course</option></select></div>
           <div style="flex:1;min-width:140px"><label>Section</label><select id="classSectionId"><option value="">Select section</option></select></div>
@@ -43,7 +60,10 @@
       </section>
 
       <section id="panel-grades" class="panel">
-        <h1>Encode Grades</h1>
+        <div class="main-header">
+          <h1>Encode Grades</h1>
+          <span class="breadcrumb">Home / Grades</span>
+        </div>
         <div id="gradeTermNotice" class="hidden"></div>
         <div id="gradeControls">
           <div class="row">
@@ -71,7 +91,10 @@
       </section>
 
       <section id="panel-formula" class="panel">
-        <h1>Grade Formula Weights</h1>
+        <div class="main-header">
+          <h1>Grade Formula Weights</h1>
+          <span class="breadcrumb">Home / Formula</span>
+        </div>
         <form id="formulaForm" class="grid-2">
           <div><label>Assignments %</label><input name="assignmentWeight" type="number" required></div>
           <div><label>Quizzes %</label><input name="quizWeight" type="number" required></div>
@@ -82,7 +105,10 @@
       </section>
 
       <section id="panel-profile" class="panel">
-        <h1>Profile</h1>
+        <div class="main-header">
+          <h1>Profile</h1>
+          <span class="breadcrumb">Home / Profile</span>
+        </div>
         <form id="profileForm" class="grid-2">
           <div><label>First Name</label><input name="firstName" required></div>
           <div><label>Middle Name</label><input name="middleName"></div>

@@ -3,24 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
+  <title>Admin Panel - SIS</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <h2 id="userLabel">Admin</h2>
-      <button data-panel="dashboard" class="active">Dashboard</button>
-      <button data-panel="students">Students</button>
-      <button data-panel="faculty">Faculty</button>
-      <button data-panel="courses">Courses</button>
-      <button data-panel="schedules">Schedules</button>
-      <button data-panel="sections">Sections</button>
-      <button data-panel="programs">Programs</button>
-      <button data-panel="departments">Departments</button>
-      <button data-panel="term">Current Term</button>
-      <button data-panel="accounts">Admin Accounts</button>
-      <a href="#" class="logout">Logout</a>
+      <div class="sidebar-header">
+        <img src="assets/placeholder/Placeholder.png" alt="Profile">
+        <h3 id="userLabel">Admin</h3>
+        <span class="role-badge">ADMIN</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button data-panel="dashboard" class="active">Dashboard</button>
+        <button data-panel="students">Students</button>
+        <button data-panel="faculty">Faculty</button>
+        <button data-panel="courses">Courses</button>
+        <button data-panel="schedules">Schedules</button>
+        <button data-panel="sections">Sections</button>
+        <button data-panel="programs">Programs</button>
+        <button data-panel="departments">Departments</button>
+        <button data-panel="term">Current Term</button>
+        <button data-panel="accounts">Admin Accounts</button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="logout">Logout</a>
+      </div>
     </aside>
     <main class="main">
       <div id="msg" class="msg hidden"></div>
@@ -48,47 +56,46 @@
         </form>
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
-        <details open><summary>Add Student</summary>
-          <form id="studentForm" style="margin-top:0.5rem">
-            <div class="fieldset-title">Profile</div>
-            <div class="grid-2">
-              <div><label>First Name</label><input name="firstName" required></div>
-              <div><label>Middle Name</label><input name="middleName"></div>
-              <div><label>Last Name</label><input name="lastName" required></div>
-              <div><label>Suffix</label><input name="suffix"></div>
-              <div><label>Sex</label><select name="sex" required><option>MALE</option><option>FEMALE</option></select></div>
-              <div><label>Date of Birth</label><input name="dateOfBirth" type="date" required></div>
-              <div><label>Civil Status</label><select name="civilStatus" required><option>SINGLE</option><option>MARRIED</option><option>DIVORCED</option><option>WIDOWED</option></select></div>
-              <div><label>Nationality</label><input name="nationality" value="Filipino" required></div>
-              <div><label>Mobile Number</label><input name="mobileNumber" required></div>
+        <button class="btn btn-sm" data-toggle-form="studentForm" style="margin-top:0.5rem">+ Add Student</button>
+        <form id="studentForm" class="hidden" style="margin-top:0.5rem">
+          <div class="fieldset-title">Profile</div>
+          <div class="grid-2">
+            <div><label>First Name</label><input name="firstName" required></div>
+            <div><label>Middle Name</label><input name="middleName"></div>
+            <div><label>Last Name</label><input name="lastName" required></div>
+            <div><label>Suffix</label><input name="suffix"></div>
+            <div><label>Sex</label><select name="sex" required><option>MALE</option><option>FEMALE</option></select></div>
+            <div><label>Date of Birth</label><input name="dateOfBirth" type="date" required></div>
+            <div><label>Civil Status</label><select name="civilStatus" required><option>SINGLE</option><option>MARRIED</option><option>DIVORCED</option><option>WIDOWED</option></select></div>
+            <div><label>Nationality</label><input name="nationality" value="Filipino" required></div>
+            <div><label>Mobile Number</label><input name="mobileNumber" required></div>
+          </div>
+          <div class="fieldset-title">Account</div>
+          <div class="grid-2">
+            <div><label>Username</label><input name="username" required></div>
+            <div><label>Password</label><input name="password" required></div>
+            <div><label>Email</label><input name="email" type="email" required></div>
+            <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          </div>
+          <div class="fieldset-title">Initial Academic Info (from current term)</div>
+          <div class="grid-2">
+            <div><label>Year Admitted</label><input name="yearAdmitted" class="readonly-field" readonly></div>
+            <div><label>Academic Year</label><input name="academicYear" class="readonly-field" readonly></div>
+            <div><label>Semester</label><input name="semester" class="readonly-field" readonly></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+            <div><label>Program</label><select name="enrolledProgramId" data-lookup="program" required><option value="">Select program</option></select></div>
+            <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select section</option></select></div>
+            <div style="grid-column:1/-1"><label>Initial Schedule</label><select name="scheduleId" data-lookup="schedule" required><option value="">Select schedule</option></select></div>
+            <div id="studentEditFields" class="hidden grid-2" style="grid-column:1/-1">
+              <div><label>Student Status</label><select name="studentStatus"><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
+              <div><label>Scholastic Status</label><select name="scholasticStatus"><option>REGULAR</option><option>IRREGULAR</option></select></div>
             </div>
-            <div class="fieldset-title">Account</div>
-            <div class="grid-2">
-              <div><label>Username</label><input name="username" required></div>
-              <div><label>Password</label><input name="password" required></div>
-              <div><label>Email</label><input name="email" type="email" required></div>
-              <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            </div>
-            <div class="fieldset-title">Initial Academic Info (from current term)</div>
-            <div class="grid-2">
-              <div><label>Year Admitted</label><input name="yearAdmitted" class="readonly-field" readonly></div>
-              <div><label>Academic Year</label><input name="academicYear" class="readonly-field" readonly></div>
-              <div><label>Semester</label><input name="semester" class="readonly-field" readonly></div>
-              <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
-              <div><label>Program</label><select name="enrolledProgramId" data-lookup="program" required><option value="">Select program</option></select></div>
-              <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select section</option></select></div>
-              <div style="grid-column:1/-1"><label>Initial Schedule</label><select name="scheduleId" data-lookup="schedule" required><option value="">Select schedule</option></select></div>
-              <div id="studentEditFields" class="hidden grid-2" style="grid-column:1/-1">
-                <div><label>Student Status</label><select name="studentStatus"><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
-                <div><label>Scholastic Status</label><select name="scholasticStatus"><option>REGULAR</option><option>IRREGULAR</option></select></div>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-sm" type="submit" id="studentSubmitBtn">Add Student</button>
-              <button class="btn btn-sm secondary hidden" type="button" id="studentCancelEdit">Cancel Edit</button>
-            </div>
-          </form>
-        </details>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-sm" type="submit" id="studentSubmitBtn">Add Student</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="studentCancelEdit">Cancel Edit</button>
+          </div>
+        </form>
         <div id="studentDetail" class="sub-panel hidden"></div>
       </section>
 
@@ -107,10 +114,10 @@
         </form>
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
-        <details open><summary>Add Faculty</summary>
-          <form id="facultyForm" style="margin-top:0.5rem">
-            <div class="fieldset-title">Profile</div>
-            <div class="grid-2">
+        <button class="btn btn-sm" data-toggle-form="facultyForm" style="margin-top:0.5rem">+ Add Faculty</button>
+        <form id="facultyForm" class="hidden" style="margin-top:0.5rem">
+          <div class="fieldset-title">Profile</div>
+          <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
             <div><label>Middle Name</label><input name="middleName"></div>
             <div><label>Last Name</label><input name="lastName" required></div>
@@ -120,29 +127,28 @@
             <div><label>Civil Status</label><select name="civilStatus" required><option>SINGLE</option><option>MARRIED</option><option>DIVORCED</option><option>WIDOWED</option></select></div>
             <div><label>Nationality</label><input name="nationality" value="Filipino" required></div>
             <div><label>Mobile Number</label><input name="mobileNumber" required></div>
-            </div>
-            <div class="fieldset-title">Account</div>
-            <div class="grid-2">
+          </div>
+          <div class="fieldset-title">Account</div>
+          <div class="grid-2">
             <div><label>Username</label><input name="username" required></div>
             <div><label>Password</label><input name="password" required></div>
             <div><label>Email</label><input name="email" type="email" required></div>
             <div><label>Account Status</label><select name="accountStatus"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            </div>
-            <div class="fieldset-title">Employment</div>
-            <div class="grid-2">
+          </div>
+          <div class="fieldset-title">Employment</div>
+          <div class="grid-2">
             <div><label>Department</label><select name="departmentId" data-lookup="department"><option value="">None</option></select></div>
             <div><label>Employment Type</label><select name="employmentType"><option>FULL_TIME</option><option>PART_TIME</option></select></div>
             <div><label>Position</label><input name="position" required></div>
             <div><label>Date Hired</label><input name="dateHired" type="date" required></div>
             <div><label>Faculty Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            </div>
-            <div style="grid-column:1/-1"><label>Qualified Courses</label><select name="qualifiedCoursesIds" id="facultyQualifiedCourses" multiple size="4"></select></div>
-            <div style="grid-column:1/-1" class="form-actions">
-              <button class="btn btn-sm" type="submit" id="facultySubmitBtn">Add Faculty</button>
-              <button class="btn btn-sm secondary hidden" type="button" id="facultyCancelEdit">Cancel Edit</button>
-            </div>
-          </form>
-        </details>
+          </div>
+          <div style="grid-column:1/-1"><label>Qualified Courses</label><select name="qualifiedCoursesIds" id="facultyQualifiedCourses" multiple size="4"></select></div>
+          <div style="grid-column:1/-1" class="form-actions">
+            <button class="btn btn-sm" type="submit" id="facultySubmitBtn">Add Faculty</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="facultyCancelEdit">Cancel Edit</button>
+          </div>
+        </form>
         <div id="facultyDetail" class="detail-box hidden"></div>
       </section>
 
@@ -162,24 +168,23 @@
         </form>
         <div id="courseStats" class="stats"></div>
         <div id="courseTable"></div>
-        <details open><summary>Add Course</summary>
-          <form id="courseForm" style="margin-top:0.5rem">
-            <div class="grid-2">
-              <div><label>Title</label><input name="title" required></div>
-              <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
-              <div><label>Units</label><input name="units" type="number" required></div>
-              <div><label>Lecture Hours</label><input name="lectureHours" type="number" required></div>
-              <div><label>Lab Hours</label><input name="labHours" type="number" value="0" required></div>
-              <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-              <div style="grid-column:1/-1"><label>Prerequisites</label><select name="prerequisiteIds" id="coursePrereqs" multiple size="4"></select></div>
-              <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
-            </div>
-            <div class="section-title">Program / Curriculum Assignments</div>
-            <div id="courseAssignmentRows" class="repeater-wrap"></div>
-            <button type="button" class="btn btn-sm secondary" data-add-row="courseAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
-            <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Course</button></div>
-          </form>
-        </details>
+        <button class="btn btn-sm" data-toggle-form="courseForm" style="margin-top:0.5rem">+ Add Course</button>
+        <form id="courseForm" class="hidden" style="margin-top:0.5rem">
+          <div class="grid-2">
+            <div><label>Title</label><input name="title" required></div>
+            <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
+            <div><label>Units</label><input name="units" type="number" required></div>
+            <div><label>Lecture Hours</label><input name="lectureHours" type="number" required></div>
+            <div><label>Lab Hours</label><input name="labHours" type="number" value="0" required></div>
+            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div style="grid-column:1/-1"><label>Prerequisites</label><select name="prerequisiteIds" id="coursePrereqs" multiple size="4"></select></div>
+            <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
+          </div>
+          <div class="section-title">Program / Curriculum Assignments</div>
+          <div id="courseAssignmentRows" class="repeater-wrap"></div>
+          <button type="button" class="btn btn-sm secondary" data-add-row="courseAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
+          <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Course</button></div>
+        </form>
         <div id="courseManage" class="sub-panel hidden">
           <div class="row">
             <h2 id="courseManageTitle">Course Assignments</h2>
@@ -214,28 +219,27 @@
         </form>
         <div id="scheduleStats" class="stats"></div>
         <div id="scheduleTable"></div>
-        <details open><summary>Add Schedule</summary>
-          <form id="scheduleForm" style="margin-top:0.5rem">
-            <input type="hidden" name="room" value="TBD">
-            <div class="grid-2">
-              <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
-              <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select</option></select></div>
-              <div><label>Faculty</label><select name="assignedFacultyId" data-lookup="faculty" required><option value="">Select</option></select></div>
-              <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
-              <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
-              <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
-              <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-              <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
-            </div>
-            <div class="section-title">Schedule Days</div>
-            <div id="scheduleDayRows" class="repeater-wrap"></div>
-            <button type="button" class="btn btn-sm secondary" data-add-row="scheduleDayRows" data-row-kind="day">+ Add Day</button>
-            <div class="form-actions">
-              <button class="btn btn-sm" type="submit" id="scheduleSubmitBtn">Add Schedule</button>
-              <button class="btn btn-sm secondary hidden" type="button" id="scheduleCancelEdit">Cancel Edit</button>
-            </div>
-          </form>
-        </details>
+        <button class="btn btn-sm" data-toggle-form="scheduleForm" style="margin-top:0.5rem">+ Add Schedule</button>
+        <form id="scheduleForm" class="hidden" style="margin-top:0.5rem">
+          <input type="hidden" name="room" value="TBD">
+          <div class="grid-2">
+            <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
+            <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select</option></select></div>
+            <div><label>Faculty</label><select name="assignedFacultyId" data-lookup="faculty" required><option value="">Select</option></select></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+            <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
+            <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
+            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
+          </div>
+          <div class="section-title">Schedule Days</div>
+          <div id="scheduleDayRows" class="repeater-wrap"></div>
+          <button type="button" class="btn btn-sm secondary" data-add-row="scheduleDayRows" data-row-kind="day">+ Add Day</button>
+          <div class="form-actions">
+            <button class="btn btn-sm" type="submit" id="scheduleSubmitBtn">Add Schedule</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="scheduleCancelEdit">Cancel Edit</button>
+          </div>
+        </form>
       </section>
 
       <section id="panel-sections" class="panel">
@@ -275,22 +279,21 @@
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="programTable"></div>
-        <details open><summary>Add Program</summary>
-          <form id="programForm" class="grid-2" style="margin-top:0.5rem">
-            <div><label>Title</label><input name="title" required></div>
-            <div><label>Code</label><input name="code" required></div>
-            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
-            <div style="grid-column:1/-1" class="section-title">Initial Curriculum</div>
-            <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
-            <div><label>Year Levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
-            <div><label>Semesters per Year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
-            <div style="grid-column:1/-1" class="form-actions">
-              <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
-              <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
-            </div>
-          </form>
-        </details>
+        <button class="btn btn-sm" data-toggle-form="programForm" style="margin-top:0.5rem">+ Add Program</button>
+        <form id="programForm" class="hidden grid-2" style="margin-top:0.5rem">
+          <div><label>Title</label><input name="title" required></div>
+          <div><label>Code</label><input name="code" required></div>
+          <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
+          <div style="grid-column:1/-1" class="section-title">Initial Curriculum</div>
+          <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
+          <div><label>Year Levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
+          <div id="yearSemesterFields" style="grid-column:1/-1"></div>
+          <div style="grid-column:1/-1" class="form-actions">
+            <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
+          </div>
+        </form>
         <div id="programManage" class="sub-panel hidden">
           <div class="row">
             <h2 id="programManageTitle">Program</h2>
@@ -302,7 +305,7 @@
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
             <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
-            <div><label>Semesters per year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
+            <div id="curriculumYearSemesterFields" style="grid-column:1/-1"></div>
             <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Curriculum</button></div>
           </form>
           <div class="section-title">Courses in curriculum</div>
