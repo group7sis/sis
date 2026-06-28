@@ -37,19 +37,27 @@ async function loadLookups() {
   LK.curriculums = LK.programs.flatMap(p => (p.curriculums || []).map(c => ({
     ...c, programId: p.id, programCode: p.code, programTitle: p.title
   })));
-  LK.courseAssignments = LK.courses.flatMap(c => (c.courseAssignments || []).map(a => ({
-    ...a, courseId: c.id, courseCode: c.code, courseTitle: c.title,
-    label: `${c.code} → ${a.curriculumId ? 'Curr ' + a.curriculumId : ''} Y${a.yearLevel} S${a.semester}`
-  })));
+  LK.courseAssignments = LK.courses.flatMap(c => (c.courseAssignments || []).map(a => {
+    const curr = LK.curriculums.find(x => x.id === a.curriculumId);
+    const currLabel = curr ? `${curr.code || curr.id} (${curr.effectiveYear || ''})` : `Curr ${a.curriculumId || ''}`;
+    return {
+      ...a, courseId: c.id, courseCode: c.code, courseTitle: c.title,
+      label: `${c.code} → ${currLabel} Y${a.yearLevel} S${a.semester}`
+    };
+  }));
 }
 
 function deptLabel(d) { return `${d.code} - ${d.name}`; }
 function progLabel(p) { return `${p.code || p.id} - ${p.title}`; }
 function currLabel(c) { return `${c.programCode || ''} ${c.code || c.id} (${c.effectiveYear || ''})`.trim(); }
-function sectLabel(s) { return `${s.name} (${s.code || s.id}) · Prog ${s.programId}`; }
+function sectLabel(s) {
+  const prog = LK.programs.find(p => p.id === s.programId);
+  const progName = prog ? `${prog.code || prog.id}` : s.programId;
+  return `${s.name} (${s.code || s.id}) · ${progName}`;
+}
 function facultyLabel(f) { return `${f.facultyNumber || f.id} - ${fmtName(f.profile)}`; }
 function courseLabel(c) { return `${c.code} - ${c.title}`; }
-function assignLabel(a) { return a.label || `${a.courseCode} Y${a.yearLevel} S${a.semester} (#${a.id})`; }
+function assignLabel(a) { return a.label || `${a.courseCode} Y${a.yearLevel} S${a.semester}`; }
 function schedLabel(s) { return `${s.code} - ${s.courseTitle} / ${s.sectionName || s.sectionId}`; }
 
 function fillSelect(el, items, valueKey, labelFn, selected) {

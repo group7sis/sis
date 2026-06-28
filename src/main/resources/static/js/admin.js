@@ -137,11 +137,15 @@ async function loadPrograms() {
   const data = await api('/admin/programs' + q);
   document.getElementById('programTable').innerHTML = tableHtml(
     ['Code', 'Title', 'Status', 'Active Curriculum', ''],
-    (data || []).map(p => [
-      p.code || p.id, p.title, p.status, p.activeCurriculumId ?? '-',
-      `<button class="btn btn-sm" data-program="${p.id}" data-title="${p.title || ''}">Manage</button>
-       <button class="btn btn-sm secondary" data-edit="program" data-id="${p.id}">Edit</button>`
-    ]));
+    (data || []).map(p => {
+      const activeCurr = (p.curriculums || []).find(c => c.id === p.activeCurriculumId);
+      const activeLabel = activeCurr ? `${activeCurr.code || activeCurr.id} (${activeCurr.effectiveYear || ''})` : (p.activeCurriculumId ?? '-');
+      return [
+        p.code || p.id, p.title, p.status, activeLabel,
+        `<button class="btn btn-sm" data-program="${p.id}" data-title="${p.title || ''}">Manage</button>
+         <button class="btn btn-sm secondary" data-edit="program" data-id="${p.id}">Edit</button>`
+      ];
+    }));
 }
 
 async function loadDepartments() {
@@ -246,8 +250,10 @@ async function openCourseManage(courseId) {
   managedCourse = await api('/admin/courses/' + courseId);
   document.getElementById('courseManageTitle').textContent =
     (managedCourse.code || 'Course') + ' — ' + (managedCourse.title || '');
+  const dept = LK.departments.find(d => d.id === managedCourse.departmentId);
+  const deptName = dept ? `${dept.code} - ${dept.name}` : `Department ${managedCourse.departmentId}`;
   document.getElementById('courseManageMeta').textContent =
-    `Department ${managedCourse.departmentId} · ${managedCourse.units} units · ${managedCourse.status}`;
+    `${deptName} · ${managedCourse.units} units · ${managedCourse.status}`;
   const container = document.getElementById('courseManageAssignmentRows');
   container.innerHTML = '';
   const assignments = managedCourse.courseAssignments || [];
@@ -268,6 +274,68 @@ function formToObj(form) {
   });
   return obj;
 }
+
+// Toggle form visibility for "Add entity" buttons
+document.body.addEventListener('click', e => {
+  const toggleBtn = e.target.closest('[data-toggle-form]');
+  if (toggleBtn) {
+    const form = document.getElementById(toggleBtn.dataset.toggleForm);
+    if (form) {
+      form.classList.toggle('hidden');
+      if (!form.classList.contains('hidden')) {
+        form.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+});
+
+// Show schedule filter function - filters schedules by current term's academic year/semester
+function filterSchedulesByTerm() {
+  const scheduleSelect = document.querySelector('[data-lookup="schedule"]');
+  if (!scheduleSelect || !currentTerm) return;
+  const filtered = (LK.schedules || []).filter(s =>
+    s.academicYear === currentTerm.academicYear && s.semester === currentTerm.semester
+  );
+  fillSelect(scheduleSelect, filtered, 'id', schedLabel, scheduleSelect.value);
+}
+
+// Filter section dropdown when program changes in student form
+function bindStudentSectionFilter() {
+  const progSelect = document.forms.studentForm?.enrolledProgramId;
+  const sectSelect = document.forms.studentForm?.sectionId;
+  if (!progSelect || !sectSelect) return;
+  progSelect.addEventListener('change', () => {
+    const progId = Number(progSelect.value);
+    if (!progId) {
+      fillSelect(sectSelect, LK.sections, 'id', sectLabel, '');
+      return;
+    }
+    const filtered = (LK.sections || []).filter(s => s.programId === progId);
+    fillSelect(sectSelect, filtered, 'id', sectLabel, '');
+  });
+}
+
+// Generate per-year semester fields
+function renderYearSemesterFields(containerId, yearCount) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= yearCount; i++) {
+    const div = document.createElement('div');
+    div.innerHTML = `<label>Year ${i} - Total Semesters</label><input name="yearSemester_${i}" type="number" value="2" min="1" required>`;
+    container.appendChild(div);
+  }
+}
+
+// Year count change handler for program form
+document.getElementById('programForm')?.querySelector('[name="yearCount"]')?.addEventListener('change', function() {
+  renderYearSemesterFields('yearSemesterFields', Number(this.value) || 1);
+});
+
+// Year count change handler for curriculum form
+document.getElementById('curriculumForm')?.querySelector('[name="yearCount"]')?.addEventListener('change', function() {
+  renderYearSemesterFields('curriculumYearSemesterFields', Number(this.value) || 1);
+});
 
 document.getElementById('studentForm').onsubmit = async e => {
   e.preventDefault();
@@ -506,7 +574,10 @@ document.getElementById('programForm').onsubmit = async e => {
       return;
     }
     const years = [];
-    for (let i = 1; i <= f.yearCount; i++) years.push({ level: i, totalSemester: f.semestersPerYear });
+    for (let i = 1; i <= f.yearCount; i++) {
+      const semKey = 'yearSemester_' + i;
+      years.push({ level: i, totalSemester: f[semKey] || 2 });
+    }
     const body = {
       title: f.title, code: f.code, status: f.status, departmentId: f.departmentId,
       curriculums: [{ effectiveYear: f.effectiveYear, years }]
@@ -567,7 +638,8 @@ document.getElementById('curriculumForm').onsubmit = async e => {
     const f = formToObj(e.target);
     const years = [];
     for (let i = 1; i <= f.yearCount; i++) {
-      years.push({ level: i, totalSemester: f.semestersPerYear });
+      const semKey = 'yearSemester_' + i;
+      years.push({ level: i, totalSemester: f[semKey] || 2 });
     }
     const curriculums = [...(managedProgram.curriculums || [])];
     curriculums.push({ effectiveYear: f.effectiveYear, years });
@@ -657,7 +729,7 @@ document.body.addEventListener('click', async e => {
 
 bindNav({
   dashboard: loadDashboard,
-  students: async () => { await loadCurrentTerm(); await loadLookups(); fillLookupSelects(); loadStudents(); },
+  students: async () => { await loadCurrentTerm(); await loadLookups(); fillLookupSelects(); filterSchedulesByTerm(); bindStudentSectionFilter(); loadStudents(); },
   faculty: async () => { await loadLookups(); fillLookupSelects(); loadFaculty(); },
   courses: async () => { await loadLookups(); fillLookupSelects(); initRepeater('courseAssignmentRows', assignmentRowHtml, 1); document.getElementById('coursePrereqs').innerHTML = qualifiedCourseSelectHtml(); loadCourses(); },
   schedules: async () => { await loadCurrentTerm(); await loadLookups(); fillLookupSelects(); initRepeater('scheduleDayRows', dayRowHtml, 1); loadSchedules(); },
@@ -671,5 +743,10 @@ bindNav({
 initAdmin().then(() => {
   initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
   initRepeater('scheduleDayRows', dayRowHtml, 1);
+  // Initialize per-year semester fields for program form
+  const yearCountInput = document.getElementById('programForm')?.querySelector('[name="yearCount"]');
+  if (yearCountInput) renderYearSemesterFields('yearSemesterFields', Number(yearCountInput.value) || 4);
+  const currYearCountInput = document.getElementById('curriculumForm')?.querySelector('[name="yearCount"]');
+  if (currYearCountInput) renderYearSemesterFields('curriculumYearSemesterFields', Number(currYearCountInput.value) || 4);
   loadDashboard();
 });

@@ -48,8 +48,8 @@
         </form>
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
-        <details open><summary>Add Student</summary>
-          <form id="studentForm" style="margin-top:0.5rem">
+        <button class="btn btn-sm" data-toggle-form="studentForm" style="margin-top:0.5rem">+ Add Student</button>
+        <form id="studentForm" class="hidden" style="margin-top:0.5rem">
             <div class="fieldset-title">Profile</div>
             <div class="grid-2">
               <div><label>First Name</label><input name="firstName" required></div>
@@ -88,7 +88,6 @@
               <button class="btn btn-sm secondary hidden" type="button" id="studentCancelEdit">Cancel Edit</button>
             </div>
           </form>
-        </details>
         <div id="studentDetail" class="sub-panel hidden"></div>
       </section>
 
@@ -107,8 +106,8 @@
         </form>
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
-        <details open><summary>Add Faculty</summary>
-          <form id="facultyForm" style="margin-top:0.5rem">
+        <button class="btn btn-sm" data-toggle-form="facultyForm" style="margin-top:0.5rem">+ Add Faculty</button>
+        <form id="facultyForm" class="hidden" style="margin-top:0.5rem">
             <div class="fieldset-title">Profile</div>
             <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
@@ -142,7 +141,6 @@
               <button class="btn btn-sm secondary hidden" type="button" id="facultyCancelEdit">Cancel Edit</button>
             </div>
           </form>
-        </details>
         <div id="facultyDetail" class="detail-box hidden"></div>
       </section>
 
@@ -162,8 +160,8 @@
         </form>
         <div id="courseStats" class="stats"></div>
         <div id="courseTable"></div>
-        <details open><summary>Add Course</summary>
-          <form id="courseForm" style="margin-top:0.5rem">
+        <button class="btn btn-sm" data-toggle-form="courseForm" style="margin-top:0.5rem">+ Add Course</button>
+        <form id="courseForm" class="hidden" style="margin-top:0.5rem">
             <div class="grid-2">
               <div><label>Title</label><input name="title" required></div>
               <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
@@ -179,7 +177,6 @@
             <button type="button" class="btn btn-sm secondary" data-add-row="courseAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
             <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Course</button></div>
           </form>
-        </details>
         <div id="courseManage" class="sub-panel hidden">
           <div class="row">
             <h2 id="courseManageTitle">Course Assignments</h2>
@@ -214,8 +211,8 @@
         </form>
         <div id="scheduleStats" class="stats"></div>
         <div id="scheduleTable"></div>
-        <details open><summary>Add Schedule</summary>
-          <form id="scheduleForm" style="margin-top:0.5rem">
+        <button class="btn btn-sm" data-toggle-form="scheduleForm" style="margin-top:0.5rem">+ Add Schedule</button>
+        <form id="scheduleForm" class="hidden" style="margin-top:0.5rem">
             <input type="hidden" name="room" value="TBD">
             <div class="grid-2">
               <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
@@ -235,7 +232,6 @@
               <button class="btn btn-sm secondary hidden" type="button" id="scheduleCancelEdit">Cancel Edit</button>
             </div>
           </form>
-        </details>
       </section>
 
       <section id="panel-sections" class="panel">
@@ -275,22 +271,21 @@
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="programTable"></div>
-        <details open><summary>Add Program</summary>
-          <form id="programForm" class="grid-2" style="margin-top:0.5rem">
-            <div><label>Title</label><input name="title" required></div>
-            <div><label>Code</label><input name="code" required></div>
-            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
-            <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
-            <div style="grid-column:1/-1" class="section-title">Initial Curriculum</div>
-            <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
-            <div><label>Year Levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
-            <div><label>Semesters per Year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
-            <div style="grid-column:1/-1" class="form-actions">
-              <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
-              <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
-            </div>
-          </form>
-        </details>
+        <button class="btn btn-sm" data-toggle-form="programForm" style="margin-top:0.5rem">+ Add Program</button>
+        <form id="programForm" class="hidden grid-2" style="margin-top:0.5rem">
+          <div><label>Title</label><input name="title" required></div>
+          <div><label>Code</label><input name="code" required></div>
+          <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
+          <div style="grid-column:1/-1" class="section-title">Initial Curriculum</div>
+          <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
+          <div><label>Year Levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
+          <div id="yearSemesterFields" style="grid-column:1/-1"></div>
+          <div style="grid-column:1/-1" class="form-actions">
+            <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
+            <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
+          </div>
+        </form>
         <div id="programManage" class="sub-panel hidden">
           <div class="row">
             <h2 id="programManageTitle">Program</h2>
@@ -302,7 +297,7 @@
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
             <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
-            <div><label>Semesters per year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
+            <div id="curriculumYearSemesterFields" style="grid-column:1/-1"></div>
             <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Curriculum</button></div>
           </form>
           <div class="section-title">Courses in curriculum</div>

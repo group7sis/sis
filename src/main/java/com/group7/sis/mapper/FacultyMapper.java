@@ -13,7 +13,7 @@ public interface FacultyMapper {
 
     @Mapping(target = "qualifiedCoursesIds", ignore = true)
     @Mapping(target = "scheduledCoursesIds", ignore = true)
-    @Mapping(target = "departmentId", source = "department.id")
+    @Mapping(target = "departmentId", expression = "java(facultyEntity.getDepartment() != null ? facultyEntity.getDepartment().getId() : null)")
     FacultyDTO toDto(FacultyEntity facultyEntity);
 
     @Mapping(target = "id", ignore = true)
