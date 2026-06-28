@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student / Faculty Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="center-page">
+  <div class="card">
+    <h1>Student / Faculty Login</h1>
+    <p>Simple account login. No tokens, just session storage.</p>
+    <div id="msg" class="msg hidden"></div>
+    <form id="form">
+      <label>Login as</label>
+      <select id="role" required>
+        <option value="STUDENT">Student</option>
+        <option value="FACULTY">Faculty</option>
+      </select>
+      <label>Username</label>
+      <input id="username" required>
+      <label>Password</label>
+      <input id="password" type="password" required>
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <p style="margin-top:1rem;font-size:0.85rem"><a href="index.html">Back</a></p>
+  </div>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      hideMsg(msg);
+      try {
+        const role = document.getElementById('role').value;
+        const res = await api('/auth/portal/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            role,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          })
+        });
+        if (!res.success) throw new Error(res.message);
+        saveSession({ role: res.role, id: res.id, name: res.name });
+        location.href = role === 'STUDENT' ? 'student.html' : 'faculty.html';
+      } catch (err) {
+        showMsg(msg, err.message, 'err');
+      }
+    });
+  </script>
+</body>
+</html>

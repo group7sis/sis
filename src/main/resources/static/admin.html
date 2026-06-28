@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2 id="userLabel">Admin</h2>
+      <button data-panel="dashboard" class="active">Dashboard</button>
+      <button data-panel="students">Students</button>
+      <button data-panel="faculty">Faculty</button>
+      <button data-panel="courses">Courses</button>
+      <button data-panel="schedules">Schedules</button>
+      <button data-panel="sections">Sections</button>
+      <button data-panel="programs">Programs</button>
+      <button data-panel="departments">Departments</button>
+      <button data-panel="terms">Terms</button>
+      <button data-panel="accounts">Admin Accounts</button>
+      <a href="#" class="logout">Logout</a>
+    </aside>
+    <main class="main">
+      <div id="msg" class="msg hidden"></div>
+
+      <section id="panel-dashboard" class="panel active">
+        <h1>Dashboard</h1>
+        <div id="dashStats" class="stats"></div>
+      </section>
+
+      <section id="panel-students" class="panel">
+        <h1>Students</h1>
+        <div class="row">
+          <input id="studentSearch" placeholder="Search name" style="max-width:200px">
+          <button class="btn btn-sm" id="studentSearchBtn">Search</button>
+        </div>
+        <div id="studentStats" class="stats"></div>
+        <div id="studentTable"></div>
+        <details><summary>Add student (JSON)</summary>
+          <textarea id="studentJson" placeholder='Paste StudentDTO JSON'></textarea>
+          <button class="btn btn-sm" id="studentAddBtn">Add Student</button>
+        </details>
+        <div id="studentDetail" class="detail-box hidden"></div>
+      </section>
+
+      <section id="panel-faculty" class="panel">
+        <h1>Faculty</h1>
+        <div class="row">
+          <input id="facultySearch" placeholder="Search name" style="max-width:200px">
+          <button class="btn btn-sm" id="facultySearchBtn">Search</button>
+        </div>
+        <div id="facultyStats" class="stats"></div>
+        <div id="facultyTable"></div>
+        <details><summary>Add faculty (JSON)</summary>
+          <textarea id="facultyJson"></textarea>
+          <button class="btn btn-sm" id="facultyAddBtn">Add Faculty</button>
+        </details>
+        <div id="facultyDetail" class="detail-box hidden"></div>
+      </section>
+
+      <section id="panel-courses" class="panel">
+        <h1>Courses</h1>
+        <div id="courseStats" class="stats"></div>
+        <div id="courseTable"></div>
+        <details><summary>Add course (JSON)</summary>
+          <textarea id="courseJson"></textarea>
+          <button class="btn btn-sm" id="courseAddBtn">Add Course</button>
+        </details>
+      </section>
+
+      <section id="panel-schedules" class="panel">
+        <h1>Schedules</h1>
+        <div id="scheduleStats" class="stats"></div>
+        <div id="scheduleTable"></div>
+        <details><summary>Add schedule (JSON)</summary>
+          <textarea id="scheduleJson"></textarea>
+          <button class="btn btn-sm" id="scheduleAddBtn">Add Schedule</button>
+        </details>
+      </section>
+
+      <section id="panel-sections" class="panel">
+        <h1>Sections</h1>
+        <div id="sectionStats" class="stats"></div>
+        <div id="sectionTable"></div>
+        <form id="sectionForm" class="grid-2" style="margin-top:0.75rem">
+          <div><label>Name</label><input name="name" required></div>
+          <div><label>Program ID</label><input name="programId" type="number" required></div>
+          <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
+          <div><label>Max Capacity</label><input name="maxCapacity" type="number" required></div>
+          <div><label>Status</label><select name="status"><option>OPEN</option><option>CLOSED</option></select></div>
+          <div><label>Notes</label><input name="notes"></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Section</button></div>
+        </form>
+      </section>
+
+      <section id="panel-programs" class="panel">
+        <h1>Programs</h1>
+        <div id="programTable"></div>
+        <details><summary>Add program (JSON)</summary>
+          <textarea id="programJson"></textarea>
+          <button class="btn btn-sm" id="programAddBtn">Add Program</button>
+        </details>
+      </section>
+
+      <section id="panel-departments" class="panel">
+        <h1>Departments</h1>
+        <div id="departmentTable"></div>
+        <form id="deptForm" class="grid-2" style="margin-top:0.75rem">
+          <div><label>Name</label><input name="name" required></div>
+          <div><label>Code</label><input name="code" required></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Department</button></div>
+        </form>
+      </section>
+
+      <section id="panel-terms" class="panel">
+        <h1>Terms</h1>
+        <div id="termTable"></div>
+        <form id="termForm" class="grid-2" style="margin-top:0.75rem">
+          <div><label>Academic Year (YYYY-YYYY)</label><input name="academicYear" required></div>
+          <div><label>Semester</label><input name="semester" type="number" required></div>
+          <div><label>Status</label><select name="status"><option>ENROLLMENT</option><option>ONGOING</option><option>CLOSED</option></select></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Term</button></div>
+        </form>
+      </section>
+
+      <section id="panel-accounts" class="panel">
+        <h1>Admin Accounts</h1>
+        <div id="accountTable"></div>
+        <form id="accountForm" class="grid-2" style="margin-top:0.75rem">
+          <div><label>Username</label><input name="username" required></div>
+          <div><label>Password</label><input name="password" required></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Admin</button></div>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

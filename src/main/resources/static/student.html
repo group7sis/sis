@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Portal</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2 id="userLabel">Student</h2>
+      <button data-panel="dashboard" class="active">Dashboard</button>
+      <button data-panel="schedule">My Schedule</button>
+      <button data-panel="grades">Grades</button>
+      <button data-panel="enrollment">Enrollment</button>
+      <button data-panel="profile">Profile</button>
+      <a href="#" class="logout">Logout</a>
+    </aside>
+    <main class="main">
+      <div id="msg" class="msg hidden"></div>
+
+      <section id="panel-dashboard" class="panel active">
+        <h1>Dashboard</h1>
+        <div id="dashContent"></div>
+      </section>
+
+      <section id="panel-schedule" class="panel">
+        <h1>My Schedule</h1>
+        <div id="scheduleTable"></div>
+      </section>
+
+      <section id="panel-grades" class="panel">
+        <h1>Grades</h1>
+        <div id="gradesContent"></div>
+      </section>
+
+      <section id="panel-enrollment" class="panel">
+        <h1>Enrollment</h1>
+        <p style="font-size:0.85rem;color:#555;margin-bottom:0.75rem">Select schedules then submit. Categories come from the API.</p>
+        <div id="enrollMsg"></div>
+        <div class="section-title">Current term schedules</div>
+        <div id="currentList" class="check-list"></div>
+        <div class="section-title">Failed courses (retake)</div>
+        <div id="failedList" class="check-list"></div>
+        <div class="section-title">Missed courses</div>
+        <div id="missedList" class="check-list"></div>
+        <button class="btn" id="enrollBtn" style="margin-top:0.75rem">Submit Enrollment</button>
+      </section>
+
+      <section id="panel-profile" class="panel">
+        <h1>Profile</h1>
+        <form id="profileForm" class="grid-2">
+          <div><label>First Name</label><input name="firstName" required></div>
+          <div><label>Middle Name</label><input name="middleName"></div>
+          <div><label>Last Name</label><input name="lastName" required></div>
+          <div><label>Suffix</label><input name="suffix"></div>
+          <div><label>Mobile</label><input name="mobileNumber"></div>
+          <div><label>Program</label><input name="enrolledProgram" disabled></div>
+          <div><label>Year Level</label><input name="yearLevel" disabled></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Save Profile</button></div>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/student.js"></script>
+</body>
+</html>
