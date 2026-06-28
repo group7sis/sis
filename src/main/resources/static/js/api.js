@@ -88,3 +88,29 @@ function bindLogout() {
     });
   });
 }
+
+function buildQuery(params) {
+  const parts = [];
+  Object.entries(params || {}).forEach(([k, v]) => {
+    if (v !== '' && v != null) parts.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+  });
+  return parts.length ? '?' + parts.join('&') : '';
+}
+
+function filterValues(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return {};
+  const o = {};
+  new FormData(form).forEach((v, k) => { if (v !== '') o[k] = v; });
+  return o;
+}
+
+function bindFilter(formId, loadFn) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.addEventListener('submit', e => { e.preventDefault(); loadFn(); });
+  form.querySelector('[data-reset]')?.addEventListener('click', () => {
+    form.reset();
+    loadFn();
+  });
+}

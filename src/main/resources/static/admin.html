@@ -18,7 +18,7 @@
       <button data-panel="sections">Sections</button>
       <button data-panel="programs">Programs</button>
       <button data-panel="departments">Departments</button>
-      <button data-panel="terms">Terms</button>
+      <button data-panel="term">Current Term</button>
       <button data-panel="accounts">Admin Accounts</button>
       <a href="#" class="logout">Logout</a>
     </aside>
@@ -27,61 +27,161 @@
 
       <section id="panel-dashboard" class="panel active">
         <h1>Dashboard</h1>
+        <div id="dashTerm" class="term-banner"></div>
         <div id="dashStats" class="stats"></div>
       </section>
 
       <section id="panel-students" class="panel">
         <h1>Students</h1>
-        <div class="row">
-          <input id="studentSearch" placeholder="Search name" style="max-width:200px">
-          <button class="btn btn-sm" id="studentSearchBtn">Search</button>
-        </div>
+        <form id="studentFilters" class="filters">
+          <div class="grid-4">
+            <div><label>Name</label><input name="name"></div>
+            <div><label>Student Status</label><select name="studentStatus"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
+            <div><label>Scholastic</label><select name="scholasticStatus"><option value="">Any</option><option>REGULAR</option><option>IRREGULAR</option></select></div>
+            <div><label>Program ID</label><input name="program" type="number"></div>
+            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Academic Year</label><input name="academicYear" placeholder="YYYY-YYYY"></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number"></div>
+            <div><label>Section ID</label><input name="section" type="number"></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
-        <details><summary>Add student (JSON)</summary>
-          <textarea id="studentJson" placeholder='Paste StudentDTO JSON'></textarea>
-          <button class="btn btn-sm" id="studentAddBtn">Add Student</button>
+        <details open><summary>Add Student</summary>
+          <form id="studentForm" class="grid-2" style="margin-top:0.5rem">
+            <div><label>First Name</label><input name="firstName" required></div>
+            <div><label>Last Name</label><input name="lastName" required></div>
+            <div><label>Username</label><input name="username" required></div>
+            <div><label>Password</label><input name="password" required></div>
+            <div><label>Email</label><input name="email" type="email" required></div>
+            <div><label>Year Admitted (from term)</label><input name="yearAdmitted" class="readonly-field" readonly></div>
+            <div><label>Program ID</label><input name="enrolledProgramId" type="number" required></div>
+            <div><label>Section ID</label><input name="sectionId" type="number" required></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+            <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
+            <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
+            <div><label>Schedule ID (enrolled course)</label><input name="scheduleId" type="number" required></div>
+            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Student</button></div>
+          </form>
         </details>
-        <div id="studentDetail" class="detail-box hidden"></div>
+        <div id="studentDetail" class="sub-panel hidden"></div>
       </section>
 
       <section id="panel-faculty" class="panel">
         <h1>Faculty</h1>
-        <div class="row">
-          <input id="facultySearch" placeholder="Search name" style="max-width:200px">
-          <button class="btn btn-sm" id="facultySearchBtn">Search</button>
-        </div>
+        <form id="facultyFilters" class="filters">
+          <div class="grid-4">
+            <div><label>Name</label><input name="name"></div>
+            <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div><label>Department ID</label><input name="department" type="number"></div>
+            <div><label>Employment</label><select name="employmentType"><option value="">Any</option><option>FULL_TIME</option><option>PART_TIME</option></select></div>
+            <div><label>Qualified Course ID</label><input name="qualifiedCourse" type="number"></div>
+            <div><label>Scheduled Course ID</label><input name="scheduledCourse" type="number"></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
-        <details><summary>Add faculty (JSON)</summary>
-          <textarea id="facultyJson"></textarea>
-          <button class="btn btn-sm" id="facultyAddBtn">Add Faculty</button>
+        <details><summary>Add Faculty</summary>
+          <form id="facultyForm" class="grid-2" style="margin-top:0.5rem">
+            <div><label>First Name</label><input name="firstName" required></div>
+            <div><label>Last Name</label><input name="lastName" required></div>
+            <div><label>Username</label><input name="username" required></div>
+            <div><label>Password</label><input name="password" required></div>
+            <div><label>Email</label><input name="email" type="email" required></div>
+            <div><label>Department ID</label><input name="departmentId" type="number"></div>
+            <div><label>Employment Type</label><select name="employmentType"><option>FULL_TIME</option><option>PART_TIME</option></select></div>
+            <div><label>Position</label><input name="position" required></div>
+            <div><label>Date Hired</label><input name="dateHired" type="date" required></div>
+            <div><label>Qualified Course IDs (comma)</label><input name="qualifiedCoursesIds" placeholder="1,2,3"></div>
+            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Faculty</button></div>
+          </form>
         </details>
         <div id="facultyDetail" class="detail-box hidden"></div>
       </section>
 
       <section id="panel-courses" class="panel">
         <h1>Courses</h1>
+        <form id="courseFilters" class="filters">
+          <div class="grid-4">
+            <div><label>Title</label><input name="title"></div>
+            <div><label>Department ID</label><input name="department" type="number"></div>
+            <div><label>Program ID</label><input name="program" type="number"></div>
+            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number"></div>
+            <div><label>Semester</label><input name="semester" type="number"></div>
+            <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="courseStats" class="stats"></div>
         <div id="courseTable"></div>
-        <details><summary>Add course (JSON)</summary>
-          <textarea id="courseJson"></textarea>
-          <button class="btn btn-sm" id="courseAddBtn">Add Course</button>
+        <details><summary>Add Course</summary>
+          <form id="courseForm" class="grid-2" style="margin-top:0.5rem">
+            <div><label>Title</label><input name="title" required></div>
+            <div><label>Department ID</label><input name="departmentId" type="number" required></div>
+            <div><label>Units</label><input name="units" type="number" required></div>
+            <div><label>Lecture Hours</label><input name="lectureHours" type="number" required></div>
+            <div><label>Lab Hours</label><input name="labHours" type="number" value="0" required></div>
+            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div><label>Program ID</label><input name="programId" type="number" required></div>
+            <div><label>Curriculum ID</label><input name="curriculumId" type="number" required></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+            <div><label>Semester</label><input name="semester" type="number" value="1" required></div>
+            <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
+            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Course</button></div>
+          </form>
         </details>
       </section>
 
       <section id="panel-schedules" class="panel">
         <h1>Schedules</h1>
+        <form id="scheduleFilters" class="filters">
+          <div class="grid-4">
+            <div><label>Academic Year</label><input name="academicYear" placeholder="YYYY-YYYY"></div>
+            <div><label>Program ID</label><input name="program" type="number"></div>
+            <div><label>Curriculum ID</label><input name="curriculum" type="number"></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number"></div>
+            <div><label>Semester</label><input name="semester" type="number"></div>
+            <div><label>Section ID</label><input name="section" type="number"></div>
+            <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div><label>Day</label><select name="day"><option value="">Any</option><option>MONDAY</option><option>TUESDAY</option><option>WEDNESDAY</option><option>THURSDAY</option><option>FRIDAY</option><option>SATURDAY</option><option>SUNDAY</option></select></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="scheduleStats" class="stats"></div>
         <div id="scheduleTable"></div>
-        <details><summary>Add schedule (JSON)</summary>
-          <textarea id="scheduleJson"></textarea>
-          <button class="btn btn-sm" id="scheduleAddBtn">Add Schedule</button>
+        <details open><summary>Add Schedule</summary>
+          <form id="scheduleForm" class="grid-2" style="margin-top:0.5rem">
+            <div><label>Course Assignment ID</label><input name="courseAssignmentId" type="number" required></div>
+            <div><label>Section ID</label><input name="sectionId" type="number" required></div>
+            <div><label>Faculty ID</label><input name="assignedFacultyId" type="number" required></div>
+            <div><label>Room</label><input name="room" required></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+            <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
+            <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
+            <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
+            <div><label>Day</label><select name="dayName" required><option>MONDAY</option><option>TUESDAY</option><option>WEDNESDAY</option><option>THURSDAY</option><option>FRIDAY</option><option>SATURDAY</option><option>SUNDAY</option></select></div>
+            <div><label>Start Time</label><input name="startTime" type="time" required></div>
+            <div><label>End Time</label><input name="endTime" type="time" required></div>
+            <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
+            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Schedule</button></div>
+          </form>
         </details>
       </section>
 
       <section id="panel-sections" class="panel">
         <h1>Sections</h1>
+        <form id="sectionFilters" class="filters">
+          <div class="grid-4">
+            <div><label>Name</label><input name="name"></div>
+            <div><label>Program ID</label><input name="program" type="number"></div>
+            <div><label>Year Level</label><input name="yearLevel" type="number"></div>
+            <div><label>Status</label><select name="status"><option value="">Any</option><option>OPEN</option><option>CLOSED</option></select></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="sectionStats" class="stats"></div>
         <div id="sectionTable"></div>
         <form id="sectionForm" class="grid-2" style="margin-top:0.75rem">
@@ -97,15 +197,53 @@
 
       <section id="panel-programs" class="panel">
         <h1>Programs</h1>
+        <form id="programFilters" class="filters">
+          <div class="grid-2">
+            <div><label>Title</label><input name="title"></div>
+            <div><label>Status</label><select name="status"><option value="">Any</option><option>ACTIVE</option><option>INACTIVE</option></select></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="programTable"></div>
-        <details><summary>Add program (JSON)</summary>
+        <details><summary>Add Program (JSON)</summary>
           <textarea id="programJson"></textarea>
           <button class="btn btn-sm" id="programAddBtn">Add Program</button>
         </details>
+        <div id="programManage" class="sub-panel hidden">
+          <div class="row">
+            <h2 id="programManageTitle">Program</h2>
+            <button class="btn btn-sm secondary" id="programManageClose" type="button">Close</button>
+          </div>
+          <div class="section-title">Curriculums</div>
+          <div id="curriculumTable"></div>
+          <form id="curriculumForm" class="grid-2" style="margin-top:0.5rem">
+            <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
+            <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
+            <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
+            <div><label>Semesters per year</label><input name="semestersPerYear" type="number" value="2" min="1" required></div>
+            <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Curriculum</button></div>
+          </form>
+          <div class="section-title">Courses in curriculum</div>
+          <form id="curriculumCourseFilters" class="filters">
+            <div class="grid-3">
+              <div><label>Curriculum</label><select name="curriculumId" id="curriculumSelect" required></select></div>
+              <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
+              <div><label>Semester</label><input name="semester" type="number" value="1" required></div>
+            </div>
+            <div class="row"><button class="btn btn-sm" type="submit">List Courses</button></div>
+          </form>
+          <div id="curriculumCourseTable"></div>
+        </div>
       </section>
 
       <section id="panel-departments" class="panel">
         <h1>Departments</h1>
+        <form id="deptFilters" class="filters">
+          <div class="grid-2">
+            <div><label>Name</label><input name="name"></div>
+          </div>
+          <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
+        </form>
         <div id="departmentTable"></div>
         <form id="deptForm" class="grid-2" style="margin-top:0.75rem">
           <div><label>Name</label><input name="name" required></div>
@@ -114,21 +252,21 @@
         </form>
       </section>
 
-      <section id="panel-terms" class="panel">
-        <h1>Terms</h1>
-        <div id="termTable"></div>
-        <form id="termForm" class="grid-2" style="margin-top:0.75rem">
-          <div><label>Academic Year (YYYY-YYYY)</label><input name="academicYear" required></div>
-          <div><label>Semester</label><input name="semester" type="number" required></div>
+      <section id="panel-term" class="panel">
+        <h1>Current Term</h1>
+        <p style="font-size:0.85rem;color:#555;margin-bottom:0.75rem">This is the single system term (ID 1). Update status or semester here.</p>
+        <form id="termForm" class="grid-2" style="max-width:480px">
+          <div><label>Academic Year</label><input name="academicYear" required pattern="\d{4}-\d{4}"></div>
+          <div><label>Semester</label><input name="semester" type="number" min="1" required></div>
           <div><label>Status</label><select name="status"><option>ENROLLMENT</option><option>ONGOING</option><option>CLOSED</option></select></div>
-          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Term</button></div>
+          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Save Term</button></div>
         </form>
       </section>
 
       <section id="panel-accounts" class="panel">
         <h1>Admin Accounts</h1>
         <div id="accountTable"></div>
-        <form id="accountForm" class="grid-2" style="margin-top:0.75rem">
+        <form id="accountForm" class="grid-2" style="margin-top:0.75rem;max-width:480px">
           <div><label>Username</label><input name="username" required></div>
           <div><label>Password</label><input name="password" required></div>
           <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Admin</button></div>
