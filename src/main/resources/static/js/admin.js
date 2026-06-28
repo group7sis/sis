@@ -286,16 +286,56 @@ function formToObj(form) {
   return obj;
 }
 
-// Toggle form visibility for "Add entity" buttons
+// Open add/edit forms in modal
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
   if (toggleBtn) {
     const form = document.getElementById(toggleBtn.dataset.toggleForm);
     if (form) {
-      form.classList.toggle('hidden');
-      if (!form.classList.contains('hidden')) {
-        form.scrollIntoView({ behavior: 'smooth' });
+      const isEdit = toggleBtn.dataset.edit === 'true';
+      const title = isEdit ? 'Edit' : 'Add';
+      const formName = form.id.replace('Form', '');
+      const modalData = {
+        title: `${title} ${formName}`,
+        content: form.outerHTML
+      };
+      ModalSystem.open(`modal-${form.id}`, modalData);
+      form.classList.add('hidden');
+    }
+  }
+});
+
+// Handle form submissions from within modals
+document.getElementById('modal-container').addEventListener('submit', e => {
+  if (e.target.tagName === 'FORM') {
+    e.preventDefault();
+    const form = e.target;
+    const originalForm = document.getElementById(form.id);
+    if (originalForm) {
+      // Copy values back to original form and submit it
+      Array.from(form.elements).forEach(el => {
+        if (el.name && originalForm.elements[el.name]) {
+          originalForm.elements[el.name].value = el.value;
+        }
+      });
+      originalForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  }
+});
+
+// Close modal and return form
+document.getElementById('modal-container').addEventListener('click', e => {
+  if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-overlay')) {
+    const modal = e.target.closest('.modal-overlay');
+    if (modal) {
+      const modalId = modal.dataset.modalId;
+      const formId = modalId.replace('modal-', '');
+      const form = document.getElementById(formId);
+      if (form) {
+        modal.remove();
+        form.classList.add('hidden');
       }
+      ModalSystem.close(modalId);
     }
   }
 });
