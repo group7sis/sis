@@ -286,6 +286,9 @@ function formToObj(form) {
   return obj;
 }
 
+// Store original form parents for returning forms after modal closes
+const formParents = new Map();
+
 // Open add/edit forms in modal
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
@@ -295,12 +298,21 @@ document.body.addEventListener('click', e => {
       const isEdit = toggleBtn.dataset.edit === 'true';
       const title = isEdit ? 'Edit' : 'Add';
       const formName = form.id.replace('Form', '');
+      
+      // Temporarily show form to get its full HTML with populated selects
+      form.classList.remove('hidden');
+      const formHtml = form.outerHTML;
+      form.classList.add('hidden');
+      
+      // Store original parent
+      formParents.set(form.id, form.parentElement);
+      
+      // Create modal with form HTML
       const modalData = {
         title: `${title} ${formName}`,
-        content: form.outerHTML
+        content: formHtml
       };
       ModalSystem.open(`modal-${form.id}`, modalData);
-      form.classList.add('hidden');
     }
   }
 });
@@ -323,7 +335,7 @@ document.getElementById('modal-container').addEventListener('submit', e => {
   }
 });
 
-// Close modal and return form
+// Close modal and return form to original location
 document.getElementById('modal-container').addEventListener('click', e => {
   if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-overlay')) {
     const modal = e.target.closest('.modal-overlay');
@@ -332,8 +344,12 @@ document.getElementById('modal-container').addEventListener('click', e => {
       const formId = modalId.replace('modal-', '');
       const form = document.getElementById(formId);
       if (form) {
-        modal.remove();
-        form.classList.add('hidden');
+        const originalParent = formParents.get(formId);
+        if (originalParent) {
+          originalParent.appendChild(form);
+          form.classList.add('hidden');
+        }
+        formParents.delete(formId);
       }
       ModalSystem.close(modalId);
     }
