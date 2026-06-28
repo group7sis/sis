@@ -32,10 +32,10 @@
     </aside>
     <main class="main">
       <div id="msg" class="msg hidden"></div>
+      <div id="globalTermBanner" class="term-banner" style="margin-bottom:1rem"></div>
 
       <section id="panel-dashboard" class="panel active">
         <h1>Dashboard</h1>
-        <div id="dashTerm" class="term-banner"></div>
         <div id="dashStats" class="stats"></div>
       </section>
 
@@ -301,7 +301,8 @@
           </div>
           <div class="section-title">Curriculums</div>
           <div id="curriculumTable"></div>
-          <form id="curriculumForm" class="grid-2" style="margin-top:0.5rem">
+          <button class="btn btn-sm secondary" data-toggle-form="curriculumForm" style="margin-top:0.5rem">+ Add Curriculum</button>
+          <form id="curriculumForm" class="hidden grid-2" style="margin-top:0.5rem">
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
             <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
@@ -330,7 +331,8 @@
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="departmentTable"></div>
-        <form id="deptForm" class="grid-2" style="margin-top:0.75rem">
+        <button class="btn btn-sm" data-toggle-form="deptForm" style="margin-top:0.5rem">+ Add Department</button>
+        <form id="deptForm" class="hidden grid-2" style="margin-top:0.5rem">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Code</label><input name="code" required></div>
           <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit" id="deptSubmitBtn">Add Department</button>

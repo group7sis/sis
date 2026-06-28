@@ -23,6 +23,7 @@ function termBannerHtml(t) {
 async function loadCurrentTerm() {
   currentTerm = await api('/admin/terms/' + TERM_ID);
   applyTermToForms();
+  updateGlobalTermBanner();
   return currentTerm;
 }
 
@@ -45,10 +46,17 @@ function applyTermToForms() {
   }
 }
 
+function updateGlobalTermBanner() {
+  const banner = document.getElementById('globalTermBanner');
+  if (banner && currentTerm) {
+    banner.innerHTML = `<strong>CURRENT TERM:</strong> ${currentTerm.academicYear} | Semester ${currentTerm.semester} | ${currentTerm.status}`;
+  }
+}
+
 async function loadDashboard() {
   await loadCurrentTerm();
+  updateGlobalTermBanner();
   const d = await api('/admin/dashboard');
-  document.getElementById('dashTerm').innerHTML = termBannerHtml(currentTerm);
   document.getElementById('dashStats').innerHTML = Object.entries(d)
     .map(([k, v]) => statBox(k.replace(/([A-Z])/g, ' $1'), v)).join('');
 }
