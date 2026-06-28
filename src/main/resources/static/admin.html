@@ -227,8 +227,8 @@
             <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select</option></select></div>
             <div><label>Faculty</label><select name="assignedFacultyId" data-lookup="faculty" required><option value="">Select</option></select></div>
             <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
-            <div><label>Academic Year (from term)</label><input name="academicYear" class="readonly-field" readonly></div>
-            <div><label>Semester (from term)</label><input name="semester" class="readonly-field" readonly></div>
+            <div><label>Academic Year</label><input name="academicYear"></div>
+            <div><label>Semester</label><input name="semester" type="number" min="1"></div>
             <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
             <div style="grid-column:1/-1"><label>Notes</label><input name="notes"></div>
           </div>

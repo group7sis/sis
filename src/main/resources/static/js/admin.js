@@ -61,9 +61,9 @@ async function loadStudents() {
     statBox('Total', s.totalStudents) + statBox('Active', s.totalActiveStudents) +
     statBox('Irregular', s.totalIrregularStudents) + statBox('Graduated', s.totalGraduatedStudents);
   document.getElementById('studentTable').innerHTML = tableHtml(
-    ['Number', 'Name', 'Status', 'Scholastic', ''],
+    ['Number', 'Name', 'Year Level', 'Status', 'Scholastic', ''],
     (data.students || []).map(st => [
-      st.studentNumber, fmtName(st.profile), st.studentStatus, st.scholasticStatus,
+      st.studentNumber, fmtName(st.profile), st.yearLevel ?? '-', st.studentStatus, st.scholasticStatus,
       `<button class="btn btn-sm" data-id="${st.id}" data-kind="student">View</button>
        <button class="btn btn-sm secondary" data-edit="student" data-id="${st.id}">Edit</button>`
     ]));

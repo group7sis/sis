@@ -39,10 +39,10 @@ async function loadLookups() {
   })));
   LK.courseAssignments = LK.courses.flatMap(c => (c.courseAssignments || []).map(a => {
     const curr = LK.curriculums.find(x => x.id === a.curriculumId);
-    const currLabel = curr ? `${curr.code || curr.id} (${curr.effectiveYear || ''})` : `Curr ${a.curriculumId || ''}`;
+    const currLabel = curr ? `${curr.code || curr.id}` : `Curr ${a.curriculumId || ''}`;
     return {
       ...a, courseId: c.id, courseCode: c.code, courseTitle: c.title,
-      label: `${c.code} → ${currLabel} Y${a.yearLevel} S${a.semester}`
+      label: `${c.title} → ${currLabel} Y${a.yearLevel} S${a.semester}`
     };
   }));
 }
