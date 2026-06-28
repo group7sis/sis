@@ -3,42 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Portal</title>
+  <title>Student Portal - SIS</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <h2 id="userLabel">Student</h2>
-      <button data-panel="dashboard" class="active">Dashboard</button>
-      <button data-panel="schedule">My Schedule</button>
-      <button data-panel="grades">Grades</button>
-      <button data-panel="enrollment">Enrollment</button>
-      <button data-panel="history">Enrollment History</button>
-      <button data-panel="profile">Profile</button>
-      <a href="#" class="logout">Logout</a>
+      <div class="sidebar-header">
+        <img src="assets/placeholder/Placeholder.png" alt="Profile">
+        <h3 id="userLabel">Student</h3>
+        <span class="role-badge">STUDENT</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button data-panel="dashboard" class="active"><span class="nav-icon">📊</span> Dashboard</button>
+        <button data-panel="schedule"><span class="nav-icon">📅</span> My Schedule</button>
+        <button data-panel="grades"><span class="nav-icon">📝</span> Grades</button>
+        <button data-panel="enrollment"><span class="nav-icon">📋</span> Enrollment</button>
+        <button data-panel="history"><span class="nav-icon">📜</span> History</button>
+        <button data-panel="profile"><span class="nav-icon">👤</span> Profile</button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="logout"><span class="nav-icon">🚪</span> Logout</a>
+      </div>
     </aside>
     <main class="main">
       <div id="msg" class="msg hidden"></div>
 
       <section id="panel-dashboard" class="panel active">
-        <h1>Dashboard</h1>
+        <div class="main-header">
+          <h1>Dashboard</h1>
+          <span class="breadcrumb">Home / Dashboard</span>
+        </div>
         <div id="dashContent"></div>
       </section>
 
       <section id="panel-schedule" class="panel">
-        <h1>My Schedule</h1>
+        <div class="main-header">
+          <h1>My Schedule</h1>
+          <span class="breadcrumb">Home / Schedule</span>
+        </div>
         <div id="scheduleTable"></div>
       </section>
 
       <section id="panel-grades" class="panel">
-        <h1>Grades</h1>
+        <div class="main-header">
+          <h1>Grades</h1>
+          <span class="breadcrumb">Home / Grades</span>
+        </div>
         <div id="gradesContent"></div>
       </section>
 
       <section id="panel-enrollment" class="panel">
-        <h1>Enrollment</h1>
-        <p style="font-size:0.85rem;color:#555;margin-bottom:0.75rem">Select schedules then submit. Categories come from the API.</p>
+        <div class="main-header">
+          <h1>Enrollment</h1>
+          <span class="breadcrumb">Home / Enrollment</span>
+        </div>
+        <p style="font-size:0.85rem;color:#666;margin-bottom:0.75rem">Select schedules then submit. Categories come from the API.</p>
         <div id="enrollMsg"></div>
         <div id="enrollmentPanel">
           <div class="section-title">Current term schedules</div>
@@ -48,26 +68,37 @@
           <div class="section-title">Missed courses</div>
           <div id="missedList" class="check-list"></div>
         </div>
-        <button class="btn" id="enrollBtn" style="margin-top:0.75rem" disabled>Submit Enrollment</button>
+        <button class="btn btn-success" id="enrollBtn" style="margin-top:0.75rem" disabled>📋 Submit Enrollment</button>
       </section>
 
       <section id="panel-history" class="panel">
-        <h1>Enrollment History</h1>
+        <div class="main-header">
+          <h1>Enrollment History</h1>
+          <span class="breadcrumb">Home / History</span>
+        </div>
         <div id="historyContent"></div>
       </section>
 
       <section id="panel-profile" class="panel">
-        <h1>Profile</h1>
-        <form id="profileForm" class="grid-2">
-          <div><label>First Name</label><input name="firstName" required></div>
-          <div><label>Middle Name</label><input name="middleName"></div>
-          <div><label>Last Name</label><input name="lastName" required></div>
-          <div><label>Suffix</label><input name="suffix"></div>
-          <div><label>Mobile</label><input name="mobileNumber"></div>
-          <div><label>Program</label><input name="enrolledProgram" disabled></div>
-          <div><label>Year Level</label><input name="yearLevel" disabled></div>
-          <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Save Profile</button></div>
-        </form>
+        <div class="main-header">
+          <h1>Profile</h1>
+          <span class="breadcrumb">Home / Profile</span>
+        </div>
+        <div class="card">
+          <div class="card-header">Personal Information</div>
+          <div class="card-body">
+            <form id="profileForm" class="grid-2">
+              <div><label>First Name</label><input name="firstName" required></div>
+              <div><label>Middle Name</label><input name="middleName"></div>
+              <div><label>Last Name</label><input name="lastName" required></div>
+              <div><label>Suffix</label><input name="suffix"></div>
+              <div><label>Mobile</label><input name="mobileNumber"></div>
+              <div><label>Program</label><input name="enrolledProgram" disabled></div>
+              <div><label>Year Level</label><input name="yearLevel" disabled></div>
+              <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">💾 Save Profile</button></div>
+            </form>
+          </div>
+        </div>
       </section>
     </main>
   </div>

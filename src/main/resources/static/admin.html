@@ -9,18 +9,26 @@
 <body>
   <div class="layout">
     <aside class="sidebar">
-      <h2 id="userLabel">Admin</h2>
-      <button data-panel="dashboard" class="active">Dashboard</button>
-      <button data-panel="students">Students</button>
-      <button data-panel="faculty">Faculty</button>
-      <button data-panel="courses">Courses</button>
-      <button data-panel="schedules">Schedules</button>
-      <button data-panel="sections">Sections</button>
-      <button data-panel="programs">Programs</button>
-      <button data-panel="departments">Departments</button>
-      <button data-panel="term">Current Term</button>
-      <button data-panel="accounts">Admin Accounts</button>
-      <a href="#" class="logout">Logout</a>
+      <div class="sidebar-header">
+        <img src="assets/placeholder/Placeholder.png" alt="Profile">
+        <h3 id="userLabel">Admin</h3>
+        <span class="role-badge">ADMIN</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button data-panel="dashboard" class="active"><span class="nav-icon">📊</span> Dashboard</button>
+        <button data-panel="students"><span class="nav-icon">👨‍🎓</span> Students</button>
+        <button data-panel="faculty"><span class="nav-icon">👨‍🏫</span> Faculty</button>
+        <button data-panel="courses"><span class="nav-icon">📚</span> Courses</button>
+        <button data-panel="schedules"><span class="nav-icon">📅</span> Schedules</button>
+        <button data-panel="sections"><span class="nav-icon">🏫</span> Sections</button>
+        <button data-panel="programs"><span class="nav-icon">🎓</span> Programs</button>
+        <button data-panel="departments"><span class="nav-icon">🏢</span> Departments</button>
+        <button data-panel="term"><span class="nav-icon">📆</span> Current Term</button>
+        <button data-panel="accounts"><span class="nav-icon">🔑</span> Admin Accounts</button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" class="logout"><span class="nav-icon">🚪</span> Logout</a>
+      </div>
     </aside>
     <main class="main">
       <div id="msg" class="msg hidden"></div>
