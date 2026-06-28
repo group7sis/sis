@@ -113,6 +113,15 @@ tr:hover td { background: #f8f9ff; }
 /* Misc */
 .readonly-field { background: #f5f6f8; color: #666; cursor: not-allowed; }
 .hidden { display: none !important; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; overflow-y: auto; }
+.modal { background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: calc(100vh - 4rem); overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #e1e4e8; position: sticky; top: 0; background: #fff; z-index: 1; }
+.modal-header h2 { font-size: 1.05rem; }
+.modal-body { padding: 1.25rem; }
+.modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; padding: 0 0.25rem; }
+.modal-close:hover { color: #333; }
 .section-title { font-size: 0.9rem; font-weight: 700; margin: 0.85rem 0 0.4rem; color: #2d3436; }
 .fieldset-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: #333; padding-bottom: 0.2rem; border-bottom: 2px solid #0984e3; display: inline-block; }
 .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }

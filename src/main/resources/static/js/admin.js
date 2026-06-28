@@ -278,18 +278,53 @@ function formToObj(form) {
   return obj;
 }
 
-// Toggle form visibility for "Add entity" buttons
+// Modal helpers
+function openModal(title, bodyHtml) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+// Open add/edit forms in modal
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
   if (toggleBtn) {
-    const form = document.getElementById(toggleBtn.dataset.toggleForm);
+    const formId = toggleBtn.dataset.toggleForm;
+    const form = document.getElementById(formId);
     if (form) {
-      form.classList.toggle('hidden');
-      if (!form.classList.contains('hidden')) {
-        form.scrollIntoView({ behavior: 'smooth' });
-      }
+      const isEdit = toggleBtn.dataset.edit === 'true';
+      const title = isEdit ? 'Edit' : 'Add';
+      const modalBody = document.getElementById('modalBody');
+      modalBody.innerHTML = '';
+      modalBody.appendChild(form);
+      form.classList.remove('hidden');
+      document.getElementById('modalTitle').textContent = title + ' ' + formId.replace('Form', '');
+      document.getElementById('modalOverlay').classList.remove('hidden');
     }
   }
+});
+
+// Return form to original location when modal closes
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  const modalBody = document.getElementById('modalBody');
+  const form = modalBody.querySelector('form');
+  if (form) {
+    modalBody.innerHTML = '';
+    // Find original parent - forms are placed after their trigger buttons in HTML
+    const formId = form.id;
+    const originalParent = document.getElementById(formId)?.parentElement;
+    if (originalParent) {
+      originalParent.appendChild(form);
+      form.classList.add('hidden');
+    }
+  }
+  overlay.classList.add('hidden');
+}
+
+document.querySelector('.modal-close').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'modalOverlay') closeModal();
 });
 
 // Show schedule filter function - filters schedules by current term's academic year/semester
