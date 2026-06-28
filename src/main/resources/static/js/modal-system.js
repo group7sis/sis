@@ -32,6 +32,8 @@ const ModalSystem = (() => {
       render(modal);
       bindEvents(modal);
       focusFirstField(modal);
+      // Call onOpen callback if provided
+      if (data.onOpen) data.onOpen(modal);
       return modal;
     }
     const newModal = create({ id: modalId, data });
@@ -39,6 +41,8 @@ const ModalSystem = (() => {
     state.currentModal = newModal;
     render(newModal);
     bindEvents(newModal);
+    // Call onOpen callback if provided
+    if (data.onOpen) data.onOpen(newModal);
     return newModal;
   }
 
@@ -54,7 +58,18 @@ const ModalSystem = (() => {
   function render(modal) {
     const container = document.getElementById('modal-container');
     if (!container) return;
-    container.innerHTML = generateHTML(modal);
+    
+    // If content is a DOM element, append it directly
+    if (modal.data.element) {
+      container.innerHTML = generateHTML(modal);
+      const modalBody = container.querySelector('.modal-body');
+      if (modalBody && modal.data.element) {
+        modalBody.appendChild(modal.data.element);
+      }
+    } else {
+      container.innerHTML = generateHTML(modal);
+    }
+    
     container.classList.add('active');
   }
 
@@ -67,7 +82,7 @@ const ModalSystem = (() => {
             <button class="modal-close" aria-label="Close">&times;</button>
           </div>
           <div class="modal-body">
-            ${modal.data.content || ''}
+            ${modal.data.element ? '' : (modal.data.content || '')}
           </div>
         </div>
       </div>

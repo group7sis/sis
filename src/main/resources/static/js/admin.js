@@ -289,7 +289,7 @@ function formToObj(form) {
 // Store original form parents for returning forms after modal closes
 const formParents = new Map();
 
-// Open add/edit forms in modal
+// Open add/edit forms in modal - move actual form element
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
   if (toggleBtn) {
@@ -299,19 +299,58 @@ document.body.addEventListener('click', e => {
       const title = isEdit ? 'Edit' : 'Add';
       const formName = form.id.replace('Form', '');
       
-      // Temporarily show form to get its full HTML with populated selects
-      form.classList.remove('hidden');
-      const formHtml = form.outerHTML;
-      form.classList.add('hidden');
-      
       // Store original parent
       formParents.set(form.id, form.parentElement);
       
-      // Create modal with form HTML
+      // Create modal with the actual form element and initialization callback
       const modalData = {
         title: `${title} ${formName}`,
-        content: formHtml
+        element: form,
+        onOpen: (modal) => {
+          // Re-initialize dynamic elements in the modal
+          setTimeout(() => {
+            const modalForm = document.querySelector(`[data-modal-id="${modal.id}"] form`);
+            if (!modalForm) return;
+            
+            // Re-initialize repeaters
+            if (modalForm.querySelector('[data-repeater="assignment"]')) {
+              initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+            }
+            if (modalForm.querySelector('[data-repeater="day"]')) {
+              initRepeater('scheduleDayRows', dayRowHtml, 1);
+            }
+            
+            // Re-populate multi-selects
+            const facultyCourses = modalForm.querySelector('#facultyQualifiedCourses');
+            if (facultyCourses) {
+              facultyCourses.innerHTML = qualifiedCourseSelectHtml();
+            }
+            const coursePrereqs = modalForm.querySelector('#coursePrereqs');
+            if (coursePrereqs) {
+              coursePrereqs.innerHTML = qualifiedCourseSelectHtml();
+            }
+            
+            // Re-initialize year semester fields for program/curriculum forms
+            if (modalForm.id === 'programForm' || modalForm.id === 'curriculumForm') {
+              const yearCountInput = modalForm.querySelector('[name="yearCount"]');
+              const containerId = modalForm.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
+              if (yearCountInput) {
+                renderYearSemesterFields(containerId, Number(yearCountInput.value) || 4);
+              }
+            }
+            
+            // Re-bind year count change handlers
+            const yearCountInput = modalForm.querySelector('[name="yearCount"]');
+            if (yearCountInput) {
+              yearCountInput.onchange = function() {
+                const containerId = modalForm.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
+                renderYearSemesterFields(containerId, Number(this.value) || 1);
+              };
+            }
+          }, 0);
+        }
       };
+      
       ModalSystem.open(`modal-${form.id}`, modalData);
     }
   }
