@@ -3,34 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student / Faculty Login - SIS</title>
+  <title>Student / Faculty Login</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="center-page">
-  <div class="login-wrap">
-    <div class="login-side">
-      <img src="assets/placeholder/Placeholder.png" alt="SIS Logo">
-      <h1>Student & Faculty Portal</h1>
-      <p>Access your courses, grades, schedules, and enrollment information.</p>
-    </div>
-    <div class="login-form">
-      <h2>Sign In</h2>
-      <p class="subtitle">Enter your credentials to continue</p>
-      <div id="msg" class="msg hidden"></div>
-      <form id="form">
-        <label>Login as</label>
-        <select id="role" required>
-          <option value="STUDENT">👨‍🎓 Student</option>
-          <option value="FACULTY">👨‍🏫 Faculty</option>
-        </select>
-        <label>Username</label>
-        <input id="username" placeholder="Enter your username" required>
-        <label>Password</label>
-        <input id="password" type="password" placeholder="Enter your password" required>
-        <button class="btn" type="submit">Sign In</button>
-      </form>
-      <p class="back-link"><a href="index.html">← Back to Home</a></p>
-    </div>
+  <div class="card">
+    <h1>Student / Faculty Login</h1>
+    <p>Simple account login. No tokens, just session storage.</p>
+    <div id="msg" class="msg hidden"></div>
+    <form id="form">
+      <label>Login as</label>
+      <select id="role" required>
+        <option value="STUDENT">Student</option>
+        <option value="FACULTY">Faculty</option>
+      </select>
+      <label>Username</label>
+      <input id="username" required>
+      <label>Password</label>
+      <input id="password" type="password" required>
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <p style="margin-top:1rem;font-size:0.85rem"><a href="index.html">Back</a></p>
   </div>
   <script src="js/api.js"></script>
   <script>
