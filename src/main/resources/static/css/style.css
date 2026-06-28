@@ -124,8 +124,7 @@ tr:hover td { background: #f8f9ff; }
 .form-modal-close:hover { color: #333; }
 
 /* Inline form styled as modal */
-.form-modal-inline { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: calc(100vh - 4rem); overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-.form-modal-inline::before { content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: -1; }
+.form-modal-inline { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: calc(100vh - 4rem); overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
 .form-modal-inline .fieldset-title { margin-top: 0; }
 .form-modal-inline .form-actions { position: sticky; bottom: 0; background: #fff; padding: 1rem 0; margin-top: 1rem; border-top: 1px solid #e1e4e8; }
 .section-title { font-size: 0.9rem; font-weight: 700; margin: 0.85rem 0 0.4rem; color: #2d3436; }

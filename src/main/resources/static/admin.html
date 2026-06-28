@@ -57,7 +57,7 @@
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
         <button class="btn btn-sm" data-toggle-form="studentForm" style="margin-top:0.5rem">+ Add Student</button>
-        <form id="studentForm" class="hidden" style="margin-top:0.5rem">
+        <form id="studentForm" style="margin-top:0.5rem; display:none;">
           <div class="fieldset-title">Profile</div>
           <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
@@ -115,7 +115,7 @@
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
         <button class="btn btn-sm" data-toggle-form="facultyForm" style="margin-top:0.5rem">+ Add Faculty</button>
-        <form id="facultyForm" class="hidden" style="margin-top:0.5rem">
+        <form id="facultyForm" style="margin-top:0.5rem; display:none;">
           <div class="fieldset-title">Profile</div>
           <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
@@ -169,7 +169,7 @@
         <div id="courseStats" class="stats"></div>
         <div id="courseTable"></div>
         <button class="btn btn-sm" data-toggle-form="courseForm" style="margin-top:0.5rem">+ Add Course</button>
-        <form id="courseForm" class="hidden" style="margin-top:0.5rem">
+        <form id="courseForm" style="margin-top:0.5rem; display:none;">
           <div class="grid-2">
             <div><label>Title</label><input name="title" required></div>
             <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
@@ -220,7 +220,7 @@
         <div id="scheduleStats" class="stats"></div>
         <div id="scheduleTable"></div>
         <button class="btn btn-sm" data-toggle-form="scheduleForm" style="margin-top:0.5rem">+ Add Schedule</button>
-        <form id="scheduleForm" class="hidden" style="margin-top:0.5rem">
+        <form id="scheduleForm" style="margin-top:0.5rem; display:none;">
           <input type="hidden" name="room" value="TBD">
           <div class="grid-2">
             <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
@@ -256,7 +256,7 @@
         <div id="sectionStats" class="stats"></div>
         <div id="sectionTable"></div>
         <button class="btn btn-sm" data-toggle-form="sectionForm" style="margin-top:0.5rem">+ Add Section</button>
-        <form id="sectionForm" class="hidden grid-2" style="margin-top:0.5rem">
+        <form id="sectionForm" class="grid-2" style="margin-top:0.5rem; display:none;">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Program</label><select name="programId" data-lookup="program" required><option value="">Select</option></select></div>
           <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
@@ -281,7 +281,7 @@
         </form>
         <div id="programTable"></div>
         <button class="btn btn-sm" data-toggle-form="programForm" style="margin-top:0.5rem">+ Add Program</button>
-        <form id="programForm" class="hidden grid-2" style="margin-top:0.5rem">
+        <form id="programForm" class="grid-2" style="margin-top:0.5rem; display:none;">
           <div><label>Title</label><input name="title" required></div>
           <div><label>Code</label><input name="code" required></div>
           <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
@@ -303,7 +303,7 @@
           <div class="section-title">Curriculums</div>
           <div id="curriculumTable"></div>
           <button class="btn btn-sm secondary" data-toggle-form="curriculumForm" style="margin-top:0.5rem">+ Add Curriculum</button>
-          <form id="curriculumForm" class="hidden grid-2" style="margin-top:0.5rem">
+        <form id="curriculumForm" class="grid-2" style="margin-top:0.5rem; display:none;">
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
             <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
@@ -333,7 +333,7 @@
         </form>
         <div id="departmentTable"></div>
         <button class="btn btn-sm" data-toggle-form="deptForm" style="margin-top:0.5rem">+ Add Department</button>
-        <form id="deptForm" class="hidden grid-2" style="margin-top:0.5rem">
+        <form id="deptForm" class="grid-2" style="margin-top:0.5rem; display:none;">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Code</label><input name="code" required></div>
           <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit" id="deptSubmitBtn">Add Department</button>

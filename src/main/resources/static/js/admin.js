@@ -5,6 +5,7 @@ const TERM_ID = 1;
 let currentTerm = null;
 let managedProgram = null;
 let managedCourse = null;
+let currentModalForm = null;
 
 document.getElementById('userLabel').textContent = user.name;
 bindLogout();
@@ -292,19 +293,45 @@ document.body.addEventListener('click', e => {
   if (toggleBtn) {
     const form = document.getElementById(toggleBtn.dataset.toggleForm);
     if (form) {
-      // Remove modal class from any other open forms
+      // Close any other open modal forms
       document.querySelectorAll('.form-modal-inline').forEach(f => {
-        if (f !== form) f.classList.remove('form-modal-inline');
+        if (f !== form) {
+          f.style.position = '';
+          f.style.top = '';
+          f.style.left = '';
+          f.style.transform = '';
+          f.style.zIndex = '';
+          f.style.maxWidth = '';
+          f.style.maxHeight = '';
+          f.style.overflow = '';
+          f.style.boxShadow = '';
+          f.classList.add('hidden');
+        }
       });
-      document.querySelectorAll('.form-modal-overlay').forEach(o => o.remove());
+      const existingOverlay = document.getElementById('formOverlay');
+      if (existingOverlay) existingOverlay.remove();
       
-      // Add modal styling to this form
-      form.classList.add('form-modal-inline');
+      // Show form and apply modal styles directly
+      form.classList.remove('hidden');
+      form.style.setProperty('display', 'block', 'important');
+      form.style.setProperty('visibility', 'visible', 'important');
+      form.style.position = 'fixed';
+      form.style.top = '50%';
+      form.style.left = '50%';
+      form.style.transform = 'translate(-50%, -50%)';
+      form.style.zIndex = '1001';
+      form.style.background = '#fff';
+      form.style.borderRadius = '8px';
+      form.style.width = '100%';
+      form.style.maxWidth = '720px';
+      form.style.maxHeight = 'calc(100vh - 4rem)';
+      form.style.overflowY = 'auto';
+      form.style.boxShadow = '0 10px 40px rgba(0,0,0,0.2)';
       
       // Add overlay
       const overlay = document.createElement('div');
-      overlay.className = 'form-modal-overlay';
       overlay.id = 'formOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;';
       document.body.appendChild(overlay);
       
       // Scroll to top of form
@@ -332,12 +359,21 @@ document.body.addEventListener('click', e => {
   }
 });
 
-// Close modal form when clicking overlay or close button
+// Close modal form when clicking overlay
 document.body.addEventListener('click', e => {
-  if (e.target.classList.contains('form-modal-overlay') || e.target.classList.contains('form-modal-close')) {
-    const form = document.querySelector('.form-modal-inline');
+  if (e.target.id === 'formOverlay') {
+    const form = document.querySelector('[style*="position: fixed"][style*="z-index: 1001"]');
     if (form) {
-      form.classList.remove('form-modal-inline');
+      form.style.position = '';
+      form.style.top = '';
+      form.style.left = '';
+      form.style.transform = '';
+      form.style.zIndex = '';
+      form.style.maxWidth = '';
+      form.style.maxHeight = '';
+      form.style.overflowY = '';
+      form.style.boxShadow = '';
+      form.style.display = 'none';
     }
     const overlay = document.getElementById('formOverlay');
     if (overlay) overlay.remove();
@@ -347,9 +383,18 @@ document.body.addEventListener('click', e => {
 // Close modal on Escape key
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    const form = document.querySelector('.form-modal-inline');
+    const form = document.querySelector('[style*="position: fixed"][style*="z-index: 1001"]');
     if (form) {
-      form.classList.remove('form-modal-inline');
+      form.style.position = '';
+      form.style.top = '';
+      form.style.left = '';
+      form.style.transform = '';
+      form.style.zIndex = '';
+      form.style.maxWidth = '';
+      form.style.maxHeight = '';
+      form.style.overflowY = '';
+      form.style.boxShadow = '';
+      form.style.display = 'none';
     }
     const overlay = document.getElementById('formOverlay');
     if (overlay) overlay.remove();
