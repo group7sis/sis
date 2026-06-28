@@ -9,9 +9,12 @@ import com.group7.sis.entity.users.FacultyEntity.EmploymentType;
 import com.group7.sis.entity.users.FacultyEntity.Status;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface FacultyRepository extends JpaRepository<FacultyEntity, Long> {
+    Optional<FacultyEntity> findByAccountUsernameAndAccountPassword(String username, String password);
+
     FacultyEntity findTopByDepartmentIdOrderByFacultyNumberDesc(Long departmentId);
 
     @Query("""

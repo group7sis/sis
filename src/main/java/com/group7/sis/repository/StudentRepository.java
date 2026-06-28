@@ -17,6 +17,8 @@ import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 
 public interface StudentRepository extends JpaRepository<StudentEntity, Long> {
 
+    Optional<StudentEntity> findByAccountUsernameAndAccountPassword(String username, String password);
+
     Optional<StudentEntity> findByAcademicInfoId(Long id);
 
     List<StudentEntity> findByYearAdmitted(String yearAdmitted);
