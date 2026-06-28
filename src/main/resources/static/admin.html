@@ -255,7 +255,8 @@
         </form>
         <div id="sectionStats" class="stats"></div>
         <div id="sectionTable"></div>
-        <form id="sectionForm" class="grid-2" style="margin-top:0.75rem">
+        <button class="btn btn-sm" data-toggle-form="sectionForm" style="margin-top:0.5rem">+ Add Section</button>
+        <form id="sectionForm" class="hidden grid-2" style="margin-top:0.5rem">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Program</label><select name="programId" data-lookup="program" required><option value="">Select</option></select></div>
           <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
