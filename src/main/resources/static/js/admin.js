@@ -286,112 +286,73 @@ function formToObj(form) {
   return obj;
 }
 
-// Store original form parents for returning forms after modal closes
-const formParents = new Map();
-
-// Open add/edit forms in modal - move actual form element
+// Open add/edit forms as modal overlay using CSS
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
   if (toggleBtn) {
     const form = document.getElementById(toggleBtn.dataset.toggleForm);
     if (form) {
-      const isEdit = toggleBtn.dataset.edit === 'true';
-      const title = isEdit ? 'Edit' : 'Add';
-      const formName = form.id.replace('Form', '');
-      
-      // Store original parent
-      formParents.set(form.id, form.parentElement);
-      
-      // Create modal with the actual form element and initialization callback
-      const modalData = {
-        title: `${title} ${formName}`,
-        element: form,
-        onOpen: (modal) => {
-          // Re-initialize dynamic elements in the modal
-          setTimeout(() => {
-            const modalForm = document.querySelector(`[data-modal-id="${modal.id}"] form`);
-            if (!modalForm) return;
-            
-            // Re-initialize repeaters
-            if (modalForm.querySelector('[data-repeater="assignment"]')) {
-              initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
-            }
-            if (modalForm.querySelector('[data-repeater="day"]')) {
-              initRepeater('scheduleDayRows', dayRowHtml, 1);
-            }
-            
-            // Re-populate multi-selects
-            const facultyCourses = modalForm.querySelector('#facultyQualifiedCourses');
-            if (facultyCourses) {
-              facultyCourses.innerHTML = qualifiedCourseSelectHtml();
-            }
-            const coursePrereqs = modalForm.querySelector('#coursePrereqs');
-            if (coursePrereqs) {
-              coursePrereqs.innerHTML = qualifiedCourseSelectHtml();
-            }
-            
-            // Re-initialize year semester fields for program/curriculum forms
-            if (modalForm.id === 'programForm' || modalForm.id === 'curriculumForm') {
-              const yearCountInput = modalForm.querySelector('[name="yearCount"]');
-              const containerId = modalForm.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
-              if (yearCountInput) {
-                renderYearSemesterFields(containerId, Number(yearCountInput.value) || 4);
-              }
-            }
-            
-            // Re-bind year count change handlers
-            const yearCountInput = modalForm.querySelector('[name="yearCount"]');
-            if (yearCountInput) {
-              yearCountInput.onchange = function() {
-                const containerId = modalForm.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
-                renderYearSemesterFields(containerId, Number(this.value) || 1);
-              };
-            }
-          }, 0);
-        }
-      };
-      
-      ModalSystem.open(`modal-${form.id}`, modalData);
-    }
-  }
-});
-
-// Handle form submissions from within modals
-document.getElementById('modal-container').addEventListener('submit', e => {
-  if (e.target.tagName === 'FORM') {
-    e.preventDefault();
-    const form = e.target;
-    const originalForm = document.getElementById(form.id);
-    if (originalForm) {
-      // Copy values back to original form and submit it
-      Array.from(form.elements).forEach(el => {
-        if (el.name && originalForm.elements[el.name]) {
-          originalForm.elements[el.name].value = el.value;
-        }
+      // Remove modal class from any other open forms
+      document.querySelectorAll('.form-modal-inline').forEach(f => {
+        if (f !== form) f.classList.remove('form-modal-inline');
       });
-      originalForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      document.querySelectorAll('.form-modal-overlay').forEach(o => o.remove());
+      
+      // Add modal styling to this form
+      form.classList.add('form-modal-inline');
+      
+      // Add overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'form-modal-overlay';
+      overlay.id = 'formOverlay';
+      document.body.appendChild(overlay);
+      
+      // Scroll to top of form
+      form.scrollTop = 0;
+      
+      // Re-initialize dynamic elements
+      setTimeout(() => {
+        if (form.querySelector('[data-repeater="assignment"]')) {
+          initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+        }
+        if (form.querySelector('[data-repeater="day"]')) {
+          initRepeater('scheduleDayRows', dayRowHtml, 1);
+        }
+        const facultyCourses = form.querySelector('#facultyQualifiedCourses');
+        if (facultyCourses) facultyCourses.innerHTML = qualifiedCourseSelectHtml();
+        const coursePrereqs = form.querySelector('#coursePrereqs');
+        if (coursePrereqs) coursePrereqs.innerHTML = qualifiedCourseSelectHtml();
+        if (form.id === 'programForm' || form.id === 'curriculumForm') {
+          const yearCountInput = form.querySelector('[name="yearCount"]');
+          const containerId = form.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
+          if (yearCountInput) renderYearSemesterFields(containerId, Number(yearCountInput.value) || 4);
+        }
+      }, 0);
     }
   }
 });
 
-// Close modal and return form to original location
-document.getElementById('modal-container').addEventListener('click', e => {
-  if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-overlay')) {
-    const modal = e.target.closest('.modal-overlay');
-    if (modal) {
-      const modalId = modal.dataset.modalId;
-      const formId = modalId.replace('modal-', '');
-      const form = document.getElementById(formId);
-      if (form) {
-        const originalParent = formParents.get(formId);
-        if (originalParent) {
-          originalParent.appendChild(form);
-          form.classList.add('hidden');
-        }
-        formParents.delete(formId);
-      }
-      ModalSystem.close(modalId);
+// Close modal form when clicking overlay or close button
+document.body.addEventListener('click', e => {
+  if (e.target.classList.contains('form-modal-overlay') || e.target.classList.contains('form-modal-close')) {
+    const form = document.querySelector('.form-modal-inline');
+    if (form) {
+      form.classList.remove('form-modal-inline');
     }
+    const overlay = document.getElementById('formOverlay');
+    if (overlay) overlay.remove();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const form = document.querySelector('.form-modal-inline');
+    if (form) {
+      form.classList.remove('form-modal-inline');
+    }
+    const overlay = document.getElementById('formOverlay');
+    if (overlay) overlay.remove();
   }
 });
 
