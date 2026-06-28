@@ -106,9 +106,12 @@ async function loadSchedules() {
   const q = buildQuery(filters);
   const data = await api('/admin/schedules' + q);
   const s = data.stats || {};
-  let statsHtml = statBox('Total', s.totalSchedules) + statBox('Active', s.totalActiveSchedules) +
-    statBox('Weekly Hrs', s.weeklyHours);
-  if (filters.day) statsHtml += statBox('Daily Hrs', s.dailyHours);
+  let statsHtml = statBox('Total', s.totalSchedules) + statBox('Active', s.totalActiveSchedules);
+  if (filters.day) {
+    statsHtml += statBox('Daily Hrs', s.dailyHours);
+  } else {
+    statsHtml += statBox('Weekly Hrs', s.weeklyHours);
+  }
   document.getElementById('scheduleStats').innerHTML = statsHtml;
   document.getElementById('scheduleTable').innerHTML = tableHtml(
     ['Code', 'Course', 'Section', 'Faculty', 'Year', 'Days', 'Status', ''],

@@ -59,6 +59,21 @@ async function loadDashboard() {
     ['Course', 'Section', 'Days'],
     (d.schedules || []).map(x => [x.courseTitle, x.sectionName, fmtDays(x.days)])
   );
+
+  // Today's schedule
+  const today = (d.currentDayOfTheWeek || '').toLowerCase();
+  const todaySched = (d.schedules || []).filter(x => {
+    if (!today || !x.days) return false;
+    return x.days.some(day => (day.name || '').toLowerCase() === today);
+  });
+  const todayEl = document.getElementById('todaySchedule');
+  if (todaySched.length) {
+    todayEl.innerHTML = `
+      <h2 style="font-size:1rem;margin-bottom:0.5rem">Today's Schedule (${d.currentDayOfTheWeek || ''})</h2>
+      ${tableHtml(['Course', 'Section', 'Time'], todaySched.map(x => [x.courseTitle, x.sectionName, fmtDays(x.days)]))}`;
+  } else {
+    todayEl.innerHTML = '';
+  }
 }
 
 async function loadSchedules() {
@@ -66,10 +81,12 @@ async function loadSchedules() {
   let html = '';
   days.forEach(day => {
     const list = data[day] || [];
+    if (!list.length) return; // only show days with records
     html += `<div class="section-title">${day.charAt(0).toUpperCase() + day.slice(1)}</div>`;
     html += tableHtml(['Course', 'Section', 'Time'],
       list.map(s => [s.courseTitle, s.sectionName, fmtDays(s.days)]));
   });
+  if (!html) html = '<p style="color:#888;font-size:0.85rem">No schedules available.</p>';
   document.getElementById('schedContent').innerHTML = html;
 }
 
@@ -150,9 +167,12 @@ document.getElementById('gradeLoadBtn').onclick = async () => {
     hideMsg(msg);
     const list = await api(`${base}/records/courses/${courseId}/sections/${sectionId}/students`);
     document.getElementById('gradeStudentTable').innerHTML = tableHtml(
-      ['Student', 'Course', 'Final Grade', 'Finalized', ''],
+      ['Student', 'Assignments', 'Quizzes', 'Activities', 'Final Exam', 'Calc Grade', 'Final Grade', 'Finalized', ''],
       (list || []).map(r => [
-        r.studentName, r.courseName, r.finalGrade ?? '-', r.finalized ? 'Yes' : 'No',
+        r.studentName,
+        r.assignments ?? '-', r.quizzes ?? '-', r.activities ?? '-', r.finalExam ?? '-',
+        r.calculatedGrade ?? '-', r.finalGrade ?? '-',
+        r.finalized ? 'Yes' : 'No',
         `<button class="btn btn-sm" data-record="${r.id}">Encode</button>`
       ])
     );
@@ -209,8 +229,8 @@ document.getElementById('gradeForm').onsubmit = async e => {
       quizzes: num(form.quizzes.value),
       activities: num(form.activities.value),
       finalExam: num(form.finalExam.value),
-      finalGrade: num(form.finalGrade.value),
-      finalized: true
+      finalGrade: num(form.finalGrade.value)
+      // finalized not included - save only saves scores
     };
     await api(`${base}/records/encode/${activeRecordId}`, { method: 'PUT', body: JSON.stringify(body) });
     showMsg(msg, 'Grade saved', 'ok');
@@ -219,6 +239,19 @@ document.getElementById('gradeForm').onsubmit = async e => {
     showMsg(msg, err.message, 'err');
   }
 };
+
+// Finalize button - sets finalized to true
+document.getElementById('finalizeBtn')?.addEventListener('click', async () => {
+  if (!activeRecordId || termClosed) return;
+  try {
+    hideMsg(msg);
+    await api(`${base}/records/encode/${activeRecordId}/finalize`, { method: 'PUT' });
+    showMsg(msg, 'Grade finalized', 'ok');
+    document.getElementById('gradeLoadBtn').click();
+  } catch (err) {
+    showMsg(msg, err.message, 'err');
+  }
+});
 
 function num(v) {
   return v === '' || v == null ? null : Number(v);
