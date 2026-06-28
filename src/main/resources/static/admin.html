@@ -85,7 +85,7 @@
             <div><label>Year Level</label><input name="yearLevel" type="number" value="1" required></div>
             <div><label>Program</label><select name="enrolledProgramId" data-lookup="program" required><option value="">Select program</option></select></div>
             <div><label>Section</label><select name="sectionId" data-lookup="section" required><option value="">Select section</option></select></div>
-            <div style="grid-column:1/-1"><label>Initial Schedule</label><select name="scheduleId" data-lookup="schedule" required><option value="">Select schedule</option></select></div>
+            <div style="grid-column:1/-1"><label>Initial Schedules (hold Ctrl to select multiple)</label><select name="scheduleIds" data-lookup="schedule" multiple size="4" required></select></div>
             <div id="studentEditFields" class="hidden grid-2" style="grid-column:1/-1">
               <div><label>Student Status</label><select name="studentStatus"><option>ACTIVE</option><option>INACTIVE</option><option>GRADUATED</option><option>DROPPED</option></select></div>
               <div><label>Scholastic Status</label><select name="scholasticStatus"><option>REGULAR</option><option>IRREGULAR</option></select></div>
@@ -365,14 +365,5 @@
   <script src="js/lookups.js"></script>
   <script src="js/admin-edit.js"></script>
   <script src="js/admin.js"></script>
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="modalTitle"></h2>
-        <button class="modal-close" type="button">&times;</button>
-      </div>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
-  </div>
 </body>
 </html>

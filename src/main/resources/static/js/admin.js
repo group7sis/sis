@@ -278,53 +278,18 @@ function formToObj(form) {
   return obj;
 }
 
-// Modal helpers
-function openModal(title, bodyHtml) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalBody').innerHTML = bodyHtml;
-  document.getElementById('modalOverlay').classList.remove('hidden');
-}
-
-// Open add/edit forms in modal
+// Toggle form visibility for "Add entity" buttons
 document.body.addEventListener('click', e => {
   const toggleBtn = e.target.closest('[data-toggle-form]');
   if (toggleBtn) {
-    const formId = toggleBtn.dataset.toggleForm;
-    const form = document.getElementById(formId);
+    const form = document.getElementById(toggleBtn.dataset.toggleForm);
     if (form) {
-      const isEdit = toggleBtn.dataset.edit === 'true';
-      const title = isEdit ? 'Edit' : 'Add';
-      const modalBody = document.getElementById('modalBody');
-      modalBody.innerHTML = '';
-      modalBody.appendChild(form);
-      form.classList.remove('hidden');
-      document.getElementById('modalTitle').textContent = title + ' ' + formId.replace('Form', '');
-      document.getElementById('modalOverlay').classList.remove('hidden');
+      form.classList.toggle('hidden');
+      if (!form.classList.contains('hidden')) {
+        form.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }
-});
-
-// Return form to original location when modal closes
-function closeModal() {
-  const overlay = document.getElementById('modalOverlay');
-  const modalBody = document.getElementById('modalBody');
-  const form = modalBody.querySelector('form');
-  if (form) {
-    modalBody.innerHTML = '';
-    // Find original parent - forms are placed after their trigger buttons in HTML
-    const formId = form.id;
-    const originalParent = document.getElementById(formId)?.parentElement;
-    if (originalParent) {
-      originalParent.appendChild(form);
-      form.classList.add('hidden');
-    }
-  }
-  overlay.classList.add('hidden');
-}
-
-document.querySelector('.modal-close').addEventListener('click', closeModal);
-document.getElementById('modalOverlay').addEventListener('click', e => {
-  if (e.target.id === 'modalOverlay') closeModal();
 });
 
 // Show schedule filter function - filters schedules by current term's academic year/semester
@@ -397,6 +362,8 @@ document.getElementById('studentForm').onsubmit = async e => {
     }
     const today = new Date().toISOString().slice(0, 10);
     const prog = await api('/admin/programs/' + f.enrolledProgramId.value);
+    const scheduleIds = getMultiSelectValues(f.scheduleIds);
+    if (!scheduleIds.length) throw new Error('Select at least one schedule');
     const body = {
       studentStatus: 'ACTIVE',
       scholasticStatus: 'REGULAR',
@@ -414,7 +381,7 @@ document.getElementById('studentForm').onsubmit = async e => {
         enrollmentDate: today,
         scholasticStatus: 'REGULAR',
         enrollmentStatus: 'ACTIVE',
-        enrolledCourses: [{ scheduleId: Number(f.scheduleId.value), status: 'ONGOING' }]
+        enrolledCourses: scheduleIds.map(scheduleId => ({ scheduleId, status: 'ONGOING' }))
       }]
     };
     if (!body.academicInfo[0].programCurriculumId) throw new Error('Program has no active curriculum');
