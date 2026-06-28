@@ -311,27 +311,14 @@ document.body.addEventListener('click', e => {
       const existingOverlay = document.getElementById('formOverlay');
       if (existingOverlay) existingOverlay.remove();
       
-      // Show form and apply modal styles directly
+      // Show form and apply modal styles from CSS
       form.classList.remove('hidden');
-      form.style.setProperty('display', 'block', 'important');
-      form.style.setProperty('visibility', 'visible', 'important');
-      form.style.position = 'fixed';
-      form.style.top = '50%';
-      form.style.left = '50%';
-      form.style.transform = 'translate(-50%, -50%)';
-      form.style.zIndex = '1001';
-      form.style.background = '#fff';
-      form.style.borderRadius = '8px';
-      form.style.width = '100%';
-      form.style.maxWidth = '720px';
-      form.style.maxHeight = 'calc(100vh - 4rem)';
-      form.style.overflowY = 'auto';
-      form.style.boxShadow = '0 10px 40px rgba(0,0,0,0.2)';
+      form.classList.add('form-modal');
       
       // Add overlay
       const overlay = document.createElement('div');
       overlay.id = 'formOverlay';
-      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;';
+      overlay.className = 'modal-overlay';
       document.body.appendChild(overlay);
       
       // Scroll to top of form
