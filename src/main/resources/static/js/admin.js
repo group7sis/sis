@@ -287,104 +287,53 @@ function formToObj(form) {
   return obj;
 }
 
-// Open add/edit forms as modal overlay using CSS
+// Open dialogs using native HTML dialog element
 document.body.addEventListener('click', e => {
-  const toggleBtn = e.target.closest('[data-toggle-form]');
-  if (toggleBtn) {
-    const form = document.getElementById(toggleBtn.dataset.toggleForm);
-    if (form) {
-      // Close any other open modal forms
-      document.querySelectorAll('.form-modal-inline').forEach(f => {
-        if (f !== form) {
-          f.style.position = '';
-          f.style.top = '';
-          f.style.left = '';
-          f.style.transform = '';
-          f.style.zIndex = '';
-          f.style.maxWidth = '';
-          f.style.maxHeight = '';
-          f.style.overflow = '';
-          f.style.boxShadow = '';
-          f.classList.add('hidden');
-        }
+  const showBtn = e.target.closest('[data-show-dialog]');
+  if (showBtn) {
+    const dialogId = showBtn.dataset.showDialog;
+    const dialog = document.getElementById(dialogId);
+    if (dialog) {
+      // Close any other open dialogs
+      document.querySelectorAll('dialog[open]').forEach(d => {
+        if (d !== dialog) d.close();
       });
-      const existingOverlay = document.getElementById('formOverlay');
-      if (existingOverlay) existingOverlay.remove();
       
-      // Show form and apply modal styles from CSS
-      form.classList.remove('hidden');
-      form.classList.add('form-modal');
-      
-      // Add overlay
-      const overlay = document.createElement('div');
-      overlay.id = 'formOverlay';
-      overlay.className = 'modal-overlay';
-      document.body.appendChild(overlay);
-      
-      // Scroll to top of form
-      form.scrollTop = 0;
+      // Open this dialog
+      dialog.showModal();
       
       // Re-initialize dynamic elements
-      setTimeout(() => {
-        if (form.querySelector('[data-repeater="assignment"]')) {
-          initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
-        }
-        if (form.querySelector('[data-repeater="day"]')) {
-          initRepeater('scheduleDayRows', dayRowHtml, 1);
-        }
-        const facultyCourses = form.querySelector('#facultyQualifiedCourses');
-        if (facultyCourses) facultyCourses.innerHTML = qualifiedCourseSelectHtml();
-        const coursePrereqs = form.querySelector('#coursePrereqs');
-        if (coursePrereqs) coursePrereqs.innerHTML = qualifiedCourseSelectHtml();
-        if (form.id === 'programForm' || form.id === 'curriculumForm') {
-          const yearCountInput = form.querySelector('[name="yearCount"]');
-          const containerId = form.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
-          if (yearCountInput) renderYearSemesterFields(containerId, Number(yearCountInput.value) || 4);
-        }
-      }, 0);
+      const form = dialog.querySelector('form');
+      if (form) {
+        setTimeout(() => {
+          if (form.querySelector('[data-repeater="assignment"]')) {
+            initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+          }
+          if (form.querySelector('[data-repeater="day"]')) {
+            initRepeater('scheduleDayRows', dayRowHtml, 1);
+          }
+          const facultyCourses = form.querySelector('#facultyQualifiedCourses');
+          if (facultyCourses) facultyCourses.innerHTML = qualifiedCourseSelectHtml();
+          const coursePrereqs = form.querySelector('#coursePrereqs');
+          if (coursePrereqs) coursePrereqs.innerHTML = qualifiedCourseSelectHtml();
+          if (form.id === 'programForm' || form.id === 'curriculumForm') {
+            const yearCountInput = form.querySelector('[name="yearCount"]');
+            const containerId = form.id === 'programForm' ? 'yearSemesterFields' : 'curriculumYearSemesterFields';
+            if (yearCountInput) renderYearSemesterFields(containerId, Number(yearCountInput.value) || 4);
+          }
+        }, 0);
+      }
     }
   }
 });
 
-// Close modal form when clicking overlay
+// Close dialogs using native API
 document.body.addEventListener('click', e => {
-  if (e.target.id === 'formOverlay') {
-    const form = document.querySelector('[style*="position: fixed"][style*="z-index: 1001"]');
-    if (form) {
-      form.style.position = '';
-      form.style.top = '';
-      form.style.left = '';
-      form.style.transform = '';
-      form.style.zIndex = '';
-      form.style.maxWidth = '';
-      form.style.maxHeight = '';
-      form.style.overflowY = '';
-      form.style.boxShadow = '';
-      form.style.display = 'none';
-    }
-    const overlay = document.getElementById('formOverlay');
-    if (overlay) overlay.remove();
-  }
-});
-
-// Close modal on Escape key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    const form = document.querySelector('[style*="position: fixed"][style*="z-index: 1001"]');
-    if (form) {
-      form.style.position = '';
-      form.style.top = '';
-      form.style.left = '';
-      form.style.transform = '';
-      form.style.zIndex = '';
-      form.style.maxWidth = '';
-      form.style.maxHeight = '';
-      form.style.overflowY = '';
-      form.style.boxShadow = '';
-      form.style.display = 'none';
-    }
-    const overlay = document.getElementById('formOverlay');
-    if (overlay) overlay.remove();
+  const closeBtn = e.target.closest('[data-close-dialog]');
+  if (closeBtn) {
+    const dialogId = closeBtn.dataset.closeDialog;
+    const dialog = document.getElementById(dialogId);
+    if (dialog) dialog.close();
   }
 });
 

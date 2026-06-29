@@ -56,8 +56,10 @@
         </form>
         <div id="studentStats" class="stats"></div>
         <div id="studentTable"></div>
-        <button class="btn btn-sm" data-toggle-form="studentForm" style="margin-top:0.5rem">+ Add Student</button>
-        <form id="studentForm" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="studentDialog" style="margin-top:0.5rem">+ Add Student</button>
+        
+        <dialog id="studentDialog">
+          <form id="studentForm" method="dialog">
           <div class="fieldset-title">Profile</div>
           <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
@@ -95,6 +97,7 @@
             <button class="btn btn-sm" type="submit" id="studentSubmitBtn">Add Student</button>
             <button class="btn btn-sm secondary hidden" type="button" id="studentCancelEdit">Cancel Edit</button>
           </div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="studentDialog" style="margin-top:0.5rem">Close</button>
         </form>
         <div id="studentDetail" class="sub-panel hidden"></div>
       </section>
@@ -114,8 +117,10 @@
         </form>
         <div id="facultyStats" class="stats"></div>
         <div id="facultyTable"></div>
-        <button class="btn btn-sm" data-toggle-form="facultyForm" style="margin-top:0.5rem">+ Add Faculty</button>
-        <form id="facultyForm" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="facultyDialog" style="margin-top:0.5rem">+ Add Faculty</button>
+        
+        <dialog id="facultyDialog">
+          <form id="facultyForm" method="dialog">
           <div class="fieldset-title">Profile</div>
           <div class="grid-2">
             <div><label>First Name</label><input name="firstName" required></div>
@@ -148,6 +153,7 @@
             <button class="btn btn-sm" type="submit" id="facultySubmitBtn">Add Faculty</button>
             <button class="btn btn-sm secondary hidden" type="button" id="facultyCancelEdit">Cancel Edit</button>
           </div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="facultyDialog" style="margin-top:0.5rem">Close</button>
         </form>
         <div id="facultyDetail" class="detail-box hidden"></div>
       </section>
@@ -168,8 +174,10 @@
         </form>
         <div id="courseStats" class="stats"></div>
         <div id="courseTable"></div>
-        <button class="btn btn-sm" data-toggle-form="courseForm" style="margin-top:0.5rem">+ Add Course</button>
-        <form id="courseForm" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="courseDialog" style="margin-top:0.5rem">+ Add Course</button>
+        
+        <dialog id="courseDialog">
+          <form id="courseForm" method="dialog">
           <div class="grid-2">
             <div><label>Title</label><input name="title" required></div>
             <div><label>Department</label><select name="departmentId" data-lookup="department" required><option value="">Select</option></select></div>
@@ -184,6 +192,7 @@
           <div id="courseAssignmentRows" class="repeater-wrap"></div>
           <button type="button" class="btn btn-sm secondary" data-add-row="courseAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
           <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Course</button></div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="courseDialog" style="margin-top:0.5rem">Close</button>
         </form>
         <div id="courseManage" class="sub-panel hidden">
           <div class="row">
@@ -219,8 +228,10 @@
         </form>
         <div id="scheduleStats" class="stats"></div>
         <div id="scheduleTable"></div>
-        <button class="btn btn-sm" data-toggle-form="scheduleForm" style="margin-top:0.5rem">+ Add Schedule</button>
-        <form id="scheduleForm" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="scheduleDialog" style="margin-top:0.5rem">+ Add Schedule</button>
+        
+        <dialog id="scheduleDialog">
+          <form id="scheduleForm" method="dialog">
           <input type="hidden" name="room" value="TBD">
           <div class="grid-2">
             <div><label>Course Assignment</label><select name="courseAssignmentId" data-lookup="assignment" required><option value="">Select</option></select></div>
@@ -239,6 +250,7 @@
             <button class="btn btn-sm" type="submit" id="scheduleSubmitBtn">Add Schedule</button>
             <button class="btn btn-sm secondary hidden" type="button" id="scheduleCancelEdit">Cancel Edit</button>
           </div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="scheduleDialog" style="margin-top:0.5rem">Close</button>
         </form>
       </section>
 
@@ -255,8 +267,10 @@
         </form>
         <div id="sectionStats" class="stats"></div>
         <div id="sectionTable"></div>
-        <button class="btn btn-sm" data-toggle-form="sectionForm" style="margin-top:0.5rem">+ Add Section</button>
-        <form id="sectionForm" class="grid-2" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="sectionDialog" style="margin-top:0.5rem">+ Add Section</button>
+        
+        <dialog id="sectionDialog">
+          <form id="sectionForm" method="dialog" class="grid-2">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Program</label><select name="programId" data-lookup="program" required><option value="">Select</option></select></div>
           <div><label>Year Level</label><input name="yearLevel" type="number" required></div>
@@ -267,6 +281,7 @@
             <button class="btn btn-sm" type="submit" id="sectionSubmitBtn">Add Section</button>
             <button class="btn btn-sm secondary hidden" type="button" id="sectionCancelEdit">Cancel Edit</button>
           </div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="sectionDialog" style="margin-top:0.5rem">Close</button>
         </form>
       </section>
 
@@ -280,8 +295,10 @@
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="programTable"></div>
-        <button class="btn btn-sm" data-toggle-form="programForm" style="margin-top:0.5rem">+ Add Program</button>
-        <form id="programForm" class="grid-2" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="programDialog" style="margin-top:0.5rem">+ Add Program</button>
+        
+        <dialog id="programDialog">
+          <form id="programForm" method="dialog" class="grid-2">
           <div><label>Title</label><input name="title" required></div>
           <div><label>Code</label><input name="code" required></div>
           <div><label>Status</label><select name="status"><option>ACTIVE</option><option>INACTIVE</option></select></div>
@@ -294,6 +311,7 @@
             <button class="btn btn-sm" type="submit" id="programSubmitBtn">Add Program</button>
             <button class="btn btn-sm secondary hidden" type="button" id="programCancelEdit">Cancel Edit</button>
           </div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="programDialog" style="margin-top:0.5rem">Close</button>
         </form>
         <div id="programManage" class="sub-panel hidden">
           <div class="row">
@@ -302,13 +320,16 @@
           </div>
           <div class="section-title">Curriculums</div>
           <div id="curriculumTable"></div>
-          <button class="btn btn-sm secondary" data-toggle-form="curriculumForm" style="margin-top:0.5rem">+ Add Curriculum</button>
-        <form id="curriculumForm" class="grid-2" style="margin-top:0.5rem; display:none;">
+          <button class="btn btn-sm secondary" data-show-dialog="curriculumDialog" style="margin-top:0.5rem">+ Add Curriculum</button>
+        
+        <dialog id="curriculumDialog">
+          <form id="curriculumForm" method="dialog" class="grid-2">
             <div><label>Effective Year (YYYY-YYYY)</label><input name="effectiveYear" required placeholder="2025-2026"></div>
             <div><label>Set as active after add</label><select name="setActive"><option value="yes">Yes</option><option value="no">No</option></select></div>
             <div><label>Year levels (count)</label><input name="yearCount" type="number" value="4" min="1" required></div>
             <div id="curriculumYearSemesterFields" style="grid-column:1/-1"></div>
             <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit">Add Curriculum</button></div>
+            <button type="button" class="btn btn-sm secondary" data-close-dialog="curriculumDialog" style="margin-top:0.5rem">Close</button>
           </form>
           <div class="section-title">Courses in curriculum</div>
           <form id="curriculumCourseFilters" class="filters">
@@ -332,12 +353,15 @@
           <div class="row"><button class="btn btn-sm" type="submit">Apply Filters</button><button class="btn btn-sm secondary" type="button" data-reset>Clear</button></div>
         </form>
         <div id="departmentTable"></div>
-        <button class="btn btn-sm" data-toggle-form="deptForm" style="margin-top:0.5rem">+ Add Department</button>
-        <form id="deptForm" class="grid-2" style="margin-top:0.5rem; display:none;">
+        <button class="btn btn-sm" data-show-dialog="deptDialog" style="margin-top:0.5rem">+ Add Department</button>
+        
+        <dialog id="deptDialog">
+          <form id="deptForm" method="dialog" class="grid-2">
           <div><label>Name</label><input name="name" required></div>
           <div><label>Code</label><input name="code" required></div>
           <div style="grid-column:1/-1"><button class="btn btn-sm" type="submit" id="deptSubmitBtn">Add Department</button>
             <button class="btn btn-sm secondary hidden" type="button" id="deptCancelEdit">Cancel Edit</button></div>
+          <button type="button" class="btn btn-sm secondary" data-close-dialog="deptDialog" style="margin-top:0.5rem">Close</button>
         </form>
       </section>
 

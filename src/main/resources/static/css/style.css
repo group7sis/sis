@@ -126,10 +126,11 @@ tr:hover td { background: #f8f9ff; }
 /* Modal overlay */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
 
-/* Form styled as modal */
-.form-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: calc(100vh - 4rem); overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-.form-modal .fieldset-title { margin-top: 0; }
-.form-modal .form-actions { position: sticky; bottom: 0; background: #fff; padding: 1rem 0; margin-top: 1rem; border-top: 1px solid #e1e4e8; }
+/* Native dialog element */
+dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; background: #fff; border-radius: 8px; width: 100%; max-width: 720px; max-height: calc(100vh - 4rem); overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); border: none; padding: 1.25rem; }
+dialog::backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
+dialog .fieldset-title { margin-top: 0; }
+dialog .form-actions { position: sticky; bottom: 0; background: #fff; padding: 1rem 0; margin-top: 1rem; border-top: 1px solid #e1e4e8; }
 .section-title { font-size: 0.9rem; font-weight: 700; margin: 0.85rem 0 0.4rem; color: #2d3436; }
 .fieldset-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: #333; padding-bottom: 0.2rem; border-bottom: 2px solid #0984e3; display: inline-block; }
 .form-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
