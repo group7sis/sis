@@ -194,20 +194,24 @@
           <div style="margin-top:0.75rem"><button class="btn btn-sm" type="submit">Add Course</button></div>
           <button type="button" class="btn btn-sm secondary" data-close-dialog="courseDialog" style="margin-top:0.5rem">Close</button>
         </form>
-        <div id="courseManage" class="sub-panel hidden">
-          <div class="row">
-            <h2 id="courseManageTitle">Course Assignments</h2>
-            <button class="btn btn-sm secondary" id="courseManageClose" type="button">Close</button>
-          </div>
-          <p id="courseManageMeta" style="font-size:0.85rem;margin-bottom:0.5rem"></p>
-          <div class="section-title">Assignments</div>
-          <div id="courseManageAssignmentRows" class="repeater-wrap"></div>
-          <button type="button" class="btn btn-sm secondary" data-add-row="courseManageAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
-          <div style="margin-top:0.75rem" class="grid-2">
-            <div style="grid-column:1/-1"><label>Prerequisites</label><select id="courseManagePrereqs" multiple size="4"></select></div>
-          </div>
-          <button class="btn btn-sm" id="courseManageSave" type="button" style="margin-top:0.5rem">Save Assignments</button>
-        </div>
+        <dialog id="courseManageDialog">
+          <form id="courseManageForm" method="dialog">
+            <div class="row">
+              <h2 id="courseManageTitle">Course Assignments</h2>
+            </div>
+            <p id="courseManageMeta" style="font-size:0.85rem;margin-bottom:0.5rem"></p>
+            <div class="section-title">Assignments</div>
+            <div id="courseManageAssignmentRows" class="repeater-wrap"></div>
+            <button type="button" class="btn btn-sm secondary" data-add-row="courseManageAssignmentRows" data-row-kind="assignment">+ Add Assignment</button>
+            <div style="margin-top:0.75rem" class="grid-2">
+              <div style="grid-column:1/-1"><label>Prerequisites</label><select id="courseManagePrereqs" multiple size="4"></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-sm" type="button" id="courseManageSave">Save Assignments</button>
+              <button type="button" class="btn btn-sm secondary" data-close-dialog="courseManageDialog">Close</button>
+            </div>
+          </form>
+        </dialog>
       </section>
 
       <section id="panel-schedules" class="panel">
@@ -313,14 +317,17 @@
           </div>
           <button type="button" class="btn btn-sm secondary" data-close-dialog="programDialog" style="margin-top:0.5rem">Close</button>
         </form>
-        <div id="programManage" class="sub-panel hidden">
-          <div class="row">
-            <h2 id="programManageTitle">Program</h2>
-            <button class="btn btn-sm secondary" id="programManageClose" type="button">Close</button>
-          </div>
-          <div class="section-title">Curriculums</div>
-          <div id="curriculumTable"></div>
-          <button class="btn btn-sm secondary" data-show-dialog="curriculumDialog" style="margin-top:0.5rem">+ Add Curriculum</button>
+        <dialog id="programManageDialog">
+          <form id="programManageForm" method="dialog">
+            <div class="row">
+              <h2 id="programManageTitle">Program</h2>
+              <button type="button" class="btn btn-sm secondary" data-close-dialog="programManageDialog">Close</button>
+            </div>
+            <div class="section-title">Curriculums</div>
+            <div id="curriculumTable"></div>
+            <button class="btn btn-sm secondary" data-show-dialog="curriculumDialog" style="margin-top:0.5rem">+ Add Curriculum</button>
+          </form>
+        </dialog>
         
         <dialog id="curriculumDialog">
           <form id="curriculumForm" method="dialog" class="grid-2">

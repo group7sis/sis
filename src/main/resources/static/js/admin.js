@@ -224,9 +224,9 @@ async function showStudentDetail(id) {
 async function openProgramManage(programId, title) {
   managedProgram = await api('/admin/programs/' + programId);
   document.getElementById('programManageTitle').textContent = (title || managedProgram.title) + ' — Curriculums';
-  document.getElementById('programManage').classList.remove('hidden');
   renderCurriculumTable();
   fillCurriculumSelect();
+  document.getElementById('programManageDialog').showModal();
 }
 
 function renderCurriculumTable() {
@@ -273,7 +273,7 @@ async function openCourseManage(courseId) {
     container.insertAdjacentHTML('beforeend', assignmentRowHtml());
   }
   document.getElementById('courseManagePrereqs').innerHTML = qualifiedCourseSelectHtml(managedCourse.prerequisiteIds || []);
-  document.getElementById('courseManage').classList.remove('hidden');
+  document.getElementById('courseManageDialog').showModal();
 }
 
 function formToObj(form) {
@@ -886,7 +886,7 @@ document.getElementById('courseManageSave').onclick = async () => {
 };
 
 document.getElementById('courseManageClose').onclick = () => {
-  document.getElementById('courseManage').classList.add('hidden');
+  document.getElementById('courseManageDialog').close();
   managedCourse = null;
 };
 
@@ -933,7 +933,7 @@ document.getElementById('curriculumCourseFilters').onsubmit = e => {
 };
 
 document.getElementById('programManageClose').onclick = () => {
-  document.getElementById('programManage').classList.add('hidden');
+  document.getElementById('programManageDialog').close();
   managedProgram = null;
 };
 
@@ -949,12 +949,6 @@ document.body.addEventListener('click', async e => {
     }
     return;
   }
-  const progBtn = e.target.closest('[data-program]');
-  if (progBtn) openProgramManage(progBtn.dataset.program, progBtn.dataset.title);
-  const courseBtn = e.target.closest('[data-course]');
-  if (courseBtn) openCourseManage(courseBtn.dataset.course);
-  const courseEditBtn = e.target.closest('[data-edit="course"]');
-  if (courseEditBtn) openCourseManage(courseEditBtn.dataset.id);
   const activeBtn = e.target.closest('[data-set-active]');
   if (activeBtn && managedProgram) {
     try {
