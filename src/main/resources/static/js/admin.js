@@ -74,7 +74,7 @@ async function loadStudents() {
     (data.students || []).map(st => [
       st.studentNumber, fmtName(st.profile), st.yearLevel ?? '-', st.studentStatus, st.scholasticStatus,
       `<button class="btn btn-sm" data-id="${st.id}" data-kind="student">View</button>
-       <button class="btn btn-sm secondary" data-edit="student" data-id="${st.id}">Edit</button>`
+       <button class="btn btn-sm secondary" data-show-dialog="studentDialog" data-edit-id="${st.id}">Edit</button>`
     ]));
 }
 
@@ -90,7 +90,7 @@ async function loadFaculty() {
     (data.faculties || []).map(f => [
       f.facultyNumber, fmtName(f.profile), f.employmentType, f.status,
       `<button class="btn btn-sm" data-id="${f.id}" data-kind="faculty">View</button>
-       <button class="btn btn-sm secondary" data-edit="faculty" data-id="${f.id}">Edit</button>`
+       <button class="btn btn-sm secondary" data-show-dialog="facultyDialog" data-edit-id="${f.id}">Edit</button>`
     ]));
 }
 
@@ -105,8 +105,7 @@ async function loadCourses() {
     ['Code', 'Title', 'Units', 'Assignments', 'Status', ''],
     (data.courses || []).map(c => [
       c.code, c.title, c.units, (c.courseAssignments || []).length, c.status,
-      `<button class="btn btn-sm" data-course="${c.id}">Manage</button>
-       <button class="btn btn-sm secondary" data-edit="course" data-id="${c.id}">Edit</button>`
+      `<button class="btn btn-sm" data-show-dialog="courseDialog" data-edit-id="${c.id}">Manage/Edit</button>`
     ]));
 }
 
@@ -126,7 +125,7 @@ async function loadSchedules() {
     ['Code', 'Course', 'Section', 'Faculty', 'Year', 'Days', 'Status', ''],
     (data.schedules || []).map(sc => [
       sc.code, sc.courseTitle, sc.sectionName, sc.facultyName || '-', sc.academicYear, fmtDays(sc.days), sc.status,
-      `<button class="btn btn-sm secondary" data-edit="schedule" data-id="${sc.id}">Edit</button>`
+      `<button class="btn btn-sm secondary" data-show-dialog="scheduleDialog" data-edit-id="${sc.id}">Edit</button>`
     ]));
 }
 
@@ -140,7 +139,7 @@ async function loadSections() {
     ['Code', 'Name', 'Program', 'Year', 'Capacity', 'Status'],
     (data.sections || []).map(x => [
       x.code, x.name, LK.programs.find(p => p.id === x.programId)?.code || x.programId, x.yearLevel, x.maxCapacity, x.status,
-      `<button class="btn btn-sm secondary" data-edit="section" data-id="${x.id}">Edit</button>`
+      `<button class="btn btn-sm secondary" data-show-dialog="sectionDialog" data-edit-id="${x.id}">Edit</button>`
     ]));
 }
 
@@ -149,15 +148,14 @@ async function loadPrograms() {
   const data = await api('/admin/programs' + q);
   document.getElementById('programTable').innerHTML = tableHtml(
     ['Code', 'Title', 'Status', 'Active Curriculum', ''],
-    (data || []).map(p => {
-      const activeCurr = (p.curriculums || []).find(c => c.id === p.activeCurriculumId);
-      const activeLabel = activeCurr ? `${activeCurr.code || activeCurr.id} (${activeCurr.effectiveYear || ''})` : (p.activeCurriculumId ?? '-');
-      return [
-        p.code || p.id, p.title, p.status, activeLabel,
-        `<button class="btn btn-sm" data-program="${p.id}" data-title="${p.title || ''}">Manage</button>
-         <button class="btn btn-sm secondary" data-edit="program" data-id="${p.id}">Edit</button>`
-      ];
-    }));
+  (data || []).map(p => {
+    const activeCurr = (p.curriculums || []).find(c => c.id === p.activeCurriculumId);
+    const activeLabel = activeCurr ? `${activeCurr.code || activeCurr.id} (${activeCurr.effectiveYear || ''})` : (p.activeCurriculumId ?? '-');
+    return [
+      p.code || p.id, p.title, p.status, activeLabel,
+      `<button class="btn btn-sm" data-show-dialog="programDialog" data-edit-id="${p.id}">Manage/Edit</button>`
+    ];
+  }));
 }
 
 async function loadDepartments() {
@@ -166,7 +164,7 @@ async function loadDepartments() {
   document.getElementById('departmentTable').innerHTML = tableHtml(
     ['Code', 'Name'], (data || []).map(d => [
       d.code, d.name,
-      `<button class="btn btn-sm secondary" data-edit="department" data-id="${d.id}">Edit</button>`
+      `<button class="btn btn-sm secondary" data-show-dialog="deptDialog" data-edit-id="${d.id}">Edit</button>`
     ]));
 }
 
@@ -183,7 +181,7 @@ async function loadAccounts() {
   document.getElementById('accountTable').innerHTML = tableHtml(
     ['Username', ''], (data || []).map(a => [
       a.username,
-      `<button class="btn btn-sm secondary" data-edit="account" data-id="${a.id}">Edit</button>`
+      `<button class="btn btn-sm secondary" data-show-dialog="accountDialog" data-edit-id="${a.id}">Edit</button>`
     ]));
 }
 
@@ -288,7 +286,7 @@ function formToObj(form) {
 }
 
 // Open dialogs using native HTML dialog element
-document.body.addEventListener('click', e => {
+document.body.addEventListener('click', async e => {
   const showBtn = e.target.closest('[data-show-dialog]');
   if (showBtn) {
     const dialogId = showBtn.dataset.showDialog;
@@ -298,6 +296,12 @@ document.body.addEventListener('click', e => {
       document.querySelectorAll('dialog[open]').forEach(d => {
         if (d !== dialog) d.close();
       });
+      
+      // Handle edit mode if edit-id is provided
+      const editId = showBtn.dataset.editId;
+      if (editId) {
+        await loadEntityForEdit(dialogId, editId);
+      }
       
       // Open this dialog
       dialog.showModal();
@@ -326,6 +330,212 @@ document.body.addEventListener('click', e => {
     }
   }
 });
+
+async function loadEntityForEdit(dialogId, entityId) {
+  // Map dialog IDs to entity types and API endpoints
+  const dialogMap = {
+    studentDialog: { type: 'student', endpoint: `/admin/students/${entityId}` },
+    facultyDialog: { type: 'faculty', endpoint: `/admin/faculty/${entityId}` },
+    courseDialog: { type: 'course', endpoint: `/admin/courses/${entityId}` },
+    scheduleDialog: { type: 'schedule', endpoint: `/admin/schedules/${entityId}` },
+    sectionDialog: { type: 'section', endpoint: `/admin/sections/${entityId}` },
+    programDialog: { type: 'program', endpoint: `/admin/programs/${entityId}` },
+    deptDialog: { type: 'department', endpoint: `/admin/departments/${entityId}` },
+    accountDialog: { type: 'account', endpoint: `/admin/accounts/${entityId}` }
+  };
+  
+  const mapping = dialogMap[dialogId];
+  if (!mapping) return;
+  
+  try {
+    const data = await api(mapping.endpoint);
+    editState.type = mapping.type;
+    editState.id = entityId;
+    editState.data = data;
+    
+    const form = document.getElementById(dialogId)?.querySelector('form');
+    if (!form) return;
+    
+    // Populate form based on entity type
+    switch (mapping.type) {
+      case 'student':
+        populateStudentForm(form, data);
+        break;
+      case 'faculty':
+        populateFacultyForm(form, data);
+        break;
+      case 'course':
+        populateCourseForm(form, data);
+        break;
+      case 'schedule':
+        populateScheduleForm(form, data);
+        break;
+      case 'section':
+        populateSectionForm(form, data);
+        break;
+      case 'program':
+        populateProgramForm(form, data);
+        break;
+      case 'department':
+        populateDepartmentForm(form, data);
+        break;
+      case 'account':
+        populateAccountForm(form, data);
+        break;
+    }
+    
+    // Update submit button text
+    const submitBtn = form.querySelector('[type="submit"]');
+    if (submitBtn) submitBtn.textContent = 'Update';
+    
+    // Show cancel edit button if exists
+    const cancelBtn = form.querySelector('[id$="CancelEdit"]');
+    if (cancelBtn) cancelBtn.classList.remove('hidden');
+  } catch (err) {
+    console.error('Failed to load entity for edit:', err);
+  }
+}
+
+function populateStudentForm(form, data) {
+  const p = data.profile || {};
+  form.firstName.value = p.firstName || '';
+  form.middleName.value = p.middleName || '';
+  form.lastName.value = p.lastName || '';
+  form.suffix.value = p.suffix || '';
+  form.sex.value = p.sex || 'MALE';
+  form.dateOfBirth.value = p.dateOfBirth || '';
+  form.civilStatus.value = p.civilStatus || 'SINGLE';
+  form.nationality.value = p.nationality || 'Filipino';
+  form.mobileNumber.value = p.mobileNumber || '';
+  
+  const a = data.account || {};
+  form.username.value = a.username || '';
+  form.password.value = a.password || '';
+  form.email.value = a.email || '';
+  form.accountStatus.value = a.status || 'ACTIVE';
+  
+  // Show edit fields
+  const editFields = document.getElementById('studentEditFields');
+  if (editFields) {
+    editFields.classList.remove('hidden');
+    editFields.classList.add('grid-2');
+  }
+  form.studentStatus.value = data.studentStatus || 'ACTIVE';
+  form.scholasticStatus.value = data.scholasticStatus || 'REGULAR';
+}
+
+function populateFacultyForm(form, data) {
+  const p = data.profile || {};
+  form.firstName.value = p.firstName || '';
+  form.middleName.value = p.middleName || '';
+  form.lastName.value = p.lastName || '';
+  form.suffix.value = p.suffix || '';
+  form.sex.value = p.sex || 'MALE';
+  form.dateOfBirth.value = p.dateOfBirth || '';
+  form.civilStatus.value = p.civilStatus || 'SINGLE';
+  form.nationality.value = p.nationality || 'Filipino';
+  form.mobileNumber.value = p.mobileNumber || '';
+  
+  const a = data.account || {};
+  form.username.value = a.username || '';
+  form.password.value = a.password || '';
+  form.email.value = a.email || '';
+  form.accountStatus.value = a.status || 'ACTIVE';
+  
+  form.departmentId.value = data.departmentId || '';
+  form.employmentType.value = data.employmentType || 'FULL_TIME';
+  form.position.value = data.position || '';
+  form.dateHired.value = data.dateHired || '';
+  form.status.value = data.status || 'ACTIVE';
+  
+  const facultyCourses = document.getElementById('facultyQualifiedCourses');
+  if (facultyCourses && data.qualifiedCoursesIds) {
+    facultyCourses.innerHTML = qualifiedCourseSelectHtml(data.qualifiedCoursesIds);
+  }
+}
+
+function populateCourseForm(form, data) {
+  form.title.value = data.title || '';
+  form.departmentId.value = data.departmentId || '';
+  form.units.value = data.units || '';
+  form.lectureHours.value = data.lectureHours || '';
+  form.labHours.value = data.labHours || 0;
+  form.status.value = data.status || 'ACTIVE';
+  form.notes.value = data.notes || '';
+  
+  const prereqs = document.getElementById('coursePrereqs');
+  if (prereqs && data.prerequisiteIds) {
+    prereqs.innerHTML = qualifiedCourseSelectHtml(data.prerequisiteIds);
+  }
+  
+  const assignments = data.courseAssignments || [];
+  const container = document.getElementById('courseAssignmentRows');
+  if (container) {
+    container.innerHTML = '';
+    assignments.forEach(a => container.insertAdjacentHTML('beforeend', assignmentRowHtml(a)));
+  }
+}
+
+function populateScheduleForm(form, data) {
+  form.courseAssignmentId.value = data.courseAssignmentId || '';
+  form.sectionId.value = data.sectionId || '';
+  form.assignedFacultyId.value = data.assignedFacultyId || '';
+  form.yearLevel.value = data.yearLevel || 1;
+  form.academicYear.value = data.academicYear || '';
+  form.semester.value = data.semester || '';
+  form.status.value = data.status || 'ACTIVE';
+  form.notes.value = data.notes || '';
+  
+  const days = data.days || [];
+  const container = document.getElementById('scheduleDayRows');
+  if (container) {
+    container.innerHTML = '';
+    days.forEach(d => container.insertAdjacentHTML('beforeend', dayRowHtml(d)));
+  }
+}
+
+function populateSectionForm(form, data) {
+  form.name.value = data.name || '';
+  form.programId.value = data.programId || '';
+  form.yearLevel.value = data.yearLevel || '';
+  form.maxCapacity.value = data.maxCapacity || '';
+  form.status.value = data.status || 'ACTIVE';
+  form.notes.value = data.notes || '';
+}
+
+function populateProgramForm(form, data) {
+  form.title.value = data.title || '';
+  form.code.value = data.code || '';
+  form.status.value = data.status || 'ACTIVE';
+  form.departmentId.value = data.departmentId || '';
+  
+  const curriculums = data.curriculums || [];
+  if (curriculums.length > 0) {
+    const activeCurr = curriculums.find(c => c.id === data.activeCurriculumId) || curriculums[0];
+    form.effectiveYear.value = activeCurr.effectiveYear || '';
+    
+    const yearCount = activeCurr.years ? activeCurr.years.length : 4;
+    form.yearCount.value = yearCount;
+    renderYearSemesterFields('yearSemesterFields', yearCount);
+    
+    if (activeCurr.years) {
+      activeCurr.years.forEach(y => {
+        const input = form.querySelector(`[name="yearSemester_${y.level}"]`);
+        if (input) input.value = y.totalSemester || 2;
+      });
+    }
+  }
+}
+
+function populateDepartmentForm(form, data) {
+  form.name.value = data.name || '';
+  form.code.value = data.code || '';
+}
+
+function populateAccountForm(form, data) {
+  form.username.value = data.username || '';
+  form.password.value = data.password || '';
+}
 
 // Close dialogs using native API
 document.body.addEventListener('click', e => {
