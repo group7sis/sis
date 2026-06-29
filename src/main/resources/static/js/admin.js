@@ -148,14 +148,14 @@ async function loadPrograms() {
   const data = await api('/admin/programs' + q);
   document.getElementById('programTable').innerHTML = tableHtml(
     ['Code', 'Title', 'Status', 'Active Curriculum', ''],
-  (data || []).map(p => {
-    const activeCurr = (p.curriculums || []).find(c => c.id === p.activeCurriculumId);
-    const activeLabel = activeCurr ? `${activeCurr.code || activeCurr.id} (${activeCurr.effectiveYear || ''})` : (p.activeCurriculumId ?? '-');
-    return [
-      p.code || p.id, p.title, p.status, activeLabel,
-      `<button class="btn btn-sm" data-show-dialog="programDialog" data-edit-id="${p.id}">Manage/Edit</button>`
-    ];
-  }));
+    (data || []).map(p => {
+      const activeCurr = (p.curriculums || []).find(c => c.id === p.activeCurriculumId);
+      const activeLabel = activeCurr ? `${activeCurr.code || activeCurr.id} (${activeCurr.effectiveYear || ''})` : (p.activeCurriculumId ?? '-');
+      return [
+        p.code || p.id, p.title, p.status, activeLabel,
+        `<button class="btn btn-sm" data-show-dialog="programDialog" data-edit-id="${p.id}">Manage/Edit</button>`
+      ];
+    }));
 }
 
 async function loadDepartments() {
