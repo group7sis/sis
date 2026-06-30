@@ -56,6 +56,7 @@ async function loadDashboard() {
       ${stat('Program', d.programCode || '-')}
       ${stat('Section', d.sectionName || '-')}
       ${stat('Courses', d.totalEnrolledCourses ?? '-')}
+      ${stat('Units', d.totalUnits ?? '-')}
       ${stat('Grades', d.gradeCompletionStatus || '-')}
     </div>
     <p style="font-size:0.9rem;margin-bottom:0.5rem">Today: ${d.currentDayOfTheWeek || ''}, ${d.currentMonth || ''} ${d.currentDay || ''}, ${d.currentYear || ''}</p>
