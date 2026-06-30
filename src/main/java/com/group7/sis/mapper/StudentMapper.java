@@ -32,6 +32,9 @@ public interface StudentMapper {
     @Mapping(target = "enrolledProgramId", source = "enrolledProgram.id")
     @Mapping(target = "programCurriculumId", source = "enrolledProgram.activeCurriculum.id")
     @Mapping(target = "sectionId", source = "section.id")
+    @Mapping(target = "sectionName", source = "section.name")
+    @Mapping(target = "gwa", ignore = true)
+    @Mapping(target = "programTitle", source = "enrolledProgram.title")
     AcademicInfoDTO toAcademicInfoDto(AcademicInfoEntity academicInfoEntity);
     
     @Mapping(target = "id", ignore = true)
@@ -56,6 +59,7 @@ public interface StudentMapper {
     @Mapping(target = "programId", source = "schedule.section.program.id")
     @Mapping(target = "courseCode", source = "schedule.courseAssignment.course.code")
     @Mapping(target = "courseTitle", source = "schedule.courseAssignment.course.title")
+    @Mapping(target = "facultyId", source = "schedule.assignedFaculty.id")
     @Mapping(target = "facultyName", ignore = true)
     @Mapping(target = "units", source = "schedule.courseAssignment.course.units")
     @Mapping(target = "sectionName", source = "schedule.section.name")

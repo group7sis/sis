@@ -107,6 +107,11 @@ public class FacultyController {
         return facultyModuleService.computeGrade(recordId, id);
     }
 
+    @PutMapping("/{id}/records/encode/{recordId}/finalize")
+    public StudentGradeRecordDTO finalizeGradeRecord(@PathVariable Long id, @PathVariable Long recordId){
+        return facultyModuleService.finalizeGrade(recordId, id);
+    }
+
 
 
     //------------------------------------------GRADE CONFIG--------------------------------------------------

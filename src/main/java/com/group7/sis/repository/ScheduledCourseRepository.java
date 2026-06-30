@@ -15,6 +15,7 @@ import java.util.List;
 
 public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourseEntity, Long>{
     ScheduledCourseEntity findTopByAcademicYearOrderByCodeDesc(String academicYear);
+    List<ScheduledCourseEntity> findByCourseAssignmentId(Long courseAssignmentId);
 
     ScheduledCourseEntity findByCourseAssignmentIdAndSectionIdAndAcademicYear
     (
@@ -27,7 +28,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
 
     List<ScheduledCourseEntity> findBySectionIdAndAcademicYearAndCourseAssignmentId(Long id, String academicYear, Long courseAssignmentId);
 
-    List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentId(Long id, String academicYear, Long courseAssignmentId);
+    List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYear(Long id, String academicYear);
 
     List<ScheduledCourseEntity> findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentSemesterAndDaysNameAndStatus(Long facultyId, String academicYear, int semester, DayName dayName, ScheduleStatus status);
 
@@ -137,13 +138,14 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
 
 
     @Query("""
-    SELECT s from ScheduledCourseEntity s
+    SELECT DISTINCT s FROM ScheduledCourseEntity s
     JOIN s.courseAssignment ca
     WHERE ca.program.id = :programId
     AND ca.curriculum.id = :curriculumId
     AND ca.yearLevel = :yearLevel
     AND ca.semester = :semester
     AND s.status = :status
+    AND (:courseId IS NULL OR ca.course.id = :courseId)
     AND s.academicYear = :academicYear
     """)
     List<ScheduledCourseEntity> getSchedulesForProgramCurriculum(
@@ -151,6 +153,7 @@ public interface ScheduledCourseRepository extends JpaRepository<ScheduledCourse
         @Param("curriculumId") Long curriculumId,
         @Param("yearLevel") Integer yearLevel,
         @Param("semester") Integer semester,
+        @Param("courseId") Long courseId,
         @Param("status") ScheduleStatus status,
         @Param("academicYear") String academicYear
     );   

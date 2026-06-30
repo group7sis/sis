@@ -12,6 +12,7 @@ import com.group7.sis.entity.academic.ProgramEntity;
 import com.group7.sis.entity.academic.ScheduledCourseEntity;
 import com.group7.sis.entity.academic.SectionEntity;
 import com.group7.sis.entity.academic.YearEntity;
+import com.group7.sis.entity.users.FacultyEntity;
 import com.group7.sis.entity.users.StudentEntity;
 import com.group7.sis.entity.users.StudentEntity.StudentStatus;
 import com.group7.sis.entity.users.student.AcademicInfoEntity;
@@ -23,6 +24,7 @@ import com.group7.sis.entity.users.StudentEntity.ScholasticStatus;
 import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.StudentRepository;
 import com.group7.sis.service.queryservices.CurriculumQueryService;
+import com.group7.sis.service.queryservices.FacultyQueryService;
 import com.group7.sis.service.queryservices.ProgramQueryService;
 import com.group7.sis.service.queryservices.ScheduleQueryService;
 import com.group7.sis.service.queryservices.SectionQueryService;
@@ -50,6 +52,7 @@ public class StudentService {
     private final ScheduleQueryService scheduleQueryService;
     private final CurriculumQueryService curriculumQueryService;
     private final TermQueryService termQueryService;
+    private final FacultyQueryService facultyQueryService;
 
     public StudentDTO addStudent(StudentDTO studentDTO) {
         StudentEntity student = studentMapper.toEntity(studentDTO);
@@ -126,6 +129,7 @@ public class StudentService {
                             enrolledCourseEntity.setSchedule(scheduleQueryService.getScheduledCourseEntity(enrolledCourseDTO.getScheduleId()));
                         }
                         academicInfoEntity.getEnrolledCourses().add(enrolledCourseEntity);
+                        academicInfoEntity.setUnits(calculateTotalUnitsEnrolled(academicInfoEntity.getEnrolledCourses()));
                     }
                 }
                 student.getAcademicInfo().add(academicInfoEntity);
@@ -150,6 +154,14 @@ public class StudentService {
         }
     }
 
+    private int calculateTotalUnitsEnrolled(List<EnrolledCourseEntity> enrolledCourses){
+        int enrolledUnits = 0;
+        for (EnrolledCourseEntity enrolledCourse : enrolledCourses){
+            enrolledUnits += enrolledCourse.getSchedule().getCourseAssignment().getCourse().getUnits();
+        }
+        return enrolledUnits;
+    }
+
     private void createStudentGradeRecord(EnrolledCourseEntity enrolledCourseEntity){
         StudentGradeRecordEntity studentGradeRecord = new StudentGradeRecordEntity();
         studentGradeRecord.setEnrolledCourse(enrolledCourseEntity);
@@ -158,7 +170,37 @@ public class StudentService {
     }
 
     public StudentDTO getStudent(Long id) {
-        return studentMapper.toDto(studentQueryService.getStudentEntity(id));
+        StudentDTO student = studentMapper.toDto(studentQueryService.getStudentEntity(id));
+
+        for (AcademicInfoDTO enrollment : student.getAcademicInfo()){
+            enrollment.setGwa(calculateGwaDTO(enrollment));
+
+            for (EnrolledCourseDTO enrolledCourse : enrollment.getEnrolledCourses()){
+                FacultyEntity faculty = facultyQueryService.getFacultyEntity(enrolledCourse.getFacultyId());
+                String facultyName = faculty.getProfile().getFirstName() + (faculty.getProfile().getMiddleName() == null ? "" : (" " + faculty.getProfile().getMiddleName())) + (" " + faculty.getProfile().getLastName()) + (faculty.getProfile().getSuffix() == null ? "" : (" " + faculty.getProfile().getSuffix()));
+                enrolledCourse.setFacultyName(facultyName);
+            }
+        }
+
+        return student;
+    }
+
+    private double calculateGwaDTO(AcademicInfoDTO currentEnrollment){
+        double total = 0;
+        double totalUnits = 0;
+        for (EnrolledCourseDTO enrolledCourse : currentEnrollment.getEnrolledCourses()){
+            if (enrolledCourse.getGrade() != null){
+                total += (enrolledCourse.getGrade() *  enrolledCourse.getUnits());
+                totalUnits += enrolledCourse.getUnits();
+            }
+        }
+        
+        if (totalUnits == 0){
+            return 0;
+        }
+
+        double gwa = Math.round((total / totalUnits) * 100.0) / 100.0;
+        return gwa;
     }
 
     // god damn
@@ -261,13 +303,28 @@ public class StudentService {
                     }
                     academicInfoEntity.getEnrolledCourses().clear();
                     academicInfoEntity.getEnrolledCourses().addAll(updatedEnrolledCourseEntities);
+                    academicInfoEntity.setUnits(calculateTotalUnitsEnrolled(academicInfoEntity.getEnrolledCourses()));
                 }
                 updatedAcademicInfoEntities.add(academicInfoEntity);
             }
+
             student.getAcademicInfo().clear();
             student.getAcademicInfo().addAll(updatedAcademicInfoEntities);
         }
-        return studentMapper.toDto(studentRepository.save(student));
+
+        studentRepository.save(student);
+
+        for(AcademicInfoEntity enrollment : student.getAcademicInfo()){
+            for (EnrolledCourseEntity enrolledCourse : enrollment.getEnrolledCourses()){
+                StudentGradeRecordEntity record = studentGradeRecordRepository.findByEnrolledCourseId(enrolledCourse.getId());
+
+                if (record == null){
+                    createStudentGradeRecord(enrolledCourse);
+                }
+            }
+        }
+
+        return studentMapper.toDto(student);
     }
 
     public StudentsPageDTO getAllStudents(String name, StudentStatus studentStatus, ScholasticStatus scholasticStatus, Long programId, Long curriculumId, String academicYear, Integer yearLevel, Long sectionId) {

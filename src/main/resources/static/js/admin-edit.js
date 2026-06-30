@@ -11,25 +11,69 @@ function setMultiSelectValues(sel, ids) {
   [...sel.options].forEach(o => { o.selected = set.has(o.value); });
 }
 
+function getCheckboxValues(container) {
+  if (!container) return [];
+  return [...container.querySelectorAll('input[type="checkbox"][name]')]
+    .filter(cb => cb.checked)
+    .map(cb => Number(cb.value));
+}
+
+function setCheckboxValues(container, ids) {
+  if (!container) return;
+  const set = new Set((ids || []).map(String));
+  container.querySelectorAll('input[type="checkbox"][name]').forEach(cb => {
+    cb.checked = set.has(cb.value);
+  });
+}
+
 function clearEdit(type) {
   if (editState.type !== type) return;
   editState = { type: null, id: null, data: null };
   const map = {
-    student: ['studentForm', 'studentSubmitBtn', 'studentCancelEdit', 'Add Student'],
-    faculty: ['facultyForm', 'facultySubmitBtn', 'facultyCancelEdit', 'Add Faculty'],
-    schedule: ['scheduleForm', 'scheduleSubmitBtn', 'scheduleCancelEdit', 'Add Schedule'],
-    section: ['sectionForm', 'sectionSubmitBtn', 'sectionCancelEdit', 'Add Section'],
-    program: ['programForm', 'programSubmitBtn', 'programCancelEdit', 'Add Program'],
-    department: ['deptForm', 'deptSubmitBtn', 'deptCancelEdit', 'Add Department'],
-    account: ['accountForm', 'accountSubmitBtn', 'accountCancelEdit', 'Add Admin']
+    student: ['studentForm', 'studentSubmitBtn', 'Add Student'],
+    faculty: ['facultyForm', 'facultySubmitBtn', 'Add Faculty'],
+    course: ['courseForm', 'courseSubmitBtn', 'Add Course'],
+    schedule: ['scheduleForm', 'scheduleSubmitBtn', 'Add Schedule'],
+    section: ['sectionForm', 'sectionSubmitBtn', 'Add Section'],
+    program: ['programForm', 'programSubmitBtn', 'Add Program'],
+    department: ['deptForm', 'deptSubmitBtn', 'Add Department'],
+    account: ['accountForm', 'accountSubmitBtn', 'Add Admin'],
+    curriculum: ['curriculumForm', 'curriculumSubmitBtn', 'Add Curriculum']
   };
-  const [formId, btnId, cancelId, label] = map[type] || [];
-  document.getElementById(formId)?.reset();
+  const [formId, btnId, label] = map[type] || [];
+  const form = document.getElementById(formId);
+  if (form) {
+    form.reset();
+    // Show initial curriculum section in program form if it was hidden
+    if (type === 'program') {
+      const section = form.querySelector('.section-title');
+      if (section && section.textContent.includes('Initial Curriculum')) {
+        section.style.display = '';
+        const fields = form.querySelectorAll('.grid-2 > div');
+        // Show effective year, year count, year semester fields
+        const yearFields = form.querySelectorAll('[name="effectiveYear"], [name="yearCount"], #yearSemesterFields');
+        yearFields.forEach(el => { if (el) el.closest?.('div') ? el.closest('div').style.display = '' : el.style.display = ''; });
+      }
+    }
+  }
   document.getElementById(btnId).textContent = label;
-  document.getElementById(cancelId)?.classList.add('hidden');
   if (type === 'student') {
     document.getElementById('studentEditFields')?.classList.add('hidden');
+    const academicInfoFields = document.getElementById('studentAcademicInfoFields');
+    if (academicInfoFields) academicInfoFields.style.display = '';
     applyTermToForms();
+  }
+  if (type === 'course') {
+    const container = document.getElementById('courseAssignmentRows');
+    if (container) {
+      container.innerHTML = '';
+      initRepeater('courseAssignmentRows', assignmentRowHtml, 1);
+    }
+    const prereqs = document.getElementById('coursePrereqs');
+    if (prereqs) {
+      prereqs.innerHTML = qualifiedCourseCheckboxHtml();
+      setCheckboxValues(prereqs, []);
+    }
   }
   if (type === 'schedule') initRepeater('scheduleDayRows', dayRowHtml, 1);
 }
@@ -37,6 +81,29 @@ function clearEdit(type) {
 async function startEdit(type, id) {
   editState = { type, id, data: null };
   hideMsg(msg);
+  if (type === 'course') {
+    const data = await api('/admin/courses/' + id);
+    editState.data = data;
+    const f = document.getElementById('courseForm');
+    f.title.value = data.title || '';
+    f.departmentId.value = data.departmentId || '';
+    f.units.value = data.units || '';
+    f.lectureHours.value = data.lectureHours || '';
+    f.labHours.value = data.labHours || 0;
+    f.status.value = data.status || 'ACTIVE';
+    f.notes.value = data.notes || '';
+    const prereqs = document.getElementById('coursePrereqs');
+    if (prereqs && data.prerequisiteIds) {
+      prereqs.innerHTML = qualifiedCourseCheckboxHtml(data.prerequisiteIds, data.id);
+    }
+    const assignments = data.courseAssignments || [];
+    const container = document.getElementById('courseAssignmentRows');
+    if (container) {
+      container.innerHTML = '';
+      assignments.forEach(a => container.insertAdjacentHTML('beforeend', assignmentRowHtml(a)));
+    }
+    document.getElementById('courseSubmitBtn').textContent = 'Update Course';
+  }
   if (type === 'student') {
     const st = await api('/admin/students/' + id);
     editState.data = st;
@@ -57,7 +124,6 @@ async function startEdit(type, id) {
     document.getElementById('studentEditFields').classList.remove('hidden');
     fillLookupSelects(f);
     document.getElementById('studentSubmitBtn').textContent = 'Update Student';
-    document.getElementById('studentCancelEdit').classList.remove('hidden');
     f.scrollIntoView({ behavior: 'smooth' });
   }
   if (type === 'faculty') {
@@ -79,9 +145,11 @@ async function startEdit(type, id) {
     f.employmentType.value = data.employmentType;
     f.dateHired.value = data.dateHired || '';
     f.status.value = data.status;
-    setMultiSelectValues(document.getElementById('facultyQualifiedCourses'), data.qualifiedCoursesIds);
+    const facultyCourses = document.getElementById('facultyQualifiedCourses');
+    if (facultyCourses && data.qualifiedCoursesIds) {
+      facultyCourses.innerHTML = qualifiedCourseCheckboxHtml(data.qualifiedCoursesIds);
+    }
     document.getElementById('facultySubmitBtn').textContent = 'Update Faculty';
-    document.getElementById('facultyCancelEdit').classList.remove('hidden');
   }
   if (type === 'schedule') {
     const data = await api('/admin/schedules/' + id);
@@ -91,16 +159,22 @@ async function startEdit(type, id) {
     f.courseAssignmentId.value = data.courseAssignmentId;
     f.sectionId.value = data.sectionId;
     f.assignedFacultyId.value = data.assignedFacultyId;
-    f.yearLevel.value = data.yearLevel;
     f.academicYear.value = data.academicYear;
-    f.semester.value = data.semester ?? '';
     f.status.value = data.status;
     f.notes.value = data.notes || '';
     const container = document.getElementById('scheduleDayRows');
     container.innerHTML = '';
-    (data.days || [{ name: 'MONDAY' }]).forEach(d => container.insertAdjacentHTML('beforeend', dayRowHtml(d)));
+    const days = (data.days || []).map(d => ({
+      name: d.name,
+      startTime: d.timeStart || d.startTime || '',
+      endTime: d.timeEnd || d.endTime || ''
+    }));
+    if (days.length) {
+      days.forEach(d => container.insertAdjacentHTML('beforeend', dayRowHtml(d)));
+    } else {
+      container.insertAdjacentHTML('beforeend', dayRowHtml({ name: 'MONDAY' }));
+    }
     document.getElementById('scheduleSubmitBtn').textContent = 'Update Schedule';
-    document.getElementById('scheduleCancelEdit').classList.remove('hidden');
   }
   if (type === 'section') {
     const data = await api('/admin/sections/' + id);
@@ -114,7 +188,6 @@ async function startEdit(type, id) {
     f.status.value = data.status;
     f.notes.value = data.notes || '';
     document.getElementById('sectionSubmitBtn').textContent = 'Update Section';
-    document.getElementById('sectionCancelEdit').classList.remove('hidden');
   }
   if (type === 'program') {
     const data = await api('/admin/programs/' + id);
@@ -126,7 +199,6 @@ async function startEdit(type, id) {
     f.status.value = data.status;
     f.departmentId.value = data.departmentId;
     document.getElementById('programSubmitBtn').textContent = 'Update Program';
-    document.getElementById('programCancelEdit').classList.remove('hidden');
   }
   if (type === 'department') {
     const data = await api('/admin/departments/' + id);
@@ -135,7 +207,6 @@ async function startEdit(type, id) {
     f.name.value = data.name;
     f.code.value = data.code;
     document.getElementById('deptSubmitBtn').textContent = 'Update Department';
-    document.getElementById('deptCancelEdit').classList.remove('hidden');
   }
   if (type === 'account') {
     const list = await api('/admin/accounts');
@@ -145,12 +216,11 @@ async function startEdit(type, id) {
     f.username.value = data.username;
     f.password.value = data.password || '';
     document.getElementById('accountSubmitBtn').textContent = 'Update Admin';
-    document.getElementById('accountCancelEdit').classList.remove('hidden');
   }
 }
 
-['student', 'faculty', 'schedule', 'section', 'program', 'department', 'account'].forEach(type => {
-  document.getElementById(type + 'CancelEdit')?.addEventListener('click', () => clearEdit(type));
+['student', 'faculty', 'course', 'schedule', 'section', 'program', 'department', 'account', 'curriculum'].forEach(type => {
+  document.getElementById( type + 'CloseDialog')?.addEventListener('click', () => clearEdit(type));
 });
 
 document.body.addEventListener('click', e => {
@@ -163,8 +233,6 @@ async function initAdmin() {
   fillLookupSelects();
   const fq = document.getElementById('facultyQualifiedCourses');
   const cp = document.getElementById('coursePrereqs');
-  if (fq) fq.innerHTML = qualifiedCourseSelectHtml();
-  if (cp) cp.innerHTML = qualifiedCourseSelectHtml();
-  const cmp = document.getElementById('courseManagePrereqs');
-  if (cmp && cmp.tagName === 'SELECT') cmp.innerHTML = qualifiedCourseSelectHtml();
+  if (fq) fq.innerHTML = qualifiedCourseCheckboxHtml();
+  if (cp) cp.innerHTML = qualifiedCourseCheckboxHtml();
 }

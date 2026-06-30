@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SchedulesCategorizedDTO {
+
     List<StudentScheduleDTO> currentSchedules = new ArrayList<>();
     List<StudentScheduleDTO> failedCourseSchedules = new ArrayList<>();
     List<StudentScheduleDTO> missedCourseSchedules = new ArrayList<>();

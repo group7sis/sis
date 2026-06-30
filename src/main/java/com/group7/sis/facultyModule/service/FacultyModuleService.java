@@ -210,6 +210,17 @@ public class FacultyModuleService {
     }
 
 
+    public StudentGradeRecordDTO finalizeGrade(Long recordId, Long facultyId){
+        StudentGradeRecordEntity recordEntity = getStudentGradeRecordEntity(recordId);
+        if (recordEntity.getFinalGrade() == null) {
+            throw new RuntimeException("Grades must be computed first");
+        }
+        recordEntity.setFinalized(true);
+        submitFinalGradeToStudent(recordEntity);
+        studentGradeRecordRepository.save(recordEntity);
+        return getStudentRecord(recordId);
+    }
+
     public StudentGradeRecordDTO computeGrade(Long id, Long facultyId){
         StudentGradeRecordEntity recordEntity = getStudentGradeRecordEntity(id);
 

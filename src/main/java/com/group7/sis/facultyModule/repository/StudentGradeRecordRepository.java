@@ -11,6 +11,8 @@ import com.group7.sis.facultyModule.entity.StudentGradeRecordEntity;
 
 public interface StudentGradeRecordRepository extends JpaRepository<StudentGradeRecordEntity, Long>{
 
+    StudentGradeRecordEntity findByEnrolledCourseId(Long enrolledCourseId);
+    
     @Query("""
     SELECT sgr FROM StudentGradeRecordEntity sgr
     WHERE(

@@ -190,7 +190,7 @@ public class ScheduleService {
     }
 
     private void checkDayOverlapByFaculty(ScheduledCourseDTO scheduledCourseDTO, ScheduledCourseEntity newSchedule){
-        checkDayOverlap(scheduledCourseRepository.findByAssignedFacultyIdAndAcademicYearAndCourseAssignmentId(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getAcademicYear(), scheduledCourseDTO.getCourseAssignmentId()), scheduledCourseDTO, newSchedule);
+        checkDayOverlap(scheduledCourseRepository.findByAssignedFacultyIdAndAcademicYear(scheduledCourseDTO.getAssignedFacultyId(), scheduledCourseDTO.getAcademicYear()), scheduledCourseDTO, newSchedule);
     }
 
     private void checkDayOverlapBySection(ScheduledCourseDTO scheduledCourseDTO, ScheduledCourseEntity newSchedule){
@@ -221,20 +221,17 @@ public class ScheduleService {
                     throw new RuntimeException("""
                             Schedule conflict detected.
 
-                            Conflicted with schedule:
                             Code: %s
                             AcademicYear: %s
                             AssignedFaculty: %s
-                            Section: %s
-                            Room: %s
+                            Section: %s |
                             Day: %s
                             Time: %s - %s
                             """.formatted(
                                 schedule.getCode(),
                                 schedule.getAcademicYear(),
-                                schedule.getAssignedFaculty().getId(),
-                                schedule.getSection().getId(),
-                                schedule.getRoom(),
+                                schedule.getAssignedFaculty().getFacultyNumber(),
+                                schedule.getSection().getCode(),
                                 day2.getName(),
                                 day2.getStartTime(), day2.getEndTime()
                             ));

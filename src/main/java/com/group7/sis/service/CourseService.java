@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.group7.sis.repository.ScheduledCourseRepository;
+import com.group7.sis.entity.academic.ScheduledCourseEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +34,7 @@ public class CourseService {
 
     private final CurriculumQueryService curriculumQueryService;
     private final DepartmentQueryService departmentQueryService;
+    private final ScheduledCourseRepository scheduledCourseRepository;
 
     public CourseDTO addCourse(CourseDTO courseDTO){
         CourseEntity courseEntity = courseMapper.toEntity(courseDTO);
@@ -117,6 +120,27 @@ public class CourseService {
                 newAssignments.add(courseAssignmentEntity);
             }
 
+            List<CourseAssignmentEntity> oldCourseAssignments = course.getCourseAssignments();
+        
+            for (CourseAssignmentEntity courseAssignmentEntity : oldCourseAssignments){
+                boolean found = false;
+
+                for (CourseAssignmentEntity newCourseAssignment : newAssignments){
+                    if (courseAssignmentEntity.getId().equals(newCourseAssignment.getId())){
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found){
+                    List<ScheduledCourseEntity> schedules = scheduledCourseRepository.findByCourseAssignmentId(courseAssignmentEntity.getId());
+
+                    if(!schedules.isEmpty()){
+                        throw new RuntimeException("Cannot delete a course assignment with a schedule already assigned.");
+                    }
+                }
+            }
+
             course.getCourseAssignments().clear();
             course.getCourseAssignments().addAll(newAssignments);
         }
@@ -127,6 +151,7 @@ public class CourseService {
 
         courseMapper.updateEntityFromDTO(courseToModify, course);
         courseRepository.save(course);
+        
         return getCourse(id);
     }
 

@@ -30,12 +30,9 @@ function renderChecks(containerId, list, prefix, disabled) {
 function setEnrollmentUi(closed, message) {
   enrollmentLocked = closed;
   const btn = document.getElementById('enrollBtn');
-  const lists = ['currentList', 'failedList', 'missedList'];
   btn.disabled = closed;
   if (closed) {
-    lists.forEach(id => {
-      document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(cb => { cb.disabled = true; });
-    });
+    document.querySelectorAll('#enrollmentPanel .check-list input[type="checkbox"]').forEach(cb => { cb.disabled = true; });
   }
   const em = document.getElementById('enrollMsg');
   if (message) {
@@ -59,7 +56,6 @@ async function loadDashboard() {
       ${stat('Program', d.programCode || '-')}
       ${stat('Section', d.sectionName || '-')}
       ${stat('Courses', d.totalEnrolledCourses ?? '-')}
-      ${stat('Units', d.totalUnits ?? '-')}
       ${stat('Grades', d.gradeCompletionStatus || '-')}
     </div>
     <p style="font-size:0.9rem;margin-bottom:0.5rem">Today: ${d.currentDayOfTheWeek || ''}, ${d.currentMonth || ''} ${d.currentDay || ''}, ${d.currentYear || ''}</p>
@@ -96,9 +92,36 @@ async function loadEnrollment() {
     data.message.toLowerCase().includes('dropped') ||
     data.message.toLowerCase().includes('graduated')
   );
-  renderChecks('currentList', data.currentSchedules, 'current', closed);
-  renderChecks('failedList', data.failedCourseSchedules, 'failed', closed);
-  renderChecks('missedList', data.missedCourseSchedules, 'missed', closed);
+  
+  // Only show sections that have data
+  const currentList = document.getElementById('currentList');
+  const failedList = document.getElementById('failedList');
+  const missedList = document.getElementById('missedList');
+  const currentSection = document.getElementById('currentSection');
+  const failedSection = document.getElementById('failedSection');
+  const missedSection = document.getElementById('missedSection');
+  
+  if (data.currentSchedules && data.currentSchedules.length) {
+    currentSection.style.display = '';
+    renderChecks('currentList', data.currentSchedules, 'current', closed);
+  } else {
+    currentSection.style.display = 'none';
+  }
+  
+  if (data.failedCourseSchedules && data.failedCourseSchedules.length) {
+    failedSection.style.display = '';
+    renderChecks('failedList', data.failedCourseSchedules, 'failed', closed);
+  } else {
+    failedSection.style.display = 'none';
+  }
+  
+  if (data.missedCourseSchedules && data.missedCourseSchedules.length) {
+    missedSection.style.display = '';
+    renderChecks('missedList', data.missedCourseSchedules, 'missed', closed);
+  } else {
+    missedSection.style.display = 'none';
+  }
+  
   setEnrollmentUi(closed, data.message);
   if (!closed) updateEnrollButton();
 }
@@ -144,23 +167,37 @@ async function loadEnrollmentHistory() {
     document.getElementById('historyContent').innerHTML = '<p>No enrollment records.</p>';
     return;
   }
-  let rows = [];
+  let html = '';
   list.forEach(info => {
-    rows.push([
-      info.academicYear, info.semester, info.yearLevel,
-      info.enrollmentStatus, info.scholasticStatus, (info.enrolledCourses || []).length
-    ]);
-    (info.enrolledCourses || []).forEach(ec => {
-      rows.push([
-        `<span style="padding-left:1rem">${ec.courseCode || ec.courseTitle || 'Course'}</span>`,
-        ec.sectionName || '-', ec.facultyName || '-', ec.grade ?? '-', ec.status, ''
-      ]);
-    });
+    const enrolledCourses = info.enrolledCourses || [];
+    html += `<div class="sub-panel" style="margin-bottom:0.75rem">
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:0.5rem;font-size:0.85rem">
+        <span><strong>A.Y.:</strong> ${info.academicYear}</span>
+        <span><strong>Program:</strong> ${info.programTitle}</span>
+        <span><strong>Year Level:</strong> ${info.yearLevel}</span>
+        <span><strong>Semester:</strong> ${info.semester}</span>
+        <span><strong>Section:</strong> ${info.sectionName || '-'}</span>
+        <span><strong>Scholastic Status:</strong> ${info.scholasticStatus}</span>
+        <span><strong>GWA:</strong> ${info.gwa == 0 ? '-' : info.gwa}</span>
+      </div>`;
+    if (enrolledCourses.length) {
+      html += tableHtml(
+        ['Course Code', 'Units', 'Course Title', 'Faculty', 'Grade', 'Status'],
+        enrolledCourses.map(ec => [
+          ec.courseCode || '-',
+          ec.units || '-',
+          ec.courseTitle || '-',
+          ec.facultyName || '-',
+          ec.grade ?? '-',
+          ec.status
+        ])
+      );
+    } else {
+      html += '<p style="font-size:0.85rem;color:#666">No courses enrolled.</p>';
+    }
+    html += '</div>';
   });
-  document.getElementById('historyContent').innerHTML = tableHtml(
-    ['Term / Course', 'Section', 'Faculty', 'Grade', 'Status', ''],
-    rows
-  );
+  document.getElementById('historyContent').innerHTML = html;
 }
 
 async function loadProfile() {

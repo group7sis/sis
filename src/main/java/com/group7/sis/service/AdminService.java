@@ -28,7 +28,7 @@ public class AdminService {
     public AdminDTO updateAdmin (Long id, AdminDTO adminDTO){
         AdminEntity admin = adminQueryService.getAdminEntity(id);
         adminMapper.updateEntityFromDto(adminDTO, admin);
-
+        adminRepository.save(admin);
         return getAdmin(id);
     }
 

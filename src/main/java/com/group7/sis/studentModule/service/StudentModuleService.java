@@ -42,6 +42,7 @@ import com.group7.sis.mapper.StudentMapper;
 import com.group7.sis.repository.ScheduledCourseRepository;
 import com.group7.sis.repository.StudentRepository;
 import com.group7.sis.service.queryservices.CourseQueryService;
+import com.group7.sis.service.queryservices.FacultyQueryService;
 import com.group7.sis.service.queryservices.StudentQueryService;
 import com.group7.sis.service.queryservices.TermQueryService;
 import com.group7.sis.studentModule.dto.SchedulesSubmissionDTO;
@@ -73,6 +74,7 @@ public class StudentModuleService {
     private final CourseQueryService courseQueryService;
     private final CourseAssignmentRepository courseAssignmentRepository;
 
+    private final FacultyQueryService facultyQueryService;
 
     public SchedulesCategorizedDTO getAvailableSchedules(Long studentId){
 
@@ -84,16 +86,9 @@ public class StudentModuleService {
             page.setMessage("Enrollment is closed");
             return page;
         }
-
-        AcademicInfoEntity currentEnrollment = studentQueryService.getEnrollmentOfStudentByYearAndSem(studentId, currentTerm.getAcademicYear(), currentTerm.getSemester());
-        if (currentEnrollment != null){
-            page.setMessage("Enrollment already submitted for this term");
-            return page;
-        }
-
         AcademicInfoEntity previousEnrollment = studentRepository.getLatestEnrollment(studentId, EnrollmentStatus.ACTIVE);
 
-        List<ScheduledCourseEntity> availableSchedules = scheduledCourseRepository.getSchedulesForProgramCurriculum(previousEnrollment.getEnrolledProgram().getId(), previousEnrollment.getProgramCurriculum().getId(), previousEnrollment.getYearLevel(), currentTerm.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear());
+        List<ScheduledCourseEntity> availableSchedules = scheduledCourseRepository.getSchedulesForProgramCurriculum(previousEnrollment.getEnrolledProgram().getId(), previousEnrollment.getProgramCurriculum().getId(), previousEnrollment.getYearLevel(), currentTerm.getSemester(), null, ScheduleStatus.ACTIVE, currentTerm.getAcademicYear());
 
         for (ScheduledCourseEntity schedule : availableSchedules){
             StudentScheduleDTO studentScheduleDTO = scheduledCourseMapper.toStudentScheduleDTO(schedule); 
@@ -116,7 +111,7 @@ public class StudentModuleService {
         
         if(!failedCourses.isEmpty()){
             for (CourseAssignmentEntity failedCourse : failedCourses){
-                for (ScheduledCourseEntity schedule : scheduledCourseRepository.getSchedulesForProgramCurriculum(failedCourse.getProgram().getId(), failedCourse.getCurriculum().getId(), failedCourse.getYearLevel(), failedCourse.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear())){
+                for (ScheduledCourseEntity schedule : scheduledCourseRepository.getSchedulesForProgramCurriculum(failedCourse.getProgram().getId(), failedCourse.getCurriculum().getId(), failedCourse.getYearLevel(), failedCourse.getSemester(), failedCourse.getCourse().getId(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear())){
                     availableFailedCourseSchedules.add(schedule);
                 }
             }
@@ -176,7 +171,7 @@ public class StudentModuleService {
             List<ScheduledCourseEntity> availableNotTakenCourses = new ArrayList<>();
 
             for (CourseAssignmentEntity missing : missingCourses){
-                availableNotTakenCourses.addAll(scheduledCourseRepository.getSchedulesForProgramCurriculum(missing.getProgram().getId(), missing.getCurriculum().getId(), missing.getYearLevel(), missing.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear()));
+                availableNotTakenCourses.addAll(scheduledCourseRepository.getSchedulesForProgramCurriculum(missing.getProgram().getId(), missing.getCurriculum().getId(), missing.getYearLevel(), missing.getSemester(), missing.getCourse().getId(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear()));
             }
 
         
@@ -289,7 +284,7 @@ public class StudentModuleService {
             newEnrollment.setEnrollmentDate(LocalDate.now());
             newEnrollment.setEnrollmentStatus(EnrollmentStatus.ACTIVE);
 
-            List<ScheduledCourseEntity> availableSchedules = scheduledCourseRepository.getSchedulesForProgramCurriculum(newEnrollment.getEnrolledProgram().getId(), newEnrollment.getProgramCurriculum().getId(), newEnrollment.getYearLevel(), currentTerm.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear());
+            List<ScheduledCourseEntity> availableSchedules = scheduledCourseRepository.getSchedulesForProgramCurriculum(newEnrollment.getEnrolledProgram().getId(), newEnrollment.getProgramCurriculum().getId(), newEnrollment.getYearLevel(), currentTerm.getSemester(), null, ScheduleStatus.ACTIVE, currentTerm.getAcademicYear());
             int allowedUnits = calculateUnits(availableSchedules);
 
             List<CourseAssignmentEntity> failedCourses = getFailedCourses(studentEntity);
@@ -391,7 +386,7 @@ public class StudentModuleService {
             List<ScheduledCourseEntity> availableNotTakenCourses = new ArrayList<>();
             if(!missingCourses.isEmpty()){
                 for (CourseAssignmentEntity missing : missingCourses){
-                    availableNotTakenCourses.addAll(scheduledCourseRepository.getSchedulesForProgramCurriculum(missing.getProgram().getId(), missing.getCurriculum().getId(), missing.getYearLevel(), missing.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear()));
+                    availableNotTakenCourses.addAll(scheduledCourseRepository.getSchedulesForProgramCurriculum(missing.getProgram().getId(), missing.getCurriculum().getId(), missing.getYearLevel(), missing.getSemester(), missing.getCourse().getId(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear()));
                 }
 
             
@@ -436,7 +431,7 @@ public class StudentModuleService {
 
             if (!failedCourses.isEmpty()){    
                 for (CourseAssignmentEntity failedCourse : failedCourses){
-                    for (ScheduledCourseEntity schedule : scheduledCourseRepository.getSchedulesForProgramCurriculum(failedCourse.getProgram().getId(), failedCourse.getCurriculum().getId(), failedCourse.getYearLevel(), failedCourse.getSemester(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear())){
+                    for (ScheduledCourseEntity schedule : scheduledCourseRepository.getSchedulesForProgramCurriculum(failedCourse.getProgram().getId(), failedCourse.getCurriculum().getId(), failedCourse.getYearLevel(), failedCourse.getSemester(), failedCourse.getCourse().getId(), ScheduleStatus.ACTIVE, currentTerm.getAcademicYear())){
                         availableFailedCourseSchedules.add(schedule);
                     }
                 }
@@ -524,6 +519,10 @@ public class StudentModuleService {
 
         for(AcademicInfoEntity academicInfoEntity : student.getAcademicInfo()){
             for(EnrolledCourseEntity enrolledCourseEntity : academicInfoEntity.getEnrolledCourses()){
+                if (enrolledCourseEntity.getStatus() != Status.FAILED){
+                    continue;
+                }
+
                 if (enrolledCourseEntity.getStatus() == Status.FAILED){
                     boolean alreadyAdded = false;
 
@@ -542,7 +541,7 @@ public class StudentModuleService {
         }
         return failedCourses;
     }
-
+    
     private int calculateTotalUnitsEnrolled(List<EnrolledCourseEntity> enrolledCourses){
         int enrolledUnits = 0;
         for (EnrolledCourseEntity enrolledCourse : enrolledCourses){
@@ -632,7 +631,19 @@ public class StudentModuleService {
     }
 
     public List<AcademicInfoDTO> getEnrollmentHistory(Long studentId){
-        return studentMapper.toDto(studentQueryService.getStudentEntity(studentId)).getAcademicInfo();
+        List<AcademicInfoDTO> enrollmentHistory = studentMapper.toDto(studentQueryService.getStudentEntity(studentId)).getAcademicInfo();
+
+        for (AcademicInfoDTO enrollment : enrollmentHistory){
+            enrollment.setGwa(calculateGwaDTO(enrollment));
+
+            for (EnrolledCourseDTO enrolledCourse : enrollment.getEnrolledCourses()){
+                FacultyEntity faculty = facultyQueryService.getFacultyEntity(enrolledCourse.getFacultyId());
+                String facultyName = faculty.getProfile().getFirstName() + (faculty.getProfile().getMiddleName() == null ? "" : (" " + faculty.getProfile().getMiddleName())) + (" " + faculty.getProfile().getLastName()) + (faculty.getProfile().getSuffix() == null ? "" : (" " + faculty.getProfile().getSuffix()));
+                enrolledCourse.setFacultyName(facultyName);
+            }
+        }
+
+        return enrollmentHistory;
     }
 
     public StudentProfileDTO getProfile(Long studentId){
@@ -710,6 +721,24 @@ public class StudentModuleService {
             if (enrolledCourse.getGrade() != null){
                 total += (enrolledCourse.getGrade() *  enrolledCourse.getSchedule().getCourseAssignment().getCourse().getUnits());
                 totalUnits += enrolledCourse.getSchedule().getCourseAssignment().getCourse().getUnits();
+            }
+        }
+        
+        if (totalUnits == 0){
+            return 0;
+        }
+
+        double gwa = Math.round((total / totalUnits) * 100.0) / 100.0;
+        return gwa;
+    }
+
+    private double calculateGwaDTO(AcademicInfoDTO currentEnrollment){
+        double total = 0;
+        double totalUnits = 0;
+        for (EnrolledCourseDTO enrolledCourse : currentEnrollment.getEnrolledCourses()){
+            if (enrolledCourse.getGrade() != null){
+                total += (enrolledCourse.getGrade() *  enrolledCourse.getUnits());
+                totalUnits += enrolledCourse.getUnits();
             }
         }
         

@@ -81,7 +81,7 @@ function fmtName(p) {
 
 function fmtDays(days) {
   if (!days || !days.length) return '-';
-  return days.map(d => `${d.name} ${d.startTime}-${d.endTime}`).join(', ');
+  return days.map(d => `${d.name} ${d.timeStart || d.startTime || ''}-${d.timeEnd || d.endTime || ''}`).join(', ');
 }
 
 function bindNav(loaders) {
@@ -229,18 +229,22 @@ function buildAccountFromForm(f, role) {
 }
 
 function collectAssignments(containerId) {
-  return collectRepeater(containerId).map(a => ({
-    programId: a.programId || undefined,
-    curriculumId: a.curriculumId,
-    yearLevel: a.yearLevel,
-    semester: a.semester
-  }));
+  return collectRepeater(containerId).map(a => {
+    const item = {
+      programId: a.programId || undefined,
+      curriculumId: a.curriculumId,
+      yearLevel: a.yearLevel,
+      semester: a.semester
+    };
+    if (a.id) item.id = a.id;
+    return item;
+  });
 }
 
 function collectDays(containerId) {
   return collectRepeater(containerId).map(d => ({
     name: d.name,
-    startTime: String(d.startTime).slice(0, 5),
-    endTime: String(d.endTime).slice(0, 5)
+    startTime: d.startTime ? String(d.startTime).slice(0, 5) : '',
+    endTime: d.endTime ? String(d.endTime).slice(0, 5) : ''
   }));
 }

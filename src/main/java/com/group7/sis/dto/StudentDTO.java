@@ -55,11 +55,16 @@ public class StudentDTO {
         @NotNull(message = "Program must be assigned")
         private Long enrolledProgramId;
 
+        private String programTitle;
+
         @NotNull(message = "Curriculum must be assigned")
         private Long programCurriculumId;
 
         @NotNull(message = "Section must be assigned")
         private Long sectionId;
+
+        private String sectionName;
+        private Double gwa;
 
         @NotBlank(message = "Academic year is required")
         @Pattern(
@@ -107,6 +112,7 @@ public class StudentDTO {
             private Long courseId;
             private String courseCode;
             private String courseTitle;
+            private Long facultyId;
             private String facultyName;
             private int units;
             private String sectionName;

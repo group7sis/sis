@@ -32,7 +32,6 @@ function applyGradeTermLock() {
     notice.innerHTML = '<div class="msg info">Grade encoding is unavailable because the term status is CLOSED.</div>';
     controls.classList.add('hidden');
     document.getElementById('gradeStudentTable').innerHTML = '';
-    document.getElementById('gradeFormWrap').classList.add('hidden');
   } else {
     notice.classList.add('hidden');
     controls.classList.remove('hidden');
@@ -55,12 +54,9 @@ async function loadDashboard() {
   function box(label, val) {
     return `<div class="stat"><strong>${val ?? 0}</strong><span>${label}</span></div>`;
   }
-  document.getElementById('dashSched').innerHTML = tableHtml(
-    ['Course', 'Section', 'Days'],
-    (d.schedules || []).map(x => [x.courseTitle, x.sectionName, fmtDays(x.days)])
-  );
+  document.getElementById('dashSched').innerHTML = '';
 
-  // Today's schedule
+  // Today's schedule only, not all schedules
   const today = (d.currentDayOfTheWeek || '').toLowerCase();
   const todaySched = (d.schedules || []).filter(x => {
     if (!today || !x.days) return false;
@@ -70,9 +66,9 @@ async function loadDashboard() {
   if (todaySched.length) {
     todayEl.innerHTML = `
       <h2 style="font-size:1rem;margin-bottom:0.5rem">Today's Schedule (${d.currentDayOfTheWeek || ''})</h2>
-      ${tableHtml(['Course', 'Section', 'Time'], todaySched.map(x => [x.courseTitle, x.sectionName, fmtDays(x.days)]))}`;
+      ${tableHtml(['Course', 'Section', 'Time'], todaySched.map(x => [x.courseTitle, x.sectionName, fmtDayTimes(x.days, today)]))}`;
   } else {
-    todayEl.innerHTML = '';
+    todayEl.innerHTML = '<p style="font-size:0.85rem;color:#888">No classes scheduled for today.</p>';
   }
 }
 
@@ -84,7 +80,11 @@ async function loadSchedules() {
     if (!list.length) return; // only show days with records
     html += `<div class="section-title">${day.charAt(0).toUpperCase() + day.slice(1)}</div>`;
     html += tableHtml(['Course', 'Section', 'Time'],
-      list.map(s => [s.courseTitle, s.sectionName, fmtDays(s.days)]));
+      list.map(s => {
+        const dayTime = (s.days || []).find(d => (d.name || '').toLowerCase() === day);
+        const time = dayTime ? `${dayTime.startTime || dayTime.timeStart || ''} - ${dayTime.endTime || dayTime.timeEnd || ''}`.trim() : '-';
+        return [s.courseTitle, s.sectionName, time || '-'];
+      }));
   });
   if (!html) html = '<p style="color:#888;font-size:0.85rem">No schedules available.</p>';
   document.getElementById('schedContent').innerHTML = html;
@@ -146,7 +146,6 @@ document.getElementById('gradeCourse').onchange = async () => {
   const secSel = document.getElementById('gradeSection');
   secSel.innerHTML = '<option value="">Select section</option>';
   document.getElementById('gradeStudentTable').innerHTML = '';
-  document.getElementById('gradeFormWrap').classList.add('hidden');
   if (!courseId) return;
   const sections = await api(`${base}/records/courses/${courseId}/sections`);
   secSel.innerHTML += sections.map(s => {
@@ -176,13 +175,13 @@ document.getElementById('gradeLoadBtn').onclick = async () => {
         `<button class="btn btn-sm" data-record="${r.id}">Encode</button>`
       ])
     );
-    document.getElementById('gradeFormWrap').classList.add('hidden');
   } catch (err) {
     showMsg(msg, err.message, 'err');
   }
 };
 
-document.getElementById('gradeStudentTable').onclick = async e => {
+// Encode button opens dialog
+document.getElementById('gradeStudentTable').addEventListener('click', async e => {
   if (termClosed) return;
   const btn = e.target.closest('[data-record]');
   if (!btn) return;
@@ -193,8 +192,8 @@ document.getElementById('gradeStudentTable').onclick = async e => {
   const form = document.getElementById('gradeForm');
   ['assignments', 'quizzes', 'activities', 'finalExam', 'calculatedGrade', 'finalGrade']
     .forEach(k => { form[k].value = r[k] ?? ''; });
-  document.getElementById('gradeFormWrap').classList.remove('hidden');
-};
+  document.getElementById('gradeDialog').showModal();
+});
 
 document.getElementById('computeBtn').onclick = async () => {
   if (!activeRecordId || termClosed) return;
@@ -230,28 +229,41 @@ document.getElementById('gradeForm').onsubmit = async e => {
       activities: num(form.activities.value),
       finalExam: num(form.finalExam.value),
       finalGrade: num(form.finalGrade.value)
-      // finalized not included - save only saves scores
     };
     await api(`${base}/records/encode/${activeRecordId}`, { method: 'PUT', body: JSON.stringify(body) });
     showMsg(msg, 'Grade saved', 'ok');
+    document.getElementById('gradeDialog').close();
     document.getElementById('gradeLoadBtn').click();
   } catch (err) {
     showMsg(msg, err.message, 'err');
   }
 };
 
-// Finalize button - sets finalized to true
+// Finalize button - uses new dedicated endpoint
 document.getElementById('finalizeBtn')?.addEventListener('click', async () => {
   if (!activeRecordId || termClosed) return;
   try {
     hideMsg(msg);
     await api(`${base}/records/encode/${activeRecordId}/finalize`, { method: 'PUT' });
     showMsg(msg, 'Grade finalized', 'ok');
+    document.getElementById('gradeDialog').close();
     document.getElementById('gradeLoadBtn').click();
   } catch (err) {
     showMsg(msg, err.message, 'err');
   }
 });
+
+function fmtDayTimes(days, dayName) {
+  if (!days || !days.length) return '-';
+  const dayTime = days.find(d => (d.name || '').toLowerCase() === dayName.toLowerCase());
+  if (!dayTime) return '-';
+  const timeStart = dayTime.startTime || dayTime.timeStart || '';
+  const timeEnd = dayTime.endTime || dayTime.timeEnd || '';
+  if (timeStart && timeEnd) return `${timeStart} - ${timeEnd}`;
+  if (timeStart) return timeStart;
+  if (dayTime.time) return dayTime.time;
+  return '-';
+}
 
 function num(v) {
   return v === '' || v == null ? null : Number(v);
@@ -307,6 +319,16 @@ document.getElementById('profileForm').onsubmit = async e => {
     showMsg(msg, err.message, 'err');
   }
 };
+
+// Close dialogs with data-close-dialog attribute
+document.body.addEventListener('click', e => {
+  const closeBtn = e.target.closest('[data-close-dialog]');
+  if (closeBtn) {
+    const dialogId = closeBtn.dataset.closeDialog;
+    const dialog = document.getElementById(dialogId);
+    if (dialog) dialog.close();
+  }
+});
 
 bindNav({
   dashboard: loadDashboard,

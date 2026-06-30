@@ -49,11 +49,11 @@ async function loadLookups() {
 
 function deptLabel(d) { return `${d.code} - ${d.name}`; }
 function progLabel(p) { return `${p.code || p.id} - ${p.title}`; }
-function currLabel(c) { return `${c.programCode || ''} ${c.code || c.id} (${c.effectiveYear || ''})`.trim(); }
+function currLabel(c) { return `${c.code || c.id}`.trim(); }
 function sectLabel(s) {
   const prog = LK.programs.find(p => p.id === s.programId);
   const progName = prog ? `${prog.code || prog.id}` : s.programId;
-  return `${s.name} (${s.code || s.id}) · ${progName}`;
+  return `${s.name} (${s.code || s.id})`;
 }
 function facultyLabel(f) { return `${f.facultyNumber || f.id} - ${fmtName(f.profile)}`; }
 function courseLabel(c) { return `${c.code} - ${c.title}`; }
@@ -102,5 +102,12 @@ function qualifiedCourseSelectHtml(selectedIds = []) {
   const ids = new Set((selectedIds || []).map(String));
   return (LK.courses || []).map(c =>
     `<option value="${c.id}"${ids.has(String(c.id)) ? ' selected' : ''}>${courseLabel(c)}</option>`
+  ).join('');
+}
+
+function qualifiedCourseCheckboxHtml(selectedIds = [], excludeId) {
+  const ids = new Set((selectedIds || []).map(String));
+  return (LK.courses || []).filter(c => !excludeId || c.id !== Number(excludeId)).map(c =>
+    `<label><input type="checkbox" name="qualifiedCourseIds" value="${c.id}"${ids.has(String(c.id)) ? ' checked' : ''}> ${courseLabel(c)}</label>`
   ).join('');
 }
